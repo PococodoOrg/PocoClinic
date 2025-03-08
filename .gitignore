@@ -1,0 +1,74 @@
+# Go backend
+/backend/bin/
+/backend/tmp/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Go vendor directory
+/backend/vendor/
+
+# Go coverage and debug files
+*.coverprofile
+__debug_bin
+
+# React frontend
+/frontend/node_modules/
+/frontend/.pnp
+/frontend/.pnp.js
+/frontend/coverage/
+/frontend/build/
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+*.env
+.env.*
+
+# Logs
+*.log
+logs/
+log/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Database files
+*.db
+*.sqlite
+
+# Binary files
+bin/
+dist/
+build/
+
+# Test coverage
+coverage/
+coverage.txt
+profile.out
+
+# Certificates and keys
+*.pem
+*.key
+*.crt 
