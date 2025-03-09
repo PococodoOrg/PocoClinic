@@ -48,6 +48,7 @@ PocoClinic is designed with a "Simple but Secure" philosophy, focusing on:
 | Audit Logging | 📝 | HIPAA-compliant action and event tracking | Database, Auth system |
 | Reporting | 📝 | Patient and system reports, analytics | Data access layer |
 | Documentation | 📝 | Physical admin guide and system documentation | Documentation generator |
+| AI Assistance | 📝 | Lightweight task assistance and guidance | Local LLM, Task templates |
 
 ## Current Development Focus
 
@@ -172,6 +173,29 @@ PocoClinic is designed with a "Simple but Secure" philosophy, focusing on:
   - [ ] Password storage
   - [ ] Access control
   - [ ] Physical security
+
+### AI Assistance
+**Status**: 📝 Planned
+- Local LLM Integration
+  - [ ] Lightweight model selection (e.g., GGML/GGUF format)
+  - [ ] Offline-first operation
+  - [ ] Resource usage monitoring
+  - [ ] Model updates management
+- Task Templates
+  - [ ] Common procedure guidance
+  - [ ] Form filling assistance
+  - [ ] Documentation lookup
+  - [ ] Simple report generation
+- System Integration
+  - [ ] Context-aware help
+  - [ ] Natural language search
+  - [ ] Task completion suggestions
+  - [ ] Error explanation assistance
+- Privacy & Security
+  - [ ] Local-only processing
+  - [ ] PHI/PII awareness
+  - [ ] Audit logging of AI usage
+  - [ ] Configurable usage limits
 
 ## Quality Assurance
 **Status**: 📝 Planned
