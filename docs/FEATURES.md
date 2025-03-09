@@ -177,25 +177,83 @@ PocoClinic is designed with a "Simple but Secure" philosophy, focusing on:
 ### AI Assistance
 **Status**: 📝 Planned
 - Local LLM Integration
-  - [ ] Lightweight model selection (e.g., GGML/GGUF format)
+  - [ ] Lightweight model selection
+    - Primary Option: Llama-2-7b-chat-q4 (GGUF format)
+      - ~4GB RAM usage
+      - ~4GB disk space
+      - CPU-only operation possible
+      - Good balance of capability vs resource usage
+    - Backup Option: GPT4All-J-6B (GGML format)
+      - ~3GB RAM usage
+      - ~3.7GB disk space
+      - Optimized for CPU
+    - Minimum System Requirements:
+      - 8GB RAM total
+      - 10GB free disk space
+      - x86_64 CPU with AVX2 support
   - [ ] Offline-first operation
+    - [ ] Local model file management
+    - [ ] Versioned model updates
+    - [ ] Fallback to rule-based responses
   - [ ] Resource usage monitoring
+    - [ ] RAM usage limits
+    - [ ] CPU usage throttling
+    - [ ] Disk space monitoring
   - [ ] Model updates management
+    - [ ] Manual update process
+    - [ ] Integrity verification
+    - [ ] Rollback capability
 - Task Templates
   - [ ] Common procedure guidance
+    - [ ] Pre-defined prompt templates
+    - [ ] Context-aware responses
+    - [ ] Step-by-step instructions
   - [ ] Form filling assistance
+    - [ ] Field explanation
+    - [ ] Data validation suggestions
+    - [ ] Common value recommendations
   - [ ] Documentation lookup
+    - [ ] Natural language queries
+    - [ ] Context-based search
+    - [ ] Quick reference generation
   - [ ] Simple report generation
+    - [ ] Template-based outputs
+    - [ ] Data summarization
+    - [ ] Format consistency
 - System Integration
   - [ ] Context-aware help
+    - [ ] Current page awareness
+    - [ ] User role consideration
+    - [ ] Task state understanding
   - [ ] Natural language search
+    - [ ] Query optimization
+    - [ ] Result ranking
+    - [ ] Search scope control
   - [ ] Task completion suggestions
+    - [ ] Next step recommendations
+    - [ ] Common patterns recognition
+    - [ ] Error prevention hints
   - [ ] Error explanation assistance
+    - [ ] Plain language translations
+    - [ ] Resolution suggestions
+    - [ ] Prevention tips
 - Privacy & Security
   - [ ] Local-only processing
+    - [ ] Network isolation verification
+    - [ ] Data flow monitoring
+    - [ ] Cache management
   - [ ] PHI/PII awareness
+    - [ ] Pattern recognition
+    - [ ] Data masking
+    - [ ] Sanitization rules
   - [ ] Audit logging of AI usage
+    - [ ] Query logging
+    - [ ] Response tracking
+    - [ ] Usage patterns
   - [ ] Configurable usage limits
+    - [ ] Rate limiting
+    - [ ] Token quotas
+    - [ ] Access controls
 
 ## Quality Assurance
 **Status**: 📝 Planned
