@@ -1,84 +1,106 @@
-import { useEffect, useState } from 'react';
-import { Table, TextInput, Group, Button, Pagination, Text, LoadingOverlay } from '@mantine/core';
-import { useQuery } from '@tanstack/react-query';
-import { patientApi } from '../../api/patients';
-import { Patient } from '../../types/patient';
+import { useState } from 'react';
+import { Table, Button, Group, Text, TextInput } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { fetchPatients, GetPatientsParams } from '../../api/patients';
+import { IconSearch } from '@tabler/icons-react';
+import { Patient } from '../../types/patient';
 
 export function PatientList() {
   const navigate = useNavigate();
-  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
-  // Debounce search input
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-      setPage(1);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [search]);
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['patients', page, debouncedSearch],
-    queryFn: () => patientApi.getPatients({ page, pageSize: 10, search: debouncedSearch }),
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['patients', search, page],
+    queryFn: () => fetchPatients({ search, page, pageSize })
   });
 
-  const handleRowClick = (patient: Patient) => {
-    navigate(`/patients/${patient.id}`);
+  if (error) {
+    return (
+      <Text c="red">Error loading patients. Please try again later.</Text>
+    );
+  }
+
+  const rows = data?.patients?.map((patient: Patient) => (
+    <Table.Tr key={patient.id}>
+      <Table.Td>{patient.firstName}</Table.Td>
+      <Table.Td>{patient.lastName}</Table.Td>
+      <Table.Td>{new Date(patient.dateOfBirth).toLocaleDateString()}</Table.Td>
+      <Table.Td>{patient.gender}</Table.Td>
+      <Table.Td>{patient.email}</Table.Td>
+    </Table.Tr>
+  )) ?? [];
+
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (data && page < data.totalPages) {
+      setPage(page + 1);
+    }
   };
 
   return (
-    <div style={{ position: 'relative' }}>
-      <LoadingOverlay visible={isLoading} />
-      
-      <Group position="apart" mb="md">
+    <div>
+      <Group justify="space-between" mb="md">
         <TextInput
           placeholder="Search patients..."
+          leftSection={<IconSearch size="1rem" />}
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
-          style={{ width: '300px' }}
         />
-        <Button onClick={() => navigate('/patients/new')}>Add New Patient</Button>
+        <Button onClick={() => navigate('/patients/new')}>
+          Add Patient
+        </Button>
       </Group>
 
-      <Table striped highlightOnHover>
-        <thead>
-          <tr>
-            <th>Medical Number</th>
-            <th>Name</th>
-            <th>Date of Birth</th>
-            <th>Gender</th>
-            <th>Contact</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.patients.map((patient) => (
-            <tr key={patient.id} onClick={() => handleRowClick(patient)} style={{ cursor: 'pointer' }}>
-              <td>{patient.medicalNumber}</td>
-              <td>{`${patient.lastName}, ${patient.firstName}${patient.middleName ? ` ${patient.middleName}` : ''}`}</td>
-              <td>{new Date(patient.dateOfBirth).toLocaleDateString()}</td>
-              <td style={{ textTransform: 'capitalize' }}>{patient.gender}</td>
-              <td>{patient.email || patient.phoneNumber || '-'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-
-      {data?.patients.length === 0 && (
-        <Text color="dimmed" align="center" mt="xl">
-          No patients found
+      {isLoading ? (
+        <Text c="dimmed" ta="center" mt="xl">
+          Loading patients...
         </Text>
+      ) : rows.length === 0 ? (
+        <Text c="dimmed" ta="center" mt="xl">
+          No patients found.
+        </Text>
+      ) : (
+        <Table>
+          <Table.Thead>
+            <Table.Tr>
+              <Table.Th>First Name</Table.Th>
+              <Table.Th>Last Name</Table.Th>
+              <Table.Th>Date of Birth</Table.Th>
+              <Table.Th>Gender</Table.Th>
+              <Table.Th>Email</Table.Th>
+            </Table.Tr>
+          </Table.Thead>
+          <Table.Tbody>{rows}</Table.Tbody>
+        </Table>
       )}
 
       {data && data.totalPages > 1 && (
-        <Group position="center" mt="xl">
-          <Pagination
-            total={data.totalPages}
-            value={page}
-            onChange={setPage}
-          />
+        <Group justify="center" mt="xl">
+          <Button 
+            variant="outline" 
+            disabled={page <= 1}
+            onClick={handlePreviousPage}
+          >
+            Previous
+          </Button>
+          <Text>
+            Page {page} of {data.totalPages}
+          </Text>
+          <Button 
+            variant="outline" 
+            disabled={page >= data.totalPages}
+            onClick={handleNextPage}
+          >
+            Next
+          </Button>
         </Group>
       )}
     </div>

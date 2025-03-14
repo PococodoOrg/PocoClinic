@@ -8,91 +8,141 @@ import {
   Box,
   Stack,
   Grid,
+  NumberInput,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { Patient, PatientFormData, Gender } from '../../types/patient';
+import { notifications } from '@mantine/notifications';
+import { useNavigate } from 'react-router-dom';
+import { ValidationError } from '../../api/patients';
 
 interface PatientFormProps {
   initialValues?: Patient;
-  onSubmit: (values: PatientFormData) => void;
+  onSubmit: (values: PatientFormData) => Promise<any>;
   isLoading?: boolean;
 }
 
 export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormProps) {
+  const navigate = useNavigate();
   const form = useForm<PatientFormData>({
     initialValues: initialValues ? {
       ...initialValues,
       dateOfBirth: new Date(initialValues.dateOfBirth),
+      height: initialValues.height ?? null,
+      weight: initialValues.weight ?? null,
     } : {
       firstName: '',
       lastName: '',
-      middleName: '',
-      dateOfBirth: new Date(),
+      dateOfBirth: null,
       gender: 'unknown' as Gender,
       email: '',
-      phoneNumber: '',
-      medicalNumber: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        postalCode: '',
-        country: '',
-      },
+      phone: '',
+      address: '',
+      city: '',
+      state: '',
+      zipCode: '',
+      height: null,
+      weight: null,
     },
 
     validate: {
-      firstName: (value) => (value.trim() ? null : 'First name is required'),
-      lastName: (value) => (value.trim() ? null : 'Last name is required'),
-      dateOfBirth: (value) => (value ? null : 'Date of birth is required'),
-      gender: (value) => (value ? null : 'Gender is required'),
-      medicalNumber: (value) => (value.trim() ? null : 'Medical number is required'),
-      email: (value) => (value ? /^\S+@\S+$/.test(value) ? null : 'Invalid email' : null),
+      firstName: (value) => (!value || value.trim().length === 0 ? 'First name is required' : null),
+      lastName: (value) => (!value || value.trim().length === 0 ? 'Last name is required' : null),
+      dateOfBirth: (value) => (!value ? 'Date of birth is required' : null),
+      gender: (value) => (!value ? 'Gender is required' : null),
+      email: (value) => {
+        if (!value || value.trim().length === 0) return 'Email is required';
+        if (!/^\S+@\S+\.\S+$/.test(value)) return 'Invalid email format';
+        return null;
+      },
+      phone: (value) => {
+        if (!value || value.trim().length === 0) return 'Phone number is required';
+        if (!/^\+?[\d\s-()]+$/.test(value)) return 'Invalid phone number format';
+        return null;
+      },
+      zipCode: (value?: string) => {
+        if (!value) return null;
+        if (!/^\d{5}(-\d{4})?$/.test(value)) return 'Invalid ZIP code format (e.g., 12345 or 12345-6789)';
+        return null;
+      },
+      height: (value?: number | null) => {
+        if (value !== null && value !== undefined && (value <= 0 || value > 300)) return 'Height must be between 1 and 300 cm';
+        return null;
+      },
+      weight: (value?: number | null) => {
+        if (value !== null && value !== undefined && (value <= 0 || value > 500)) return 'Weight must be between 1 and 500 kg';
+        return null;
+      },
     },
+
+    // No need for transformValues as we handle data transformation in the API layer
   });
 
-  const handleSubmit = form.onSubmit((values) => {
-    onSubmit(values);
-  });
+  const handleSubmit = async (values: PatientFormData) => {
+    try {
+      await onSubmit(values);
+      notifications.show({
+        title: 'Success',
+        message: initialValues ? 'Patient updated successfully' : 'Patient created successfully',
+        color: 'green'
+      });
+      navigate('/patients');
+    } catch (error) {
+      if ((error as ValidationError).code === 'VALIDATION_ERROR') {
+        const validationError = error as ValidationError;
+        if (validationError.errors) {
+          // Set field-specific errors
+          Object.entries(validationError.errors).forEach(([field, messages]) => {
+            form.setFieldError(field, messages[0]);
+          });
+        }
+      } else {
+        notifications.show({
+          title: 'Error',
+          message: error instanceof Error ? error.message : 'Failed to save patient',
+          color: 'red'
+        });
+      }
+    }
+  };
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
-      <Stack spacing="md">
+    <Box component="form" onSubmit={form.onSubmit(handleSubmit)}>
+      <Stack gap="md">
         <Grid>
-          <Grid.Col span={4}>
+          <Grid.Col span={6}>
             <TextInput
               required
               label="First Name"
+              placeholder="Enter first name"
               {...form.getInputProps('firstName')}
             />
           </Grid.Col>
-          <Grid.Col span={4}>
-            <TextInput
-              label="Middle Name"
-              {...form.getInputProps('middleName')}
-            />
-          </Grid.Col>
-          <Grid.Col span={4}>
+          <Grid.Col span={6}>
             <TextInput
               required
               label="Last Name"
+              placeholder="Enter last name"
               {...form.getInputProps('lastName')}
             />
           </Grid.Col>
         </Grid>
 
         <Grid>
-          <Grid.Col span={4}>
+          <Grid.Col span={6}>
             <DateInput
               required
               label="Date of Birth"
+              placeholder="Select date"
+              maxDate={new Date()}
               {...form.getInputProps('dateOfBirth')}
             />
           </Grid.Col>
-          <Grid.Col span={4}>
+          <Grid.Col span={6}>
             <Select
               required
               label="Gender"
+              placeholder="Select gender"
               data={[
                 { value: 'male', label: 'Male' },
                 { value: 'female', label: 'Female' },
@@ -102,66 +152,80 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
               {...form.getInputProps('gender')}
             />
           </Grid.Col>
-          <Grid.Col span={4}>
-            <TextInput
-              required
-              label="Medical Number"
-              {...form.getInputProps('medicalNumber')}
-            />
-          </Grid.Col>
         </Grid>
 
         <Grid>
           <Grid.Col span={6}>
             <TextInput
+              required
               label="Email"
+              placeholder="Enter email"
               type="email"
               {...form.getInputProps('email')}
             />
           </Grid.Col>
           <Grid.Col span={6}>
             <TextInput
-              label="Phone Number"
-              {...form.getInputProps('phoneNumber')}
+              required
+              label="Phone"
+              placeholder="Enter phone number"
+              {...form.getInputProps('phone')}
             />
           </Grid.Col>
         </Grid>
 
-        <Box>
-          <TextInput
-            label="Street Address"
-            {...form.getInputProps('address.street')}
-          />
-        </Box>
+        <TextInput
+          label="Address"
+          placeholder="Enter street address"
+          {...form.getInputProps('address')}
+        />
 
         <Grid>
           <Grid.Col span={4}>
             <TextInput
               label="City"
-              {...form.getInputProps('address.city')}
+              placeholder="Enter city"
+              {...form.getInputProps('city')}
             />
           </Grid.Col>
-          <Grid.Col span={3}>
+          <Grid.Col span={4}>
             <TextInput
               label="State"
-              {...form.getInputProps('address.state')}
+              placeholder="Enter state"
+              {...form.getInputProps('state')}
             />
           </Grid.Col>
-          <Grid.Col span={2}>
+          <Grid.Col span={4}>
             <TextInput
-              label="Postal Code"
-              {...form.getInputProps('address.postalCode')}
-            />
-          </Grid.Col>
-          <Grid.Col span={3}>
-            <TextInput
-              label="Country"
-              {...form.getInputProps('address.country')}
+              label="ZIP Code"
+              placeholder="Enter ZIP code"
+              {...form.getInputProps('zipCode')}
             />
           </Grid.Col>
         </Grid>
 
-        <Group position="right" mt="xl">
+        <Grid>
+          <Grid.Col span={6}>
+            <NumberInput
+              label="Height (cm)"
+              placeholder="Enter height"
+              min={1}
+              max={300}
+              {...form.getInputProps('height')}
+            />
+          </Grid.Col>
+          <Grid.Col span={6}>
+            <NumberInput
+              label="Weight (kg)"
+              placeholder="Enter weight"
+              min={1}
+              max={500}
+              {...form.getInputProps('weight')}
+            />
+          </Grid.Col>
+        </Grid>
+
+        <Group justify="flex-end" mt="xl">
           <Button type="submit" loading={isLoading}>
             {initialValues ? 'Update Patient' : 'Create Patient'}
           </Button>

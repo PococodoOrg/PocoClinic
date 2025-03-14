@@ -2,22 +2,20 @@ package commands
 
 import (
 	"context"
-	"time"
 
 	"github.com/dksch/pococlinic/internal/features/patients/domain"
 )
 
 // CreatePatientCommand represents the command to create a new patient
 type CreatePatientCommand struct {
-	FirstName     string         `json:"firstName" binding:"required"`
-	LastName      string         `json:"lastName" binding:"required"`
-	MiddleName    string         `json:"middleName"`
-	DateOfBirth   time.Time      `json:"dateOfBirth" binding:"required"`
-	Gender        domain.Gender  `json:"gender" binding:"required"`
-	Email         string         `json:"email"`
-	PhoneNumber   string         `json:"phoneNumber"`
-	Address       domain.Address `json:"address"`
-	MedicalNumber string         `json:"medicalNumber" binding:"required"`
+	FirstName   string         `json:"firstName" binding:"required"`
+	LastName    string         `json:"lastName" binding:"required"`
+	MiddleName  string         `json:"middleName"`
+	DateOfBirth domain.Date    `json:"dateOfBirth" binding:"required"`
+	Gender      domain.Gender  `json:"gender" binding:"required"`
+	Email       string         `json:"email"`
+	PhoneNumber string         `json:"phoneNumber"`
+	Address     domain.Address `json:"address"`
 }
 
 // CreatePatientHandler handles the creation of a new patient
@@ -38,12 +36,11 @@ func NewCreatePatientHandler(repo domain.CreatePatientRepository) CreatePatientH
 
 // Handle processes the create patient command
 func (h *createPatientHandler) Handle(ctx context.Context, cmd CreatePatientCommand) (*domain.Patient, error) {
-	patient := domain.NewPatient(cmd.FirstName, cmd.LastName, cmd.DateOfBirth, cmd.Gender)
+	patient := domain.NewPatient(cmd.FirstName, cmd.LastName, cmd.DateOfBirth.Time(), cmd.Gender)
 	patient.MiddleName = cmd.MiddleName
 	patient.Email = cmd.Email
 	patient.PhoneNumber = cmd.PhoneNumber
 	patient.Address = cmd.Address
-	patient.MedicalNumber = cmd.MedicalNumber
 
 	err := h.patientRepository.Create(ctx, patient)
 	if err != nil {

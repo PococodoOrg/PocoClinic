@@ -31,7 +31,6 @@ func setupPatientTest() patientTestSuite {
 	patient.Email = "john.doe@example.com"
 	patient.PhoneNumber = "555-0123"
 	patient.Address = address
-	patient.MedicalNumber = "MED123456"
 
 	return patientTestSuite{
 		defaultPatient: patient,
@@ -48,7 +47,6 @@ func TestNewPatient(t *testing.T) {
 	assert.Equal(t, "Doe", patient.LastName)
 	assert.Equal(t, "Robert", patient.MiddleName)
 	assert.Equal(t, GenderMale, patient.Gender)
-	assert.Equal(t, "MED123456", patient.MedicalNumber)
 	assert.False(t, patient.CreatedAt.IsZero())
 	assert.False(t, patient.UpdatedAt.IsZero())
 }
