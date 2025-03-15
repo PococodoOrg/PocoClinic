@@ -1,5 +1,7 @@
 # PocoClinic EMR
 
+**Note: This project is in open development using generative AI. We are actively looking for testers and contributors to help improve and expand the system.**
+
 PocoClinic is an open-source Electronic Medical Records (EMR) system designed specifically for non-profit healthcare organizations. The system provides a secure, easy-to-use platform for managing patient records while maintaining high standards of data privacy and security.
 
 ## 🌟 Features
@@ -37,11 +39,21 @@ For detailed architecture decisions, please refer to the [Architecture Decision 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/PocoClinic.git
+   git clone https://github.com/PococodoOrg/PocoClinic.git
    cd PocoClinic
    ```
 
-2. Install and run frontend (Windows):
+2. Install and run the entire system (Windows):
+   ```bash
+   # Using the provided batch file (recommended)
+   run-all.bat
+   ```
+   This will:
+   - Install frontend and backend dependencies
+   - Run tests
+   - Start both the frontend and backend servers
+
+3. Install and run frontend (Windows):
    ```bash
    # Using the provided batch file (recommended)
    run-frontend.bat
@@ -59,18 +71,18 @@ For detailed architecture decisions, please refer to the [Architecture Decision 
    npm run dev     # Start development server
    ```
 
-3. Install backend dependencies:
+4. Install backend dependencies:
    ```bash
    cd backend
    go mod tidy
    ```
 
-4. Set up the database:
+5. Set up the database:
    ```bash
    # Instructions for CockroachDB setup will be provided
    ```
 
-5. Start the backend server:
+6. Start the backend server:
    ```bash
    cd backend
    go run cmd/main.go
