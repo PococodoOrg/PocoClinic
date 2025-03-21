@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 	"time"
@@ -112,4 +113,9 @@ func (p *Patient) Age() int {
 	}
 
 	return age
+}
+
+// GetPatientRepository defines the interface for retrieving a single patient by ID
+type GetPatientRepository interface {
+	GetPatientByID(ctx context.Context, id string) (*Patient, error)
 }

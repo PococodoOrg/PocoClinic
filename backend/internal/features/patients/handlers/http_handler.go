@@ -15,6 +15,7 @@ import (
 type PatientHandler struct {
 	createPatientHandler commands.CreatePatientHandler
 	getPatientsHandler   queries.GetPatientsHandler
+	getPatientHandler    queries.GetPatientHandler
 	logger               *logging.Logger
 }
 
@@ -22,11 +23,13 @@ type PatientHandler struct {
 func NewPatientHandler(
 	createHandler commands.CreatePatientHandler,
 	getHandler queries.GetPatientsHandler,
+	getPatientHandler queries.GetPatientHandler,
 	logger *logging.Logger,
 ) *PatientHandler {
 	return &PatientHandler{
 		createPatientHandler: createHandler,
 		getPatientsHandler:   getHandler,
+		getPatientHandler:    getPatientHandler,
 		logger:               logger,
 	}
 }
@@ -37,6 +40,7 @@ func (h *PatientHandler) RegisterRoutes(router *gin.RouterGroup) {
 	{
 		patients.POST("", h.CreatePatient)
 		patients.GET("", h.ListPatients)
+		patients.GET("/:id", h.GetPatient)
 		// Add more routes as needed
 	}
 }
@@ -103,6 +107,27 @@ func (h *PatientHandler) ListPatients(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+// GetPatient handles the request to fetch a single patient by ID
+func (h *PatientHandler) GetPatient(c *gin.Context) {
+	id := c.Param("id")
+	query := queries.GetPatientQuery{ID: id}
+
+	patient, err := h.getPatientHandler.Handle(c.Request.Context(), query)
+	if err != nil {
+		h.logger.Error("Failed to fetch patient", err)
+		switch err.(type) {
+		case *errors.APIError:
+			apiErr := err.(*errors.APIError)
+			c.JSON(getStatusCodeForError(apiErr.Code), apiErr)
+		default:
+			c.JSON(http.StatusInternalServerError, errors.NewAPIError(errors.ErrInternalServer, "Failed to fetch patient"))
+		}
+		return
+	}
+
+	c.JSON(http.StatusOK, patient)
 }
 
 // getStatusCodeForError returns the appropriate HTTP status code for an error code
