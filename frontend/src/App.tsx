@@ -6,6 +6,8 @@ import { Notifications } from '@mantine/notifications';
 import { PatientList } from './components/patients/PatientList';
 import { CreatePatient } from './pages/CreatePatient';
 import { AppLayout } from './components/layout/AppLayout';
+import HelpAndSupport from './pages/HelpAndSupport';
+import PatientDetails from './pages/PatientDetails';
 
 const queryClient = new QueryClient();
 
@@ -20,6 +22,8 @@ export default function App() {
               <Route path="/" element={<Navigate to="/patients" replace />} />
               <Route path="/patients" element={<PatientList />} />
               <Route path="/patients/new" element={<CreatePatient />} />
+              <Route path="/help" element={<HelpAndSupport />} />
+              <Route path="/patients/:id" element={<PatientDetails />} />
               {/* Add more routes as needed */}
             </Routes>
           </AppLayout>

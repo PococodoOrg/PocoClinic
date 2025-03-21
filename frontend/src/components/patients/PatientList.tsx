@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Table, Button, Group, Text, TextInput } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { fetchPatients, GetPatientsParams } from '../../api/patients';
-import { IconSearch } from '@tabler/icons-react';
+import { fetchPatients } from '../../api/patients';
+import { IconSearch, IconEye } from '@tabler/icons-react';
 import { Patient } from '../../types/patient';
 
 export function PatientList() {
@@ -23,13 +23,22 @@ export function PatientList() {
     );
   }
 
+  const handleViewPatient = (patientId: string) => {
+    navigate(`/patients/${patientId}`);
+  };
+
   const rows = data?.patients?.map((patient: Patient) => (
-    <Table.Tr key={patient.id}>
+    <Table.Tr key={patient.id} onDoubleClick={() => handleViewPatient(patient.id)}>
       <Table.Td>{patient.firstName}</Table.Td>
       <Table.Td>{patient.lastName}</Table.Td>
       <Table.Td>{new Date(patient.dateOfBirth).toLocaleDateString()}</Table.Td>
       <Table.Td>{patient.gender}</Table.Td>
       <Table.Td>{patient.email}</Table.Td>
+      <Table.Td>
+        <Button variant="light" onClick={() => handleViewPatient(patient.id)}>
+          <IconEye size={16} />
+        </Button>
+      </Table.Td>
     </Table.Tr>
   )) ?? [];
 
@@ -76,6 +85,7 @@ export function PatientList() {
               <Table.Th>Date of Birth</Table.Th>
               <Table.Th>Gender</Table.Th>
               <Table.Th>Email</Table.Th>
+              <Table.Th>Actions</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>{rows}</Table.Tbody>
