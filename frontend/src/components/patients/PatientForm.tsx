@@ -81,11 +81,6 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
   const handleSubmit = async (values: PatientFormData) => {
     try {
       await onSubmit(values);
-      notifications.show({
-        title: 'Success',
-        message: initialValues ? 'Patient updated successfully' : 'Patient created successfully',
-        color: 'green'
-      });
       navigate('/patients');
     } catch (error) {
       if ((error as ValidationError).code === 'VALIDATION_ERROR') {
