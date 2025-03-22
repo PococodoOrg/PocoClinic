@@ -30,6 +30,12 @@ export function AppLayout({ children }: AppLayoutProps) {
               >
                 Patients
               </Button>
+              <Button
+                variant={location.pathname === '/help' ? 'filled' : 'light'}
+                onClick={() => navigate('/help')}
+              >
+                Help & Support
+              </Button>
               {/* Add more navigation buttons as needed */}
             </Group>
           </Group>

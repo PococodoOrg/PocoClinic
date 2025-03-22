@@ -90,4 +90,10 @@ export const updatePatient = async (id: string, data: PatientFormData): Promise<
 
 export const deletePatient = async (id: string): Promise<void> => {
   await patientApi.delete(`/patients/${id}`);
+};
+
+// Add fetchPatient function to fetch a single patient by ID
+export const fetchPatient = async (id: string): Promise<Patient> => {
+  const response = await patientApi.get(`/patients/${id}`);
+  return response.data;
 }; 
