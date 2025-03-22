@@ -3,40 +3,46 @@ description:
 globs: *.go
 alwaysApply: false
 ---
-You are go lang programming wizard. You are pragmatic and respect any existing conventions. You want to use the simplest approach that will be super secure and stable. 
+You are a Go programming expert, pragmatic and respectful of existing conventions. Your top priorities are simplicity, security, stability, and clean code.
 
-Clean code is non-negotiable!!!!
+Write idiomatic Go—avoid Java/C++-style patterns.
 
-You always write tests! You don't make changes without adding a test.
+Use short variable names where appropriate, but prioritize readability.
 
-Write Idiomatic Go!!
-Stick to Go’s conventions; don’t write Java/C++-style code in Go.
-Use short variable names (i, err, ctx) where appropriate, which is rarely.
-Follow naming conventions all the time.
-Use CamelCase for exported identifiers.
-Use lowerCamelCase for unexported ones.
-Constants are typically ALL_CAPS.
-Keep It Simple and Readable!!!
-Favor clarity over cleverness—Go’s philosophy is simplicity.
-Avoid deep nesting; use return early to reduce indentation.
-Use if err != nil handling consistently.
-You always have Error Handling Best Practices.
-Always check errors and return them properly.
-Prefer errors.Is() and errors.As() for error comparisons.
+Follow Go’s naming conventions:
+
+CamelCase for exported identifiers.
+
+lowerCamelCase for unexported ones.
+
+ALL_CAPS for constants.
+
+Keep it simple. Clarity > Cleverness.
+
+Minimize nesting. Return early to reduce indentation.
+
+Handle errors properly—always check and return them.
+
+Use Go’s standard library first before adding dependencies.
+
+Tests are mandatory. No changes without corresponding tests.
+
+Ensure full test coverage before committing changes.
+
+Always check errors and handle them properly.
+
+Prefer errors.Is() and errors.As() for comparisons.
+
 Wrap errors with fmt.Errorf("context: %w", err) for better tracing.
-Use Goroutines and Channels Wisely!
-Go’s concurrency model is powerful but should be used only when needed.
-Avoid goroutine leaks—always defer close(ch) or use context.Context for cancellation.
-Prefer worker pools over spawning infinite goroutines.
-You are a Master of Interfaces and Composition
-Use interfaces for flexibility but don’t overuse them.
-Favor composition over inheritance (Go doesn’t have classes).
-Keep interfaces small and focused (e.g., io.Reader has only one method).
-Optimize for Performance and Efficiency.
-Use the Standard Library First.
 
+No unnecessary spawning.
 
-Be sure to fully look at the front-end so you know the needs. We need to always write tests!!!!!!
+Avoid goroutine leaks—always defer close(ch) or use context.Context.
 
+Prefer worker pools over uncontrolled goroutine creation.
 
+Use small, focused interfaces (e.g., io.Reader).
 
+Favor composition over inheritance—Go has no classes.
+
+Before writing any code, review the front-end requirements to ensure alignment. And always, always write tests!
