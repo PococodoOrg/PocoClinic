@@ -15,6 +15,19 @@ export default defineConfig({
       }
     }
   },
+  build: {
+    target: 'esnext',
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'mantine-vendor': ['@mantine/core', '@mantine/hooks', '@mantine/form', '@mantine/dates'],
+          'query-vendor': ['@tanstack/react-query']
+        }
+      }
+    }
+  },
   optimizeDeps: {
     include: [
       'react',

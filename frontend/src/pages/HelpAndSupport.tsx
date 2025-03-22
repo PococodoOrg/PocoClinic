@@ -1,6 +1,6 @@
 import React from 'react';
 
-const HelpAndSupport: React.FC = () => {
+export default function HelpAndSupport() {
   return (
     <div>
       <h1>Help & Support</h1>
@@ -13,6 +13,4 @@ const HelpAndSupport: React.FC = () => {
       <p>Access our documentation for detailed guides and tutorials.</p>
     </div>
   );
-};
-
-export default HelpAndSupport; 
+} 

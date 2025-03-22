@@ -4,11 +4,11 @@ import { Text, Container, Title } from '@mantine/core';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPatient } from '../api/patients';
 
-const PatientDetails: React.FC = () => {
+export default function PatientDetails() {
   const { id } = useParams<{ id: string }>();
   const { data: patient, isLoading, error } = useQuery({
     queryKey: ['patient', id],
-    queryFn: () => fetchPatient(id),
+    queryFn: () => fetchPatient(id!),
   });
 
   if (isLoading) {
@@ -34,6 +34,4 @@ const PatientDetails: React.FC = () => {
       {/* Add more patient details as needed */}
     </Container>
   );
-};
-
-export default PatientDetails; 
+} 
