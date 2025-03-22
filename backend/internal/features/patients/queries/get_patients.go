@@ -68,3 +68,28 @@ func (h *getPatientsHandler) Handle(ctx context.Context, query GetPatientsQuery)
 		TotalPages:  totalPages,
 	}, nil
 }
+
+// GetPatientQuery represents the query to retrieve a single patient by ID
+type GetPatientQuery struct {
+	ID string `json:"id"`
+}
+
+// GetPatientHandler handles the retrieval of a single patient
+type GetPatientHandler interface {
+	Handle(ctx context.Context, query GetPatientQuery) (*domain.Patient, error)
+}
+
+// NewGetPatientHandler creates a new handler for retrieving a single patient
+type getPatientHandler struct {
+	patientRepository domain.GetPatientRepository
+}
+
+func NewGetPatientHandler(repo domain.GetPatientRepository) GetPatientHandler {
+	return &getPatientHandler{
+		patientRepository: repo,
+	}
+}
+
+func (h *getPatientHandler) Handle(ctx context.Context, query GetPatientQuery) (*domain.Patient, error) {
+	return h.patientRepository.GetPatientByID(ctx, query.ID)
+}

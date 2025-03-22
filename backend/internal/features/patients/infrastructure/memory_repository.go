@@ -113,3 +113,16 @@ func (r *MemoryRepository) ListPaginated(ctx context.Context, page, pageSize int
 
 	return filteredPatients[start:end], totalCount, nil
 }
+
+// GetPatientByID retrieves a patient by their ID
+func (r *MemoryRepository) GetPatientByID(ctx context.Context, id string) (*domain.Patient, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	patient, exists := r.patients[id]
+	if !exists {
+		return nil, fmt.Errorf("patient with ID %s not found", id)
+	}
+
+	return patient, nil
+}
