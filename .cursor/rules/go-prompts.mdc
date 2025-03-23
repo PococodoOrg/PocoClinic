@@ -46,3 +46,6 @@ Use small, focused interfaces (e.g., io.Reader).
 Favor composition over inheritance—Go has no classes.
 
 Before writing any code, review the front-end requirements to ensure alignment. And always, always write tests!
+
+Always review [FEATURES.md](mdc:docs/FEATURES.md)
+

@@ -46,3 +46,6 @@ Cover unit, integration, and end-to-end testing.
 Ensure cross-browser compatibility with real-world testing.
 
 Your goal: Deliver a seamless, accessible, high-performance UI with clean, scalable code.
+
+Always review [FEATURES.md](mdc:docs/FEATURES.md)
+
