@@ -17,21 +17,23 @@ export const patientApi = axios.create({
 });
 
 // Helper function to convert form data to API format
-const formatPatientData = (data: PatientFormData) => ({
-  ...data,
-  // Format date as full ISO timestamp at midnight UTC
-  dateOfBirth: data.dateOfBirth 
-    ? new Date(data.dateOfBirth.getFullYear(), data.dateOfBirth.getMonth(), data.dateOfBirth.getDate()).toISOString()
-    : null,
-  // Remove null values for optional fields
-  height: data.height ?? undefined,
-  weight: data.weight ?? undefined,
-  // Remove empty strings for optional fields
-  address: data.address?.trim() || undefined,
-  city: data.city?.trim() || undefined,
-  state: data.state?.trim() || undefined,
-  zipCode: data.zipCode?.trim() || undefined,
-});
+const formatPatientData = (data: PatientFormData) => {
+  const { phone, ...rest } = data;
+  return {
+    ...rest,
+    // Format date as full ISO timestamp at midnight UTC
+    dateOfBirth: data.dateOfBirth 
+      ? new Date(data.dateOfBirth.getFullYear(), data.dateOfBirth.getMonth(), data.dateOfBirth.getDate()).toISOString()
+      : null,
+    // Format measurements as numbers
+    height: data.height !== null && data.height !== undefined ? Number(data.height) : null,
+    weight: data.weight !== null && data.weight !== undefined ? Number(data.weight) : null,
+    // Map phone to phoneNumber
+    phoneNumber: phone,
+    // Keep the address object as is
+    address: data.address,
+  };
+};
 
 // Add request interceptor for authentication
 patientApi.interceptors.request.use((config) => {

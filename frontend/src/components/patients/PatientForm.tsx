@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from '@mantine/form';
 import {
   TextInput,
@@ -9,6 +9,8 @@ import {
   Stack,
   Grid,
   NumberInput,
+  SegmentedControl,
+  Text,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { Patient, PatientFormData, Gender } from '../../types/patient';
@@ -22,14 +24,30 @@ interface PatientFormProps {
   isLoading?: boolean;
 }
 
+type MeasurementUnit = 'metric' | 'standard';
+
+// Conversion functions
+const inchesToCm = (inches: number) => inches * 2.54;
+const cmToInches = (cm: number) => cm / 2.54;
+const lbsToKg = (lbs: number) => lbs * 0.453592;
+const kgToLbs = (kg: number) => kg / 0.453592;
+
 export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormProps) {
   const navigate = useNavigate();
+  const [heightUnit, setHeightUnit] = useState<MeasurementUnit>('metric');
+  const [weightUnit, setWeightUnit] = useState<MeasurementUnit>('metric');
+
   const form = useForm<PatientFormData>({
     initialValues: initialValues ? {
       ...initialValues,
       dateOfBirth: new Date(initialValues.dateOfBirth),
       height: initialValues.height ?? null,
       weight: initialValues.weight ?? null,
+      address: initialValues.address,
+      street: initialValues.address?.street || '',
+      city: initialValues.address?.city || '',
+      state: initialValues.address?.state || '',
+      zipCode: initialValues.address?.postalCode || '',
     } : {
       firstName: '',
       lastName: '',
@@ -37,7 +55,8 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
       gender: 'unknown' as Gender,
       email: '',
       phone: '',
-      address: '',
+      address: undefined,
+      street: '',
       city: '',
       state: '',
       zipCode: '',
@@ -66,27 +85,50 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
         return null;
       },
       height: (value?: number | null) => {
-        if (value !== null && value !== undefined && (value <= 0 || value > 300)) return 'Height must be between 1 and 300 cm';
+        if (value !== null && value !== undefined) {
+          const cmValue = heightUnit === 'standard' ? inchesToCm(value) : value;
+          if (cmValue <= 0 || cmValue > 300) return 'Invalid height';
+        }
         return null;
       },
       weight: (value?: number | null) => {
-        if (value !== null && value !== undefined && (value <= 0 || value > 500)) return 'Weight must be between 1 and 500 kg';
+        if (value !== null && value !== undefined) {
+          const kgValue = weightUnit === 'standard' ? lbsToKg(value) : value;
+          if (kgValue <= 0 || kgValue > 500) return 'Invalid weight';
+        }
         return null;
       },
     },
-
-    // No need for transformValues as we handle data transformation in the API layer
   });
 
   const handleSubmit = async (values: PatientFormData) => {
     try {
-      await onSubmit(values);
+      // Convert measurements to metric before submitting
+      const submitValues: PatientFormData = {
+        ...values,
+        // Structure address fields into an Address object
+        address: values.street?.trim() || values.city?.trim() || values.state?.trim() || values.zipCode?.trim() ? {
+          street: values.street?.trim() || '',
+          city: values.city?.trim() || '',
+          state: values.state?.trim() || '',
+          postalCode: values.zipCode?.trim() || '',
+          country: 'US' // Default to US for now
+        } : undefined,
+        // Remove individual address fields
+        street: undefined,
+        city: undefined,
+        state: undefined,
+        zipCode: undefined,
+        // Convert measurements to metric
+        height: values.height ? (heightUnit === 'standard' ? inchesToCm(values.height) : values.height) : null,
+        weight: values.weight ? (weightUnit === 'standard' ? lbsToKg(values.weight) : values.weight) : null,
+      };
+      await onSubmit(submitValues);
       navigate('/patients');
     } catch (error) {
       if ((error as ValidationError).code === 'VALIDATION_ERROR') {
         const validationError = error as ValidationError;
         if (validationError.errors) {
-          // Set field-specific errors
           Object.entries(validationError.errors).forEach(([field, messages]) => {
             form.setFieldError(field, messages[0]);
           });
@@ -172,7 +214,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
         <TextInput
           label="Address"
           placeholder="Enter street address"
-          {...form.getInputProps('address')}
+          {...form.getInputProps('street')}
         />
 
         <Grid>
@@ -201,22 +243,54 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
 
         <Grid>
           <Grid.Col span={6}>
-            <NumberInput
-              label="Height (cm)"
-              placeholder="Enter height"
-              min={1}
-              max={300}
-              {...form.getInputProps('height')}
-            />
+            <Stack gap="xs">
+              <Group justify="space-between">
+                <Text size="sm" fw={500}>Height</Text>
+                <SegmentedControl
+                  size="xs"
+                  value={heightUnit}
+                  onChange={(value) => setHeightUnit(value as MeasurementUnit)}
+                  data={[
+                    { label: 'cm', value: 'metric' },
+                    { label: 'in', value: 'standard' },
+                  ]}
+                />
+              </Group>
+              <NumberInput
+                placeholder={`Enter height (${heightUnit === 'metric' ? 'cm' : 'inches'})`}
+                min={1}
+                max={heightUnit === 'metric' ? 300 : 120}
+                allowDecimal={false}
+                value={form.values.height ?? ''}
+                onChange={(value) => form.setFieldValue('height', value === '' ? null : Number(value))}
+                error={form.errors.height}
+              />
+            </Stack>
           </Grid.Col>
           <Grid.Col span={6}>
-            <NumberInput
-              label="Weight (kg)"
-              placeholder="Enter weight"
-              min={1}
-              max={500}
-              {...form.getInputProps('weight')}
-            />
+            <Stack gap="xs">
+              <Group justify="space-between">
+                <Text size="sm" fw={500}>Weight</Text>
+                <SegmentedControl
+                  size="xs"
+                  value={weightUnit}
+                  onChange={(value) => setWeightUnit(value as MeasurementUnit)}
+                  data={[
+                    { label: 'kg', value: 'metric' },
+                    { label: 'lbs', value: 'standard' },
+                  ]}
+                />
+              </Group>
+              <NumberInput
+                placeholder={`Enter weight (${weightUnit === 'metric' ? 'kg' : 'lbs'})`}
+                min={1}
+                max={weightUnit === 'metric' ? 500 : 1100}
+                allowDecimal={false}
+                value={form.values.weight ?? ''}
+                onChange={(value) => form.setFieldValue('weight', value === '' ? null : Number(value))}
+                error={form.errors.weight}
+              />
+            </Stack>
           </Grid.Col>
         </Grid>
 

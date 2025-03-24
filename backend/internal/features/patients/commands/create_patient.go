@@ -15,6 +15,8 @@ type CreatePatientCommand struct {
 	Gender      domain.Gender  `json:"gender" binding:"required"`
 	Email       string         `json:"email"`
 	PhoneNumber string         `json:"phoneNumber"`
+	Height      float64        `json:"height,omitempty"`
+	Weight      float64        `json:"weight,omitempty"`
 	Address     domain.Address `json:"address"`
 }
 
@@ -40,6 +42,8 @@ func (h *createPatientHandler) Handle(ctx context.Context, cmd CreatePatientComm
 	patient.MiddleName = cmd.MiddleName
 	patient.Email = cmd.Email
 	patient.PhoneNumber = cmd.PhoneNumber
+	patient.Height = cmd.Height
+	patient.Weight = cmd.Weight
 	patient.Address = cmd.Address
 
 	err := h.patientRepository.Create(ctx, patient)

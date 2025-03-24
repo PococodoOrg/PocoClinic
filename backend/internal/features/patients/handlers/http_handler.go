@@ -54,6 +54,15 @@ func (h *PatientHandler) CreatePatient(c *gin.Context) {
 		return
 	}
 
+	// Log the received command
+	h.logger.Info("Received create patient command",
+		"firstName", cmd.FirstName,
+		"lastName", cmd.LastName,
+		"phoneNumber", cmd.PhoneNumber,
+		"height", cmd.Height,
+		"weight", cmd.Weight,
+	)
+
 	patient, err := h.createPatientHandler.Handle(c.Request.Context(), cmd)
 	if err != nil {
 		h.logger.Error("Failed to create patient", err)
@@ -67,6 +76,16 @@ func (h *PatientHandler) CreatePatient(c *gin.Context) {
 		}
 		return
 	}
+
+	// Log the created patient
+	h.logger.Info("Created patient",
+		"id", patient.ID,
+		"firstName", patient.FirstName,
+		"lastName", patient.LastName,
+		"phoneNumber", patient.PhoneNumber,
+		"height", patient.Height,
+		"weight", patient.Weight,
+	)
 
 	c.JSON(http.StatusCreated, patient)
 }

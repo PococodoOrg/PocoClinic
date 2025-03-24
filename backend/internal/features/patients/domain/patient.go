@@ -60,6 +60,8 @@ type Patient struct {
 	Gender      Gender    `json:"gender"`
 	Email       string    `json:"email,omitempty"`
 	PhoneNumber string    `json:"phoneNumber,omitempty"`
+	Height      float64   `json:"height,omitempty"`
+	Weight      float64   `json:"weight,omitempty"`
 	Address     Address   `json:"address,omitempty"`
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`

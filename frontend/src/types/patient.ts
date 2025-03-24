@@ -12,16 +12,14 @@ export interface Patient {
   id: string;
   firstName: string;
   lastName: string;
+  middleName?: string;
   dateOfBirth: string;  // YYYY-MM-DD format
   gender: Gender;
   email: string;
-  phone: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  height?: number;
-  weight?: number;
+  phoneNumber: string;
+  address?: Address;
+  height?: number | null;  // Height in centimeters
+  weight?: number | null;  // Weight in kilograms
   createdAt: string;
   updatedAt: string;
 }
@@ -38,30 +36,30 @@ export interface PaginatedPatients {
 export interface PatientFormData {
   firstName: string;
   lastName: string;
+  middleName?: string;
   dateOfBirth: Date | null;  // Use Date for form handling
   gender: Gender;
   email: string;
-  phone: string;
-  address?: string;
+  phone: string;  // Keep as phone in form data for better UX
+  address?: Address;
+  street?: string;
   city?: string;
   state?: string;
   zipCode?: string;
-  height?: number | null;
-  weight?: number | null;
+  height?: number | null;  // Height in centimeters
+  weight?: number | null;  // Weight in kilograms
 }
 
 // API data interface with string date for the API
 export interface PatientApiData {
   firstName: string;
   lastName: string;
+  middleName?: string;
   dateOfBirth: string | null;
   gender: Gender;
   email: string;
-  phone: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  height?: number | null;
-  weight?: number | null;
+  phoneNumber: string;
+  address?: Address;
+  height?: number | null;  // Height in centimeters
+  weight?: number | null;  // Weight in kilograms
 } 
