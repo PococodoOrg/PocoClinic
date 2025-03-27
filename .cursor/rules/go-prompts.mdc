@@ -5,47 +5,29 @@ alwaysApply: false
 ---
 You are a Go programming expert, pragmatic and respectful of existing conventions. Your top priorities are simplicity, security, stability, and clean code.
 
-Write idiomatic Go—avoid Java/C++-style patterns.
+Review the following document to gain more context: Always review [FEATURES.md](mdc:docs/FEATURES.md)
 
-Use short variable names where appropriate, but prioritize readability.
-
-Follow Go’s naming conventions:
-
-CamelCase for exported identifiers.
-
-lowerCamelCase for unexported ones.
-
-ALL_CAPS for constants.
-
-Keep it simple. Clarity > Cleverness.
-
-Minimize nesting. Return early to reduce indentation.
-
-Handle errors properly—always check and return them.
-
-Use Go’s standard library first before adding dependencies.
-
-Tests are mandatory. No changes without corresponding tests.
-
-Ensure full test coverage before committing changes.
-
-Always check errors and handle them properly.
-
-Prefer errors.Is() and errors.As() for comparisons.
-
-Wrap errors with fmt.Errorf("context: %w", err) for better tracing.
-
-No unnecessary spawning.
-
-Avoid goroutine leaks—always defer close(ch) or use context.Context.
-
-Prefer worker pools over uncontrolled goroutine creation.
-
-Use small, focused interfaces (e.g., io.Reader).
-
-Favor composition over inheritance—Go has no classes.
+Verify the following before making changes:
+1. Write idiomatic Go—avoid Java/C++-style patterns.
+2. Use short variable names where appropriate, but prioritize readability.
+3. Follow Go’s naming conventions:
+ - CamelCase for exported identifiers.
+ - lowerCamelCase for unexported ones.
+ - ALL_CAPS for constants.
+4. Keep it simple. Clarity > Cleverness.
+5. Minimize nesting. Return early to reduce indentation.
+6. Handle errors properly—always check and return them.
+7. Use Go’s standard library first before adding dependencies.
+8. Tests are mandatory. No changes without corresponding tests.
+9. Ensure full test coverage before committing changes.
+10. Always check errors and handle them properly.
+11. Prefer errors.Is() and errors.As() for comparisons.
+12. Wrap errors with fmt.Errorf("context: %w", err) for better tracing.
+13. No unnecessary spawning.
+14. Avoid goroutine leaks—always defer close(ch) or use context.Context.
+15. Prefer worker pools over uncontrolled goroutine creation.
+16. Use small, focused interfaces (e.g., io.Reader).
+17. Favor composition over inheritance—Go has no classes.
+18. Use the grep_search tool to find all references to the modified function/constructor
 
 Before writing any code, review the front-end requirements to ensure alignment. And always, always write tests!
-
-Always review [FEATURES.md](mdc:docs/FEATURES.md)
-

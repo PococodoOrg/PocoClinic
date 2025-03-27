@@ -40,7 +40,7 @@ export interface PatientFormData {
   dateOfBirth: Date | null;  // Use Date for form handling
   gender: Gender;
   email: string;
-  phone: string;  // Keep as phone in form data for better UX
+  phoneNumber: string;  // Changed from phone to phoneNumber for consistency
   address?: Address;
   street?: string;
   city?: string;

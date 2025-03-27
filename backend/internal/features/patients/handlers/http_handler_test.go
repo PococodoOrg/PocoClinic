@@ -41,14 +41,14 @@ func TestGetPatient(t *testing.T) {
 	errorID := uuid.New()
 
 	tests := []struct {
-		name           string
+		name          string
 		patientID     string
 		setupMock     func(*MockGetPatientHandler)
 		expectedCode  int
 		expectedError string
 	}{
 		{
-			name:       "Success",
+			name:      "Success",
 			patientID: testID.String(),
 			setupMock: func(m *MockGetPatientHandler) {
 				m.On("Handle", mock.Anything, queries.GetPatientQuery{ID: testID.String()}).Return(
@@ -61,7 +61,7 @@ func TestGetPatient(t *testing.T) {
 			expectedCode: http.StatusOK,
 		},
 		{
-			name:       "Not Found",
+			name:      "Not Found",
 			patientID: otherID.String(),
 			setupMock: func(m *MockGetPatientHandler) {
 				m.On("Handle", mock.Anything, queries.GetPatientQuery{ID: otherID.String()}).Return(
@@ -71,7 +71,7 @@ func TestGetPatient(t *testing.T) {
 			expectedError: "Patient not found",
 		},
 		{
-			name:       "Internal Server Error",
+			name:      "Internal Server Error",
 			patientID: errorID.String(),
 			setupMock: func(m *MockGetPatientHandler) {
 				m.On("Handle", mock.Anything, queries.GetPatientQuery{ID: errorID.String()}).Return(
@@ -89,7 +89,7 @@ func TestGetPatient(t *testing.T) {
 			tt.setupMock(mockHandler)
 
 			// Create handler with mock
-			handler := NewPatientHandler(nil, nil, mockHandler, logger)
+			handler := NewPatientHandler(nil, nil, mockHandler, nil, logger)
 
 			// Setup router
 			router := gin.New()

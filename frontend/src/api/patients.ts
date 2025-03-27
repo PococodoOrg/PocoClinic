@@ -1,15 +1,21 @@
 import axios, { AxiosError } from 'axios';
-import { Patient, PatientFormData, PaginatedPatients } from '../types/patient';
+import { Patient, PatientFormData, PaginatedPatients, PatientApiData } from '../types/patient';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
 
-export interface ValidationError {
+export class ValidationError extends Error {
   code: string;
-  message: string;
   errors?: Record<string, string[]>;
+
+  constructor(message: string, code: string, errors?: Record<string, string[]>) {
+    super(message);
+    this.name = 'ValidationError';
+    this.code = code;
+    this.errors = errors;
+  }
 }
 
-export const patientApi = axios.create({
+const patientApi = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
@@ -18,20 +24,17 @@ export const patientApi = axios.create({
 
 // Helper function to convert form data to API format
 const formatPatientData = (data: PatientFormData) => {
-  const { phone, ...rest } = data;
   return {
-    ...rest,
-    // Format date as full ISO timestamp at midnight UTC
-    dateOfBirth: data.dateOfBirth 
-      ? new Date(data.dateOfBirth.getFullYear(), data.dateOfBirth.getMonth(), data.dateOfBirth.getDate()).toISOString()
-      : null,
-    // Format measurements as numbers
-    height: data.height !== null && data.height !== undefined ? Number(data.height) : null,
-    weight: data.weight !== null && data.weight !== undefined ? Number(data.weight) : null,
-    // Map phone to phoneNumber
-    phoneNumber: phone,
-    // Keep the address object as is
+    firstName: data.firstName,
+    lastName: data.lastName,
+    middleName: data.middleName,
+    dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toISOString().split('T')[0] : null,
+    gender: data.gender,
+    email: data.email,
+    phoneNumber: data.phoneNumber,
     address: data.address,
+    height: data.height,
+    weight: data.weight,
   };
 };
 
@@ -64,9 +67,34 @@ patientApi.interceptors.response.use(
   }
 );
 
+const transformFormDataToApiData = (data: PatientFormData): PatientApiData => {
+  return {
+    firstName: data.firstName,
+    lastName: data.lastName,
+    middleName: data.middleName,
+    dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toISOString().split('T')[0] : null,
+    gender: data.gender,
+    email: data.email,
+    phoneNumber: data.phoneNumber,
+    address: data.address,
+    height: data.height,
+    weight: data.weight,
+  };
+};
+
 export const createPatient = async (data: PatientFormData): Promise<Patient> => {
-  const response = await patientApi.post<Patient>('/patients', formatPatientData(data));
-  return response.data;
+  try {
+    const response = await patientApi.post<Patient>('/patients', formatPatientData(data));
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const apiError = error.response?.data;
+      if (apiError?.code === 'VALIDATION_ERROR') {
+        throw new ValidationError(apiError.message, apiError.code, apiError.errors);
+      }
+    }
+    throw new Error('Failed to create patient');
+  }
 };
 
 export const fetchPatients = async (params?: { page?: number; pageSize?: number; search?: string; }): Promise<PaginatedPatients> => {
@@ -86,8 +114,18 @@ export const getPatient = async (id: string): Promise<Patient> => {
 };
 
 export const updatePatient = async (id: string, data: PatientFormData): Promise<Patient> => {
-  const response = await patientApi.put<Patient>(`/patients/${id}`, formatPatientData(data));
-  return response.data;
+  try {
+    const response = await patientApi.put<Patient>(`/patients/${id}`, formatPatientData(data));
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const apiError = error.response?.data;
+      if (apiError?.code === 'VALIDATION_ERROR') {
+        throw new ValidationError(apiError.message, apiError.code, apiError.errors);
+      }
+    }
+    throw new Error('Failed to update patient');
+  }
 };
 
 export const deletePatient = async (id: string): Promise<void> => {

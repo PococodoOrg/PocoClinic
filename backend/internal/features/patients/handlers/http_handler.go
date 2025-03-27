@@ -16,6 +16,7 @@ type PatientHandler struct {
 	createPatientHandler commands.CreatePatientHandler
 	getPatientsHandler   queries.GetPatientsHandler
 	getPatientHandler    queries.GetPatientHandler
+	updatePatientHandler commands.UpdatePatientHandler
 	logger               *logging.Logger
 }
 
@@ -24,12 +25,14 @@ func NewPatientHandler(
 	createHandler commands.CreatePatientHandler,
 	getHandler queries.GetPatientsHandler,
 	getPatientHandler queries.GetPatientHandler,
+	updateHandler commands.UpdatePatientHandler,
 	logger *logging.Logger,
 ) *PatientHandler {
 	return &PatientHandler{
 		createPatientHandler: createHandler,
 		getPatientsHandler:   getHandler,
 		getPatientHandler:    getPatientHandler,
+		updatePatientHandler: updateHandler,
 		logger:               logger,
 	}
 }
@@ -41,6 +44,7 @@ func (h *PatientHandler) RegisterRoutes(router *gin.RouterGroup) {
 		patients.POST("", h.CreatePatient)
 		patients.GET("", h.ListPatients)
 		patients.GET("/:id", h.GetPatient)
+		patients.PUT("/:id", h.UpdatePatient)
 		// Add more routes as needed
 	}
 }
@@ -145,6 +149,54 @@ func (h *PatientHandler) GetPatient(c *gin.Context) {
 		}
 		return
 	}
+
+	c.JSON(http.StatusOK, patient)
+}
+
+// UpdatePatient handles the request to update a patient
+func (h *PatientHandler) UpdatePatient(c *gin.Context) {
+	id := c.Param("id")
+	var cmd commands.UpdatePatientCommand
+	if err := c.ShouldBindJSON(&cmd); err != nil {
+		h.logger.Error("Invalid request body", err)
+		c.JSON(http.StatusBadRequest, errors.NewAPIError(errors.ErrValidation, "Invalid request body"))
+		return
+	}
+
+	cmd.ID = id
+
+	// Log the received command
+	h.logger.Info("Received update patient command",
+		"id", id,
+		"firstName", cmd.FirstName,
+		"lastName", cmd.LastName,
+		"phoneNumber", cmd.PhoneNumber,
+		"height", cmd.Height,
+		"weight", cmd.Weight,
+	)
+
+	patient, err := h.updatePatientHandler.Handle(c.Request.Context(), cmd)
+	if err != nil {
+		h.logger.Error("Failed to update patient", err)
+		switch err.(type) {
+		case *errors.APIError:
+			apiErr := err.(*errors.APIError)
+			c.JSON(getStatusCodeForError(apiErr.Code), apiErr)
+		default:
+			c.JSON(http.StatusInternalServerError, errors.NewAPIError(errors.ErrInternalServer, "Failed to update patient"))
+		}
+		return
+	}
+
+	// Log the updated patient
+	h.logger.Info("Updated patient",
+		"id", patient.ID,
+		"firstName", patient.FirstName,
+		"lastName", patient.LastName,
+		"phoneNumber", patient.PhoneNumber,
+		"height", patient.Height,
+		"weight", patient.Weight,
+	)
 
 	c.JSON(http.StatusOK, patient)
 }

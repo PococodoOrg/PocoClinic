@@ -10,6 +10,7 @@ import { AppLayout } from './components/layout/AppLayout';
 const CreatePatient = lazy(() => import('./pages/CreatePatient'));
 const HelpAndSupport = lazy(() => import('./pages/HelpAndSupport'));
 const PatientDetails = lazy(() => import('./pages/PatientDetails'));
+const EditPatient = lazy(() => import('./pages/EditPatient'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +44,7 @@ export default function App() {
                 <Route path="/patients/new" element={<CreatePatient />} />
                 <Route path="/help" element={<HelpAndSupport />} />
                 <Route path="/patients/:id" element={<PatientDetails />} />
+                <Route path="/patients/:id/edit" element={<EditPatient />} />
               </Routes>
             </Suspense>
           </AppLayout>

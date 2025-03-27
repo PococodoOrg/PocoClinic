@@ -43,6 +43,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
       dateOfBirth: new Date(initialValues.dateOfBirth),
       height: initialValues.height ?? null,
       weight: initialValues.weight ?? null,
+      phoneNumber: initialValues.phoneNumber,
       address: initialValues.address,
       street: initialValues.address?.street || '',
       city: initialValues.address?.city || '',
@@ -54,7 +55,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
       dateOfBirth: null,
       gender: 'unknown' as Gender,
       email: '',
-      phone: '',
+      phoneNumber: '',
       address: undefined,
       street: '',
       city: '',
@@ -74,7 +75,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
         if (!/^\S+@\S+\.\S+$/.test(value)) return 'Invalid email format';
         return null;
       },
-      phone: (value) => {
+      phoneNumber: (value) => {
         if (!value || value.trim().length === 0) return 'Phone number is required';
         if (!/^\+?[\d\s-()]+$/.test(value)) return 'Invalid phone number format';
         return null;
@@ -106,6 +107,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
       // Convert measurements to metric before submitting
       const submitValues: PatientFormData = {
         ...values,
+        phoneNumber: values.phoneNumber.trim(), // Ensure phoneNumber is trimmed
         // Structure address fields into an Address object
         address: values.street?.trim() || values.city?.trim() || values.state?.trim() || values.zipCode?.trim() ? {
           street: values.street?.trim() || '',
@@ -204,9 +206,9 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
           <Grid.Col span={6}>
             <TextInput
               required
-              label="Phone"
+              label="Phone Number"
               placeholder="Enter phone number"
-              {...form.getInputProps('phone')}
+              {...form.getInputProps('phoneNumber')}
             />
           </Grid.Col>
         </Grid>

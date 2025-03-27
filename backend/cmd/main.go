@@ -44,7 +44,8 @@ func main() {
 	createPatientHandler := commands.NewCreatePatientHandler(patientRepo)
 	getPatientsHandler := queries.NewGetPatientsHandler(patientRepo)
 	getPatientHandler := queries.NewGetPatientHandler(patientRepo)
-	patientHandler := handlers.NewPatientHandler(createPatientHandler, getPatientsHandler, getPatientHandler, logger)
+	updatePatientHandler := commands.NewUpdatePatientHandler(patientRepo)
+	patientHandler := handlers.NewPatientHandler(createPatientHandler, getPatientsHandler, getPatientHandler, updatePatientHandler, logger)
 
 	// Initialize router with security middleware
 	router := gin.New() // Don't use Default() as we'll add our own middleware
