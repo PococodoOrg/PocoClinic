@@ -41,7 +41,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "esbuild": "^0.25.1",
     "eslint": "^9.23.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "jsdom": "^26.0.0",
     "msw": "^2.7.3",
