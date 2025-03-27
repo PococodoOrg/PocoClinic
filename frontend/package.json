@@ -19,7 +19,7 @@
     "@emotion/react": "^11.11.3",
     "@mantine/core": "^7.17.2",
     "@mantine/dates": "^7.17.2",
-    "@mantine/form": "^7.17.2",
+    "@mantine/form": "^7.17.3",
     "@mantine/hooks": "^7.17.2",
     "@mantine/notifications": "^7.17.2",
     "@tabler/icons-react": "^3.31.0",
