@@ -128,3 +128,31 @@ If you discover any security-related issues, please email security@pococodo.com 
 
 - Project Maintainers: [List of maintainers]
 - Community: [Links to community channels]
+
+## Our Story
+
+PocoClinic is an open-source Electronic Medical Record (EMR) system designed specifically for small, independent clinics, with a particular focus on non-profit healthcare organizations. We believe that every clinic deserves access to quality healthcare technology, regardless of their size or budget.
+
+### Built for Local Healthcare
+
+- **Small Clinic Focus**: Designed for independent clinics and small healthcare practices
+- **Local Network Ready**: Runs on a Raspberry Pi, making it perfect for local intranet deployment
+- **Complete Documentation**: Includes a comprehensive instruction binder for setup and maintenance
+- **Human-Centered Design**: Features are designed with clinic staff and patient care in mind
+
+### Privacy-First Approach
+
+- **Staff Authentication**: Clinic staff access the system using secure credentials
+- **Patient Privacy**: Patient records can be obfuscated using 64-bit QR code identifiers
+- **End-to-End Security**: All data is encrypted both at rest and in transit
+- **Local Control**: Your data stays within your clinic's network
+
+### Why PocoClinic?
+
+We believe that healthcare technology should be:
+- Accessible to all clinics, regardless of size
+- Simple and straightforward to use
+- Secure and private
+- Focused on patient care
+
+PocoClinic is our contribution to the healthcare community - a complete EMR solution that prioritizes patient care while maintaining high standards of security and privacy. We offer it as an option for clinics looking for a simple, secure way to manage their patient records.
