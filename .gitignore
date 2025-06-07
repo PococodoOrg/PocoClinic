@@ -72,3 +72,6 @@ profile.out
 *.pem
 *.key
 *.crt 
+.nx/installation
+.nx/cache
+.nx/workspace-data
