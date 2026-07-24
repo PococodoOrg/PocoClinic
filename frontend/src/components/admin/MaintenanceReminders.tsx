@@ -1,6 +1,6 @@
 import { Alert, Button, Card, Group, Stack, Text, Title } from '@mantine/core';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -47,19 +47,12 @@ export function MaintenanceReminders({ status }: MaintenanceRemindersProps) {
 
   const navigate = useNavigate();
 
-  const [lastDrill, setLastDrill] = useState<Date | null>(null);
+  const [lastDrill, setLastDrill] = useState<Date | null>(() => loadLastRestoreDrill());
 
-  const [monthlyDone, setMonthlyDone] = useState<string | null>(null);
+  const [monthlyDone, setMonthlyDone] = useState<string | null>(() => loadLastMonthlyTesting());
 
-  const [complianceDone, setComplianceDone] = useState<string | null>(null);
-  const [auditArchiveDone, setAuditArchiveDone] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLastDrill(loadLastRestoreDrill());
-    setMonthlyDone(loadLastMonthlyTesting());
-    setComplianceDone(loadLastComplianceCheck());
-    setAuditArchiveDone(loadLastAuditArchive());
-  }, []);
+  const [complianceDone, setComplianceDone] = useState<string | null>(() => loadLastComplianceCheck());
+  const [auditArchiveDone, setAuditArchiveDone] = useState<string | null>(() => loadLastAuditArchive());
 
 
 

@@ -2,6 +2,8 @@ import { marked } from 'marked';
 import { binderPacks, type BinderPack, type BinderPage } from './manifest';
 import { markdownByFile } from './content';
 
+marked.use({ async: false });
+
 function loadMarkdown(file: string): string {
   const body = markdownByFile[file];
   if (body) {
@@ -165,7 +167,7 @@ function renderApp() {
   const articles = pages
     .map((page) => {
       const md = loadMarkdown(page.file);
-      const html = marked.parse(md, { async: false }) as string;
+      const html = marked.parse(md) as string;
       return `
         <article class="print-page" data-page="${escapeHtml(page.id)}">
           <header class="print-banner no-print">

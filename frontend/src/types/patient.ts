@@ -69,7 +69,7 @@ export interface PatientFormData {
   firstName: string;
   lastName: string;
   middleName?: string;
-  dateOfBirth: Date | null;  // Use Date for form handling
+  dateOfBirth: string | null;  // YYYY-MM-DD (Mantine DateInput)
   gender: Gender;
   email: string;
   phoneNumber: string;  // Changed from phone to phoneNumber for consistency

@@ -58,7 +58,7 @@ function buildValidators(
     firstName: requiredText(requirements.firstName, 'First name'),
     lastName: requiredText(requirements.lastName, 'Last name'),
     middleName: requiredText(requirements.middleName, 'Middle name'),
-    dateOfBirth: (value: Date | null) => {
+    dateOfBirth: (value: string | null) => {
       if (!requirements.dateOfBirth) {
         return null;
       }
@@ -146,7 +146,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
   const form = useForm<PatientFormData>({
     initialValues: initialValues ? {
       ...initialValues,
-      dateOfBirth: new Date(initialValues.dateOfBirth),
+      dateOfBirth: initialValues.dateOfBirth,
       height: initialValues.height ?? null,
       weight: initialValues.weight ?? null,
       phoneNumber: initialValues.phoneNumber,

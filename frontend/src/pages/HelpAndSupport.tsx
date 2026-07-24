@@ -286,7 +286,7 @@ export default function HelpAndSupport() {
 
 
 
-      <Grid gutter="lg">
+      <Grid gap="lg">
 
         <Grid.Col span={{ base: 12, md: 4 }}>
 

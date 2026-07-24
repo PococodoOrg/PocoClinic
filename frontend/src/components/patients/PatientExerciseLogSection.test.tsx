@@ -1,6 +1,6 @@
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PatientExerciseLogSection } from './PatientExerciseLogSection';
@@ -168,9 +168,8 @@ describe('PatientExerciseLogSection', () => {
 
     expect(await screen.findByText('Knee strengthening')).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Delete plan/i }));
-    expect(await screen.findByRole('heading', { name: /Delete exercise plan/i })).toBeInTheDocument();
-    const confirmButtons = screen.getAllByRole('button', { name: /Delete plan/i });
-    await user.click(confirmButtons[confirmButtons.length - 1]);
+    const dialog = await screen.findByRole('dialog', { name: /Delete exercise plan/i });
+    await user.click(within(dialog).getByRole('button', { name: /^Delete plan$/i }));
 
     await waitFor(() => {
       expect(deleteExercisePlan).toHaveBeenCalledWith(patientId, planId);
@@ -221,8 +220,8 @@ describe('PatientExerciseLogSection', () => {
 
     const statusInputs = screen.getAllByLabelText(/Plan status/i);
     await user.click(statusInputs[0]);
-    const completed = await screen.findAllByRole('option', { name: /Completed/i });
-    await user.click(completed[completed.length - 1]);
+    const completedOption = await screen.findByRole('option', { name: 'Completed', hidden: true });
+    await user.click(completedOption);
 
     await waitFor(() => {
       expect(updateExercisePlan).toHaveBeenCalledWith(patientId, planId, {
