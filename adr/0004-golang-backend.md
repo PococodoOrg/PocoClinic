@@ -19,7 +19,7 @@ We need a language that enforces consistency and maintainability while providing
 ## Decision
 We will use Go (Golang) as our backend language, specifically:
 
-- Go 1.21+ for generics and performance improvements
+- Go 1.25+ for current module toolchain (`backend/go.mod`)
 - Standard library for HTTP server and core functionality
 - Minimal external dependencies for better security
 - Built-in testing framework

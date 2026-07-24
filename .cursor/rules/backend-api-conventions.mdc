@@ -1,0 +1,93 @@
+---
+description: Backend HTTP error handling, auth requirements, and handler patterns
+alwaysApply: true
+---
+
+# Backend API Conventions
+
+Review @docs/FEATURES.md and @docs/NETWORK-AND-SECURITY.md before API changes. All new endpoints must follow these patterns.
+
+**Product scope ([ADR-0014](../../adr/0014-private-lan-only-deployment.md)):** Private LAN only; no cloud, no native mobile apps, no internet-required production paths. Clients are clinic LAN browsers (tablet primary, desktop secondary). Still require auth, audit, and RBAC on every business route. Architecture changes: update root [`adr/`](../../adr/README.md) (see `AGENTS.md`).
+
+## Global error handling (required)
+
+The server must never crash on a bad request. Layers:
+
+1. **`middleware.Recovery(logger)`** — first middleware in `cmd/main.go`; catches panics, logs stack, returns 500.
+2. **`pkg/httperr`** — all handler error responses go through this package.
+
+### Handler rules
+
+- Inject `*logging.Logger` into every HTTP handler struct.
+- **Do not** use ad-hoc `c.JSON(status, gin.H{"error": ...})` for failures.
+- Use the correct helper:
+
+| Situation | Helper |
+|-----------|--------|
+| General / patients / forms | `httperr.Respond(c, h.logger, err)` |
+| Login, refresh, change PIN | `httperr.RespondAuth(c, h.logger, err)` |
+| Staff user CRUD, badges | `httperr.RespondUserManagement(c, h.logger, err)` |
+| Bad JSON, invalid UUID param, bad query | `httperr.RespondValidation(c, h.logger, "message")` |
+
+- Return typed errors from commands/queries (`*pkg/errors.APIError`, `*auth/domain.AuthError`) and let `httperr.Map` classify them.
+- Success responses only: `c.JSON`, `c.Status`.
+
+Standard error JSON (frontend reads `error`):
+
+```json
+{ "code": "VALIDATION_ERROR", "error": "...", "message": "..." }
+```
+
+## Authorization (required)
+
+**Every non-auth business endpoint must require authentication.**
+
+### Public routes (no session cookie / unauthenticated)
+
+- `GET /health`
+- `POST /api/v1/auth/login/staff`
+- `POST /api/v1/auth/login/admin`
+- `POST /api/v1/auth/refresh` (refresh token cookie)
+- `POST /api/v1/auth/logout`
+
+Everything else under `/api/v1` **must** call `authMiddleware.RequireAuth()` (reads the access-token **HttpOnly cookie**, not an `Authorization: Bearer` header).
+
+### Route registration pattern
+
+```go
+// In RegisterRoutes — auth on the group, role on specific routes
+group := router.Group("/resources")
+group.Use(authMiddleware.RequireAuth())
+{
+    group.GET("", h.List)                                    // any authenticated staff
+    group.POST("", authMiddleware.RequireRole(domain.RoleAdmin), h.Create) // admin only
+}
+```
+
+- Do not register patient, form, audit, or admin routes without `RequireAuth`.
+- Admin-only mutations (create/update/delete templates, users, groups) also need `RequireRole(RoleAdmin)`.
+- Read-only staff endpoints: `RequireAuth()` alone is enough.
+
+### Wiring in main.go
+
+```go
+patientHandler.RegisterRoutes(v1, authMiddleware.RequireAuth())
+formHandler.RegisterRoutes(v1, authMiddleware) // handler applies RequireAuth internally
+```
+
+## New endpoint checklist
+
+- [ ] Route group uses `RequireAuth()` (and `RequireRole` if admin-only)
+- [ ] Handler has `logger *logging.Logger`
+- [ ] All error paths use `httperr.*`
+- [ ] Command/query returns typed errors, not bare strings (unless mapped in `httperr.Map`)
+- [ ] Tests cover at least one error status (404, 400, 401, 500 as appropriate)
+
+## Database migrations
+
+Follow [ADR-0013](../../adr/0013-database-migrations.md) and [migrations/README.md](../../backend/internal/pkg/database/migrations/README.md):
+
+- Production/clinic server: run **`/opt/pococlinic/bin/migrate`** as a **deploy step** (wrapper loads `/etc/pococlinic/env`); app runs with `RUN_MIGRATIONS=false`. Source wrappers: [`clinic/server/bin/`](../../clinic/server/bin/).
+- Local dev: `go run ./cmd/migrate` or `migrate.bat` → `clinic/dev-windows/`.
+- Every migration must be **N-1 compatible** (old app works with new schema)
+- Breaking changes: **expand** in deploy 1, **contract** in deploy 2 — never drop/rename in the same release as code that still reads the old shape

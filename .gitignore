@@ -1,6 +1,41 @@
-# Go backend
+# =============================================================================
+# PocoClinic — local dev artifacts, secrets, and PHI (never commit)
+# =============================================================================
+
+# --- Secrets & environment (keep *.example templates) -----------------------
+.env
+.env.*
+*.env
+!.env.example
+!**/.env.example
+!**/env.example
+!**/setup.env.example
+!**/personas.env.example
+
+# One-time default admin credentials (first boot only; lives under data/)
+**/bootstrap-admin-once.txt
+
+# --- Local clinic data (SQLite + documents — may contain PHI) -----------------
+/backend/data/
+/data/
+*.db
+*.sqlite
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+
+# --- Backups (tarballs contain full clinic database + documents) --------------
+backups/
+/backend/backups/
+pococlinic-backup-*.tar.gz
+pococlinic-backup-*.sqlite
+
+# --- Go backend ---------------------------------------------------------------
 /backend/bin/
 /backend/tmp/
+/backend/vendor/
+/backend/cmd/ops-helper/static/
 *.exe
 *.exe~
 *.dll
@@ -9,66 +44,75 @@
 *.test
 *.out
 go.work
-
-# Go vendor directory
-/backend/vendor/
-
-# Go coverage and debug files
 *.coverprofile
 __debug_bin
 
-# React frontend
+# --- Node / frontend apps -----------------------------------------------------
 /frontend/node_modules/
+/frontend/dist/
+/frontend/build/
+/frontend/coverage/
 /frontend/.pnp
 /frontend/.pnp.js
-/frontend/coverage/
-/frontend/build/
+/frontend/.vite/
+/frontend/npm-debug.log*
+/frontend/yarn-debug.log*
+/frontend/yarn-error.log*
 /frontend/.env.local
 /frontend/.env.development.local
 /frontend/.env.test.local
 /frontend/.env.production.local
-/frontend/npm-debug.log*
-/frontend/yarn-debug.log*
-/frontend/yarn-error.log*
 
-# IDE and Editor files
+/ops-helper/node_modules/
+/ops-helper/dist/
+
+/binder-printer/node_modules/
+/binder-printer/dist/
+
+# --- Python (loadtest only; not CI) -------------------------------------------
+/venv/
+loadtest/.venv/
+loadtest/venv/
+loadtest/__pycache__/
+loadtest/.pytest_cache/
+loadtest/.env
+loadtest/setup.env
+loadtest/personas.env
+loadtest/reports/*
+!loadtest/reports/.gitkeep
+*.py[cod]
+*$py.class
+
+# --- Build outputs & release artifacts ----------------------------------------
+bin/
+dist/
+build/
+/docs/guide-site/
+
+# --- Test coverage ------------------------------------------------------------
+coverage/
+coverage.txt
+profile.out
+
+# --- Logs & temp files --------------------------------------------------------
+*.log
+logs/
+log/
+*.tmp
+*.temp
+.cache/
+
+# --- IDE / OS -----------------------------------------------------------------
 .idea/
 .vscode/
 *.swp
 *.swo
 *~
 .DS_Store
+Thumbs.db
+Desktop.ini
 
-# Environment variables
-.env
-*.env
-.env.*
-
-# Logs
-*.log
-logs/
-log/
-
-# Temporary files
-*.tmp
-*.temp
-.cache/
-
-# Database files
-*.db
-*.sqlite
-
-# Binary files
-bin/
-dist/
-build/
-
-# Test coverage
-coverage/
-coverage.txt
-profile.out
-
-# Certificates and keys
+# --- Certificates & keys ------------------------------------------------------
 *.pem
 *.key
-*.crt 
+*.crt

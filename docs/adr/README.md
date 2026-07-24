@@ -1,44 +1,11 @@
-# Architecture Decision Records (ADR)
+# ADRs moved
 
-This directory contains Architecture Decision Records for the PocoClinic EMR project.
+Architecture Decision Records live at the **repository root** so they are easy to find on GitHub:
 
-## What is an ADR?
+→ **[`adr/`](../../adr/README.md)** (canonical)
 
-An Architecture Decision Record (ADR) is a document that captures an important architectural decision made along with its context and consequences.
+Do **not** add new ADRs here. This folder is a redirect stub only.
 
-ADRs help team members and stakeholders understand:
-- Why a particular decision was made
-- What alternatives were considered
-- What trade-offs were accepted
-- What context existed at the time
+Start with [ADR-0014](../../adr/0014-private-lan-only-deployment.md) (product scope), [ADR-0015](../../adr/0015-clinic-database-engine.md) (SQLite), and [ADR-0016](../../adr/0016-clinic-runtime-packaging.md) (`clinic/` vs `scripts/`).
 
-## ADR Format
-
-Each ADR follows this format:
-
-```markdown
-# ADR-NNNN: Title
-
-## Status
-[Proposed, Accepted, Deprecated, Superseded]
-
-## Context
-What is the issue that we're seeing that is motivating this decision or change?
-
-## Decision
-What is the change that we're proposing and/or doing?
-
-## Consequences
-What becomes easier or more difficult to do because of this change?
-```
-
-## File Naming
-
-ADRs are numbered sequentially and named using the format:
-`NNNN-title-with-hyphens.md`
-
-Example: `0001-modular-monolith-architecture.md`
-
-## Viewing ADRs
-
-All ADR files in this directory are markdown files that can be read directly in your code editor or on GitHub. 
+Also: [Docs hub](../README.md) · [Repo README](../../README.md)

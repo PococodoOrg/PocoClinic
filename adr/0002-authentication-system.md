@@ -17,10 +17,12 @@ Key requirements:
 ## Decision
 We will implement a two-factor authentication system consisting of:
 
-1. **Primary Authentication**: 64-bit key
+> **Note (2026):** Operator-facing auth is specified as **employee badge (QR) + PIN** in [ADR-0011](./0011-employee-badge-authentication.md). The 64-bit key below is the secret encoded in the badge QR.
+
+1. **Primary Authentication**: 64-bit key (presented on employee badge as QR)
    - Generated uniquely for each user
    - High entropy for security
-   - Can be stored securely in password managers
+   - Carried on a physical badge; scanned at login (not typed)
    - Used for initial authentication
 
 2. **Secondary Authentication**: 4-digit PIN
