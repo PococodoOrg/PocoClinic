@@ -1,0 +1,50 @@
+---
+description: Monorepo layout, root ADRs, and GitHub-friendly navigation links
+alwaysApply: true
+---
+
+# Monorepo docs & ADRs (PocoClinic)
+
+This is a **monorepo**. Architecture decisions and top-level navigation must stay easy to find on **GitHub** (browse markdown in the tree — no assumption of a docs site).
+
+## Where things live
+
+| Path | Purpose |
+|------|---------|
+| [`README.md`](../../README.md) | GitHub front door — “Choose a path” + repo map |
+| [`AGENTS.md`](../../AGENTS.md) | Agent/contributor orientation |
+| [`adr/`](../../adr/README.md) | **Canonical Architecture Decision Records** (repo root) |
+| [`docs/`](../../docs/README.md) | Docs hub → vision, guides, ops, FEATURES |
+| [`devices/`](../../devices/README.md) | Device-specific ops code + docs (e.g. Raspberry Pi) |
+| [`binder-printer/`](../../binder-printer/README.md) | Standalone binder print utility (**not** part of the EMR) |
+| [`clinic/`](../../clinic/README.md) | Post-deploy ops — server install tree, cron, env wrappers (**not** dev/CI scripts) |
+| `backend/`, `frontend/`, `ops-helper/` | Application code |
+
+`docs/adr/` is only a **stub** pointing at root `adr/`. Never add new ADRs under `docs/adr/`.
+
+## ADRs — keep them current
+
+- Before proposing or implementing architectural changes, read [`adr/README.md`](../../adr/README.md) and relevant ADRs (especially **0014** product scope, **0015** SQLite, **0012** backup).
+- When a decision changes (stack, deploy shape, backup model, auth, DB engine, etc.):
+  1. **Update or add** an ADR under `adr/` (`NNNN-title.md`).
+  2. Set Status (`Proposed` / `Accepted` / `Deprecated` / `Superseded`).
+  3. Include **Context**, **Decision**, **Alternatives considered**, **Consequences**.
+  4. Update the index table in [`adr/README.md`](../../adr/README.md).
+  5. Add or refresh **handy links** from [`README.md`](../../README.md) (and `docs/VISION.md` / FEATURES when product-facing).
+- Prefer amending an existing ADR or marking it Superseded over silent drift in code comments only.
+
+## GitHub navigation (required habit)
+
+Readers land on the repo root. Keep **short, obvious markdown links** so they can click through without hunting:
+
+- Root [`README.md`](../../README.md) must link to `adr/`, `docs/`, `devices/`, and other top-level hubs.
+- New top-level folders get a `README.md` and a link from the root README and/or `adr/README.md` / `docs/guide/README.md` as appropriate.
+- Prefer relative links that work on GitHub (`./adr/0015-….md`, `../docs/VISION.md`).
+- Keep the root README **Choose a path** table accurate when adding audience-facing hubs.
+- Do not bury the only copy of a cross-cutting decision inside a deep `docs/` path.
+
+## Database & backup (do not regress)
+
+- **SQLite only** ([ADR-0015](../../adr/0015-clinic-database-engine.md)) — `DATABASE_URL` is a file path; no Cockroach/Postgres daemon.
+- USB backups use a **native SQLite file** inside the tar ([ADR-0012](../../adr/0012-backup-and-recovery-ops.md)).
+- Do not reintroduce Cockroach, `pgx`, or JSONL table dumps as the production path.

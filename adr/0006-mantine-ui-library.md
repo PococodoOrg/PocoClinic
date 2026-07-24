@@ -96,7 +96,7 @@ Our implementation includes:
 - Additional functionality (@mantine/form, @mantine/dates)
 - Integration with our testing setup
 - Custom theme configuration
-- Responsive design utilities
+- Layout utilities for clinic workstation browsers (not a mobile product)
 
 ## References
 

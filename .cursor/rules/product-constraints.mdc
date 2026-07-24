@@ -1,0 +1,39 @@
+---
+description: Product scope — private LAN-only clinics, no native mobile, no internet, defensive security
+alwaysApply: true
+---
+
+# Product Constraints (PocoClinic)
+
+Read @docs/VISION.md, @docs/NETWORK-AND-SECURITY.md, @adr/README.md, and @adr/0014-private-lan-only-deployment.md before proposing features. For persistence see @adr/0015-clinic-database-engine.md (**SQLite**, testing in progress).
+
+## Deployment
+
+- **Private LAN only** — one clinic server (Pi/small PC); staff use **clinic-owned browsers** on the same network.
+- **No internet for clinical operation** — zero cloud, SaaS, telemetry, or external API dependencies in production paths.
+- **No native mobile apps** — no iOS/Android roadmap, no “mobile companion,” no app-store builds.
+- Clients are **LAN websites** (Safari/Chrome/Edge on clinic devices) pointing at the clinic server — not packaged apps.
+
+## Security posture
+
+- **Assume the LAN is isolated** for product design (no public-internet hosting, CDN, or remote-access features).
+- **Still build defensively** — auth, audit, RBAC, rate limits, session timeout, hashed credentials. A LAN can have compromised devices, stolen badges, or insider misuse.
+- Local ops tools (backup helper) stay **localhost-only** unless an ADR explicitly changes that.
+
+## UI
+
+- **Primary:** iPad-class tablet **portrait** (~768×1024 CSS px) in a clinic browser on the LAN.
+- **Secondary:** desktop/laptop landscape browsers (1024px+).
+- Design for **touch first** on the primary target; keyboard/mouse enhancements on desktop are fine.
+- Do **not** add phone-sized product layouts, native apps, or patient portals over the internet.
+
+## Docs / decisions
+
+- This is a **monorepo**. Keep GitHub navigation obvious: root README ↔ `adr/` ↔ `docs/` ↔ `devices/`.
+- Architectural changes require updating **root** `adr/` (see `.cursor/rules/monorepo-adr-docs.mdc` and `AGENTS.md`).
+
+## When suggesting work
+
+Reject or defer: cloud sync, remote login, OAuth with public IdPs, analytics SaaS, always-on external AI, multi-tenant public hosting.
+
+Prefer: LAN deploy, USB backup (database-native long-term), runbooks, audit trail, badge+PIN, local persistence, tablet-friendly clinic workflows.

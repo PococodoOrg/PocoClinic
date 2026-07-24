@@ -1,51 +1,58 @@
 ---
-description: 
-globs: *.ts,*.js,*.css,*.tsx,*.html
+description: Front-end accessibility, tablet-first clinic LAN layouts, performance, and testing standards
+globs: **/*.ts,**/*.tsx,**/*.js,**/*.css,**/*.html
 alwaysApply: false
 ---
-You are a front-end expert, pragmatic and respectful of existing conventions. Your priorities are simplicity, accessibility, responsiveness, and performance.
 
-Ensure high contrast for readability, considering users with color blindness.
+# Front-End Standards
 
-Use semantic HTML for screen readers and better SEO.
+You are a front-end expert, pragmatic and respectful of existing conventions. Priorities: simplicity, accessibility, tablet-first clinic LAN UX, and performance.
 
-Provide keyboard navigation and focus states for interactive elements.
+Review @docs/FEATURES.md and @docs/NETWORK-AND-SECURITY.md before making changes.
 
-Add components to the UI immediately to verify layout, behavior, and styling.
+**Product scope:** PocoClinic runs on a **private LAN** with **no internet** and **no native mobile apps**. Staff use **clinic-owned browsers** against the local clinic website.
 
-Regularly inspect the full front-end to ensure consistency and usability.
+## Viewport targets
 
-Mobile-first approach—design for smaller screens, then scale up.
+| Priority | Target | Typical size |
+|----------|--------|--------------|
+| Primary | iPad-class tablet portrait | ~768×1024 CSS px |
+| Secondary | Desktop / laptop landscape | 1280×800, 1920×1080 |
 
-Use fluid layouts with percentages, rem, and em units where needed.
+- Treat viewports **below Mantine `md` (~992px)** as tablet/portrait mode (drawer nav, card lists, larger touch targets).
+- Treat **`md` and up** as desktop enhancements (persistent sidebar, denser tables).
+- Phone-sized layouts and native apps are **out of scope**.
 
-Test across multiple devices and screen sizes early and often.
+## Accessibility
 
-Use Flexbox for one-dimensional layouts and alignment.
+- Ensure high contrast for readability, including users with color blindness.
+- Use semantic HTML for screen readers.
+- Provide keyboard navigation and visible `:focus-visible` states (badge scanners / external keyboards still used).
+- Touch targets should be **≥44px** (prefer 48px) on tablet layouts.
+- Never require hover to reveal essential actions.
 
-Use CSS Grid for complex, multi-dimensional structures.
+## Layout (clinic LAN browsers)
 
-Avoid fixed dimensions—use flexible and scalable sizing.
+- Use fluid layouts with `rem` and flexible widths; avoid fixed pixel-only layouts.
+- Use Flexbox and CSS Grid per Mantine conventions.
+- Collapsible / drawer navigation below `md`; persistent sidebar from `md` up.
+- Prefer single-column forms on tablet; optional two-column on desktop.
+- Sticky primary actions where staff complete a task standing at bedside.
 
-Follow a consistent file structure and naming conventions.
+## Components and Structure
 
-Keep components modular and reusable.
+- Follow existing Mantine and project file structure.
+- Keep components modular and reusable.
 
-Remove unused CSS and JavaScript.
+## Performance
 
-Minimize CSS, JS, and image sizes for faster load times.
+- Minimize bundle size; lazy-load routes where already established.
+- No external CDN dependencies for production assets (LAN/offline deploy).
 
-Use lazy loading for images and heavy assets.
+## Testing
 
-Optimize for Core Web Vitals (LCP, FID, CLS).
+- Write tests for behavioral changes.
+- Verify tablet portrait (~768 wide) and desktop (~1280+).
+- Cross-browser on clinic browsers (Safari/Chrome/Edge on iPad and desktop).
 
-Write tests for every change—no exceptions.
-
-Cover unit, integration, and end-to-end testing.
-
-Ensure cross-browser compatibility with real-world testing.
-
-Your goal: Deliver a seamless, accessible, high-performance UI with clean, scalable code.
-
-Always review [FEATURES.md](mdc:docs/FEATURES.md)
-
+Deliver a seamless, accessible UI for **local-network clinic tablets and workstations** with clean, scalable code.

@@ -20,7 +20,7 @@ We have chosen to implement a RESTful API design with the following key characte
 - Resource-oriented endpoints
 - Standard HTTP methods
 - JSON as the primary data format
-- JWT-based authentication
+- JWT-based authentication (HttpOnly cookies for access + refresh tokens)
 - Versioned endpoints
 - Consistent error handling
 
@@ -46,7 +46,6 @@ We have chosen to implement a RESTful API design with the following key characte
    - Easy to version
    - Clear separation of concerns
    - Testable endpoints
-   - Swagger/OpenAPI support
 
 4. **Performance**
    - Efficient caching
@@ -140,8 +139,8 @@ We have chosen to implement a RESTful API design with the following key characte
    - 500: Server Error
 
 4. **Security**
-   - JWT in Authorization header
-   - CORS configuration
+   - Access JWT in an HttpOnly cookie (`poco_access_token` / `ACCESS_TOKEN_COOKIE`); refresh JWT in a path-scoped HttpOnly cookie
+   - CORS configuration (clinic LAN origins)
    - Rate limiting
    - Input validation
    - Output sanitization
@@ -155,9 +154,15 @@ POST   /api/v1/patients
 GET    /api/v1/patients/:id
 PUT    /api/v1/patients/:id
 DELETE /api/v1/patients/:id
-GET    /api/v1/patients/:id/appointments
-POST   /api/v1/patients/:id/appointments
+GET    /api/v1/patients/:id/notes
+POST   /api/v1/patients/:id/notes
+GET    /api/v1/patients/:id/documents
+POST   /api/v1/patients/:id/documents
+GET    /api/v1/patients/:id/exercise-plans
+POST   /api/v1/patients/:id/exercise-plans
 ```
+
+Public auth (no session cookie required): `POST /api/v1/auth/login/staff`, `POST /api/v1/auth/login/admin`, `POST /api/v1/auth/refresh`, `POST /api/v1/auth/logout`. All other `/api/v1` business routes require a valid access-token cookie.
 
 ## References
 
