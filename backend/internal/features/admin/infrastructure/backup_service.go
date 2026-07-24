@@ -45,7 +45,7 @@ func (s *BackupService) CreateBackup(ctx context.Context) (*admindomain.BackupRe
 	}
 
 	createdAt := time.Now().UTC()
-	if info, err := backup.Open(path); err == nil {
+	if info, err := backup.Open(s.dir, filepath.Base(path)); err == nil {
 		createdAt = info.Manifest.CreatedAt
 	}
 
@@ -102,7 +102,8 @@ func (s *BackupService) VerifyBackup(ctx context.Context, filename string) (*adm
 	if err != nil {
 		return nil, err
 	}
-	archive, err := backup.Open(path)
+	_ = path
+	archive, err := backup.Open(s.dir, filename)
 	if err != nil {
 		return &admindomain.BackupVerifyResult{
 			Filename:  filename,

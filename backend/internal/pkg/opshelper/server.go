@@ -126,7 +126,7 @@ func (s *Server) createBackup(c *gin.Context) {
 		return
 	}
 
-	info, _ := backup.Open(path)
+	info, _ := backup.Open(s.backupDir, filepath.Base(path))
 	c.JSON(http.StatusCreated, gin.H{
 		"filename":  filepath.Base(path),
 		"path":      path,

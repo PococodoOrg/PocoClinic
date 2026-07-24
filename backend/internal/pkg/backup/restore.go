@@ -27,7 +27,15 @@ type Archive struct {
 }
 
 // Open reads and verifies a backup archive.
-func Open(path string) (*Archive, error) {
+func Open(rootDir, filename string) (*Archive, error) {
+	if err := pathsafe.ValidateBackupFilename(filename); err != nil {
+		return nil, err
+	}
+	path, err := pathsafe.JoinRoot(rootDir, filename)
+	if err != nil {
+		return nil, err
+	}
+
 	files, err := readArchiveFiles(path)
 	if err != nil {
 		return nil, err
