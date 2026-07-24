@@ -20,7 +20,7 @@ import {
   IconListCheck,
   IconRotateClockwise,
 } from '@tabler/icons-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminGuideSections, setupChecklistTasks } from '../../help/adminGuide';
 import { loadSetupChecklist, saveSetupChecklist, toggleSetupStep } from '../../help/adminSetupChecklist';
@@ -67,11 +67,7 @@ export function AdminHelpPanel() {
   const navigate = useNavigate();
   const setupTasks = setupChecklistTasks();
   const referenceSections = adminGuideSections.filter((section) => section.id !== 'initial-setup');
-  const [checklist, setChecklist] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    setChecklist(loadSetupChecklist());
-  }, []);
+  const [checklist, setChecklist] = useState<Record<string, boolean>>(() => loadSetupChecklist());
 
   const completedCount = useMemo(
     () => setupTasks.filter((task) => checklist[task.id]).length,

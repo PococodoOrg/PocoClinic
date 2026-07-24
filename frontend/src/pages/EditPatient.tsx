@@ -55,7 +55,7 @@ export default function EditPatient() {
   if (error) {
     return (
       <Container size="md">
-        <Text color="red">Error loading patient data</Text>
+        <Text c="red">Error loading patient data</Text>
       </Container>
     );
   }

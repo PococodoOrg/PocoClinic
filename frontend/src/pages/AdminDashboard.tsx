@@ -434,7 +434,7 @@ export default function AdminDashboard() {
 
         <Tabs.Panel value="backup" pt="md">
           <Stack gap="lg">
-            <Grid gutter="lg">
+            <Grid gap="lg">
               <Grid.Col span={{ base: 12, lg: 6 }}>
                 <HealthCheckPanel />
               </Grid.Col>

@@ -245,7 +245,7 @@ function HistoryToggle({ patientId, entryId }: { patientId: string; entryId: str
       <Button variant="subtle" size="xs" onClick={toggle} px={0}>
         {opened ? 'Hide version history' : 'Show version history'}
       </Button>
-      <Collapse in={opened}>
+      <Collapse expanded={opened}>
         <EntryHistoryPanel patientId={patientId} entryId={entryId} />
       </Collapse>
     </Stack>

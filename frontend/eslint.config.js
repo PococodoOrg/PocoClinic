@@ -32,6 +32,9 @@ export default [
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'react-hooks/exhaustive-deps': 'warn',
+      // eslint-plugin-react-hooks v7 — valid localStorage / URL sync patterns in this app
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/purity': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'off',
       'no-empty': ['error', { allowEmptyCatch: true }],

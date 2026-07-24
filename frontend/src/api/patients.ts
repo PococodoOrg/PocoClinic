@@ -21,7 +21,7 @@ const formatPatientData = (data: PatientFormData) => ({
   firstName: data.firstName,
   lastName: data.lastName,
   middleName: data.middleName,
-  dateOfBirth: data.dateOfBirth ? data.dateOfBirth.toISOString().split('T')[0] : null,
+  dateOfBirth: data.dateOfBirth,
   gender: data.gender,
   email: data.email,
   phoneNumber: data.phoneNumber,

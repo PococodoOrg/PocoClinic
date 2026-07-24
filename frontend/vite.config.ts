@@ -13,13 +13,19 @@ export default defineConfig({
     minify: 'esbuild',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'mantine-vendor': ['@mantine/core', '@mantine/hooks', '@mantine/form', '@mantine/dates'],
-          'query-vendor': ['@tanstack/react-query']
-        }
-      }
-    }
+        manualChunks(id) {
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/') || id.includes('react-router-dom')) {
+            return 'react-vendor';
+          }
+          if (id.includes('@mantine/core') || id.includes('@mantine/hooks') || id.includes('@mantine/form') || id.includes('@mantine/dates')) {
+            return 'mantine-vendor';
+          }
+          if (id.includes('@tanstack/react-query')) {
+            return 'query-vendor';
+          }
+        },
+      },
+    },
   },
   optimizeDeps: {
     include: [
