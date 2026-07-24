@@ -37,7 +37,7 @@ func TestSQLiteBackupCreateRestoreRoundTrip(t *testing.T) {
 		t.Fatalf("backup file missing: %v", err)
 	}
 
-	archive, err := Open(archivePath)
+	archive, err := Open(backupDir, filepath.Base(archivePath))
 	if err != nil {
 		t.Fatalf("open archive: %v", err)
 	}

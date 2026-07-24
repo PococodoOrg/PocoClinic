@@ -243,11 +243,10 @@ func (s *Server) buildStatus(ctx context.Context) (*Status, error) {
 }
 
 func (s *Server) verifyBackupFile(filename string) (*VerifyResult, error) {
-	path, err := pathsafe.JoinRoot(s.backupDir, filename)
-	if err != nil {
+	if _, err := pathsafe.JoinRoot(s.backupDir, filename); err != nil {
 		return nil, err
 	}
-	archive, err := backup.Open(path)
+	archive, err := backup.Open(s.backupDir, filename)
 	if err != nil {
 		return &VerifyResult{
 			Filename:  filename,
