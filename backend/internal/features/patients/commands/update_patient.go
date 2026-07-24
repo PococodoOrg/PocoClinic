@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/dksch/pococlinic/internal/features/patients/domain"
@@ -11,19 +12,19 @@ import (
 // UpdatePatientCommand represents the command to update a patient
 type UpdatePatientCommand struct {
 	ID          string  `json:"-"`
-	FirstName   string  `json:"firstName" binding:"required"`
-	LastName    string  `json:"lastName" binding:"required"`
+	FirstName   string  `json:"firstName"`
+	LastName    string  `json:"lastName"`
 	MiddleName  *string `json:"middleName,omitempty"`
-	DateOfBirth string  `json:"dateOfBirth" binding:"required"`
-	Gender      string  `json:"gender" binding:"required,oneof=male female other unknown"`
-	Email       string  `json:"email" binding:"required,email"`
-	PhoneNumber string  `json:"phoneNumber" binding:"required"`
+	DateOfBirth string  `json:"dateOfBirth"`
+	Gender      string  `json:"gender"`
+	Email       string  `json:"email"`
+	PhoneNumber string  `json:"phoneNumber"`
 	Address     *struct {
-		Street     string `json:"street" binding:"required"`
-		City       string `json:"city" binding:"required"`
-		State      string `json:"state" binding:"required"`
-		PostalCode string `json:"postalCode" binding:"required"`
-		Country    string `json:"country" binding:"required"`
+		Street     string `json:"street"`
+		City       string `json:"city"`
+		State      string `json:"state"`
+		PostalCode string `json:"postalCode"`
+		Country    string `json:"country"`
 	} `json:"address,omitempty"`
 	Height *float64 `json:"height,omitempty"`
 	Weight *float64 `json:"weight,omitempty"`
@@ -35,17 +36,15 @@ type UpdatePatientHandler interface {
 }
 
 type updatePatientHandler struct {
-	repo domain.PatientRepository
+	repo     domain.PatientRepository
+	settings domain.SettingsRepository
 }
 
-// NewUpdatePatientHandler creates a new update patient handler
-func NewUpdatePatientHandler(repo domain.PatientRepository) UpdatePatientHandler {
-	return &updatePatientHandler{repo: repo}
+func NewUpdatePatientHandler(repo domain.PatientRepository, settings domain.SettingsRepository) UpdatePatientHandler {
+	return &updatePatientHandler{repo: repo, settings: settings}
 }
 
-// Handle processes the update patient command
 func (h *updatePatientHandler) Handle(ctx context.Context, cmd UpdatePatientCommand) (*domain.Patient, error) {
-	// Get the existing patient
 	patient, err := h.repo.GetByID(ctx, cmd.ID)
 	if err != nil {
 		return nil, err
@@ -54,31 +53,18 @@ func (h *updatePatientHandler) Handle(ctx context.Context, cmd UpdatePatientComm
 		return nil, errors.NewAPIError(errors.ErrNotFound, "Patient not found")
 	}
 
-	// Parse the date of birth
-	dob, err := time.Parse("2006-01-02", cmd.DateOfBirth)
+	reqs, err := h.settings.GetPatientFieldRequirements(ctx)
 	if err != nil {
-		return nil, errors.NewAPIError(errors.ErrValidation, "Invalid date of birth format")
+		return nil, fmt.Errorf("load patient field requirements: %w", err)
 	}
 
-	// Update the patient fields
-	patient.FirstName = cmd.FirstName
-	patient.LastName = cmd.LastName
+	middleName := patient.MiddleName
 	if cmd.MiddleName != nil {
-		patient.MiddleName = *cmd.MiddleName
+		middleName = *cmd.MiddleName
 	}
-	patient.DateOfBirth = domain.Date(dob)
-	patient.Gender = domain.Gender(cmd.Gender)
-	patient.Email = cmd.Email
-	patient.PhoneNumber = cmd.PhoneNumber
-	if cmd.Height != nil {
-		patient.Height = *cmd.Height
-	}
-	if cmd.Weight != nil {
-		patient.Weight = *cmd.Weight
-	}
-
+	address := patient.Address
 	if cmd.Address != nil {
-		patient.Address = domain.Address{
+		address = domain.Address{
 			Street:     cmd.Address.Street,
 			City:       cmd.Address.City,
 			State:      cmd.Address.State,
@@ -87,7 +73,41 @@ func (h *updatePatientHandler) Handle(ctx context.Context, cmd UpdatePatientComm
 		}
 	}
 
-	// Save the updated patient
+	if err := domain.ValidatePatientInput(domain.PatientInput{
+		FirstName:   cmd.FirstName,
+		LastName:    cmd.LastName,
+		MiddleName:  middleName,
+		DateOfBirth: cmd.DateOfBirth,
+		Gender:      cmd.Gender,
+		Email:       cmd.Email,
+		PhoneNumber: cmd.PhoneNumber,
+		Address:     address,
+		Height:      cmd.Height,
+		Weight:      cmd.Weight,
+	}, reqs); err != nil {
+		return nil, err
+	}
+
+	dob, err := time.Parse("2006-01-02", cmd.DateOfBirth)
+	if err != nil {
+		return nil, errors.NewAPIError(errors.ErrValidation, "Invalid date of birth format")
+	}
+
+	patient.FirstName = cmd.FirstName
+	patient.LastName = cmd.LastName
+	patient.MiddleName = middleName
+	patient.DateOfBirth = domain.Date(dob)
+	patient.Gender = domain.Gender(cmd.Gender)
+	patient.Email = cmd.Email
+	patient.PhoneNumber = cmd.PhoneNumber
+	patient.Address = address
+	if cmd.Height != nil {
+		patient.Height = *cmd.Height
+	}
+	if cmd.Weight != nil {
+		patient.Weight = *cmd.Weight
+	}
+
 	if err := h.repo.Update(ctx, patient); err != nil {
 		return nil, err
 	}

@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/dksch/pococlinic/internal/features/patients/commands"
 	"github.com/dksch/pococlinic/internal/features/patients/domain"
 	"github.com/dksch/pococlinic/internal/features/patients/queries"
 	"github.com/dksch/pococlinic/internal/pkg/errors"
@@ -89,16 +90,16 @@ func TestGetPatient(t *testing.T) {
 			tt.setupMock(mockHandler)
 
 			// Create handler with mock
-			handler := NewPatientHandler(nil, nil, mockHandler, nil, logger)
+			handler := NewPatientHandler(nil, nil, mockHandler, nil, nil, commands.CreateNoteHandler{}, commands.UpdateNoteHandler{}, commands.DeleteNoteHandler{}, queries.ListNotesHandler{}, commands.UploadDocumentHandler{}, commands.DeleteDocumentHandler{}, queries.ListDocumentsHandler{}, queries.GetDocumentHandler{}, commands.OpenDocumentContentHandler{}, nil, logger, nil)
 
 			// Setup router
 			router := gin.New()
-			api := router.Group("/api")
-			handler.RegisterRoutes(api)
+			api := router.Group("/api/v1")
+			handler.RegisterRoutes(api, nil)
 
 			// Create request
 			w := httptest.NewRecorder()
-			req, _ := http.NewRequest("GET", "/api/patients/"+tt.patientID, nil)
+			req, _ := http.NewRequest("GET", "/api/v1/patients/"+tt.patientID, nil)
 
 			// Serve request
 			router.ServeHTTP(w, req)

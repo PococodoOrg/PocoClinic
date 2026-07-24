@@ -8,9 +8,23 @@ import (
 
 // GetPatientsQuery represents the query to retrieve patients
 type GetPatientsQuery struct {
-	Page     int    `form:"page,default=1"`
-	PageSize int    `form:"pageSize,default=20"`
-	Search   string `form:"search"`
+	Page            int    `form:"page,default=1"`
+	PageSize        int    `form:"pageSize,default=20"`
+	Search          string `form:"search"`
+	Gender          string `form:"gender"`
+	DobFrom         string `form:"dobFrom"`
+	DobTo           string `form:"dobTo"`
+	RegisteredSince string `form:"registeredSince"`
+}
+
+func (q GetPatientsQuery) Filter() domain.PatientListFilter {
+	return domain.PatientListFilter{
+		Search:          q.Search,
+		Gender:          q.Gender,
+		DateOfBirthFrom: q.DobFrom,
+		DateOfBirthTo:   q.DobTo,
+		RegisteredSince: q.RegisteredSince,
+	}
 }
 
 // PaginatedPatients represents a paginated list of patients
@@ -49,7 +63,7 @@ func (h *getPatientsHandler) Handle(ctx context.Context, query GetPatientsQuery)
 	}
 
 	// Get patients with pagination
-	patients, totalCount, err := h.patientRepository.ListPaginated(ctx, query.Page, query.PageSize, query.Search)
+	patients, totalCount, err := h.patientRepository.ListPaginated(ctx, query.Page, query.PageSize, query.Filter())
 	if err != nil {
 		return nil, err
 	}
@@ -91,5 +105,5 @@ func NewGetPatientHandler(repo domain.GetPatientRepository) GetPatientHandler {
 }
 
 func (h *getPatientHandler) Handle(ctx context.Context, query GetPatientQuery) (*domain.Patient, error) {
-	return h.patientRepository.GetPatientByID(ctx, query.ID)
+	return h.patientRepository.GetByID(ctx, query.ID)
 }
