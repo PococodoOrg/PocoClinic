@@ -128,6 +128,30 @@ func TestValidateRelativeKey(t *testing.T) {
 	}
 }
 
+func TestResolveBasenameUnderRootRejectsTraversal(t *testing.T) {
+	root := t.TempDir()
+	secretDir := filepath.Join(filepath.Dir(root), "secret-area")
+	if err := os.MkdirAll(secretDir, 0o755); err != nil {
+		t.Fatalf("MkdirAll: %v", err)
+	}
+	secretFile := filepath.Join(secretDir, "leaked.txt")
+	if err := os.WriteFile(secretFile, []byte("secret"), 0o644); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+
+	attempts := []string{
+		"../secret-area/leaked.txt",
+		"..\\secret-area\\leaked.txt",
+		".../...//",
+	}
+	for _, name := range attempts {
+		_, err := pathsafe.OpenBackupFile(root, name)
+		if err == nil {
+			t.Fatalf("expected rejection for %q", name)
+		}
+	}
+}
+
 func TestJoinRootWindowsDrive(t *testing.T) {
 	if os.PathSeparator != '\\' {
 		t.Skip("windows-specific")
