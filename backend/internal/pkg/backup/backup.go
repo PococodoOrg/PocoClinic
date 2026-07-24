@@ -246,8 +246,8 @@ func sha256Hex(content []byte) string {
 	return hex.EncodeToString(sum[:])
 }
 
-func readManifestFromArchive(path string) (Manifest, error) {
-	files, err := readArchiveFiles(path)
+func readManifestFromArchive(rootDir, filename string) (Manifest, error) {
+	files, err := readArchiveFiles(rootDir, filename)
 	if err != nil {
 		return Manifest{}, err
 	}
@@ -262,8 +262,8 @@ func readManifestFromArchive(path string) (Manifest, error) {
 	return manifest, nil
 }
 
-func fileModTime(path string) time.Time {
-	info, err := os.Stat(path)
+func fileModTime(rootDir, filename string) time.Time {
+	info, err := pathsafe.StatBackupFile(rootDir, filename)
 	if err != nil {
 		return time.Now().UTC()
 	}

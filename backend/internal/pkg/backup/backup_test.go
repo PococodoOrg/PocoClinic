@@ -72,7 +72,9 @@ func TestArchiveVerifyDetectsTampering(t *testing.T) {
 }
 
 func TestReadArchiveRejectsZipSlip(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "evil.tar.gz")
+	root := t.TempDir()
+	filename := "pococlinic-backup-evil.tar.gz"
+	path := filepath.Join(root, filename)
 	file, err := os.Create(path)
 	if err != nil {
 		t.Fatalf("create archive: %v", err)
@@ -99,7 +101,7 @@ func TestReadArchiveRejectsZipSlip(t *testing.T) {
 		t.Fatalf("close file: %v", err)
 	}
 
-	if _, err := readArchiveFiles(path); err == nil {
+	if _, err := readArchiveFiles(root, filename); err == nil {
 		t.Fatal("expected zip-slip archive to be rejected")
 	}
 }
