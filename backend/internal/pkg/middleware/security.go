@@ -10,6 +10,8 @@ import (
 	"golang.org/x/time/rate"
 )
 
+const contentSecurityPolicy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+
 // SecurityHeaders adds security-related headers to the response
 func SecurityHeaders() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -17,9 +19,16 @@ func SecurityHeaders() gin.HandlerFunc {
 		c.Header("X-Frame-Options", "DENY")
 		c.Header("X-XSS-Protection", "1; mode=block")
 		c.Header("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
-		c.Header("Content-Security-Policy", "default-src 'self'")
+		c.Header("Content-Security-Policy", contentSecurityPolicy)
+		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
+		c.Header("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
 		c.Next()
 	}
+}
+
+// ContentSecurityPolicy returns the CSP applied to HTTP responses.
+func ContentSecurityPolicy() string {
+	return contentSecurityPolicy
 }
 
 // IPRateLimiter stores rate limiters for IP addresses
@@ -62,25 +71,11 @@ func (i *IPRateLimiter) GetLimiter(ip string) *rate.Limiter {
 func RateLimiterMiddleware(limiter *IPRateLimiter) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		ip := c.ClientIP()
-		// Try to take a single token
 		if !limiter.GetLimiter(ip).AllowN(time.Now(), 1) {
 			c.JSON(http.StatusTooManyRequests, errors.NewAPIError(errors.ErrRateLimit, "Rate limit exceeded"))
 			c.Abort()
 			return
 		}
-		c.Next()
-	}
-}
-
-// Recovery returns a middleware that recovers from panics
-func Recovery() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		defer func() {
-			if err := recover(); err != nil {
-				c.JSON(http.StatusInternalServerError, errors.NewAPIError(errors.ErrInternalServer, "An internal error occurred"))
-				c.Abort()
-			}
-		}()
 		c.Next()
 	}
 }

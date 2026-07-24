@@ -38,7 +38,9 @@ func TestSecurityHeaders(t *testing.T) {
 		"X-Frame-Options":           "DENY",
 		"X-XSS-Protection":          "1; mode=block",
 		"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-		"Content-Security-Policy":   "default-src 'self'",
+		"Content-Security-Policy":   middleware.ContentSecurityPolicy(),
+		"Referrer-Policy":           "strict-origin-when-cross-origin",
+		"Permissions-Policy":        "camera=(), microphone=(), geolocation=()",
 	}
 
 	for header, expected := range expectedHeaders {
@@ -291,7 +293,7 @@ func TestRateLimiterCleanup(t *testing.T) {
 
 func TestPanicRecovery(t *testing.T) {
 	router := setupTestRouter()
-	router.Use(middleware.Recovery())
+	router.Use(middleware.Recovery(nil))
 
 	router.GET("/panic", func(c *gin.Context) {
 		panic("test panic")
