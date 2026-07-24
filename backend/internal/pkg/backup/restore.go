@@ -83,7 +83,7 @@ func Restore(ctx context.Context, db *database.DB, path, documentsDir string) er
 		return fmt.Errorf("database connection is required for restore")
 	}
 
-	archive, err := Open(path)
+	archive, err := Open(filepath.Dir(path), filepath.Base(path))
 	if err != nil {
 		return err
 	}
