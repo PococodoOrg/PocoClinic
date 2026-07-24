@@ -1,9 +1,10 @@
 # Raspberry Pi — device binder
 
 **Print this packet for the clinic Pi server.**  
-Store it with the Pi (cabinet) or behind the clinic ops binder as a **device tab**.
+Store it with the Pi (cabinet) or behind the **site operations binder** as a **device tab**.
 
-This binder is **Pi-only**. Clinic-wide staff/admin how-to stays in [`docs/ops/binder/`](../../../docs/ops/binder/README.md).  
+This binder is **Pi-only**. Clinic-wide staff/admin how-to stays in the [**site operations binder**](../../../docs/ops/binder/README.md).  
+Install-day network/TLS steps: [**installer binder**](../../../docs/binders/installer/README.md).  
 Secrets stay on the **safe vault** sheet — not in this packet.
 
 | Clinic | ________________________________ |
@@ -58,7 +59,7 @@ Day-to-day charting is not done on the Pi display. Use staff browsers on the LAN
 - [ ] Section A — A1, A2, A3
 - [ ] Section B — B1
 - [ ] Section C — C1, C2, C3
-- [ ] Clinic ops binder still printed separately (staff/admin/emergency paper care)
+- [ ] **Site operations binder** printed separately for clinic desk
 
 ---
 
@@ -67,5 +68,7 @@ Day-to-day charting is not done on the Pi display. Use staff browsers on the LAN
 - [Raspberry Pi device folder](../README.md)
 - [Hardware details](../hardware.md)
 - [Touchscreen backup (full)](../touchscreen-backup.md)
-- [Clinic ops binder](../../../docs/ops/binder/README.md)
+- [Binders hub](../../../docs/binders/README.md)
+- [Site operations binder](../../../docs/ops/binder/README.md)
+- [Installer binder](../../../docs/binders/installer/README.md)
 - [Binder printer utility](../../../binder-printer/README.md)

@@ -35,7 +35,7 @@ PocoClinic is designed for a **private, isolated local area network (LAN)**. Dai
 
 Clinics that require full egress blocking should use the **release tarball** built with `scripts/build-release.mjs` (copies [`clinic/server/`](../../clinic/server/README.md)) — see [DEPLOYMENT-BOUNDARY](../deploy/DEPLOYMENT-BOUNDARY.md) and [ADR-0010](../../adr/0010-local-airgap-deployment.md).
 
-**HTTPS on the LAN:** [Pi TLS guide](../../devices/raspberry-pi/tls-lan.md) · [Pi hardening](../../devices/raspberry-pi/hardening.md) · [ADR-0017](../../adr/0017-raspberry-pi-hardening-and-lan-tls.md)
+**HTTPS on the LAN:** [Installer binder I2](../../binders/installer/I2-network-and-wifi.md) (print checklist) · [Pi TLS guide](../../devices/raspberry-pi/tls-lan.md) · [Pi hardening](../../devices/raspberry-pi/hardening.md) · [ADR-0017](../../adr/0017-raspberry-pi-hardening-and-lan-tls.md)
 
 ## Security expectations
 
@@ -51,6 +51,7 @@ Full model: [NETWORK-AND-SECURITY.md](../NETWORK-AND-SECURITY.md) · [ADR-0014](
 
 ## Related
 
+- [Binders hub](../../binders/README.md) · [Installer I2 — Network & Wi‑Fi](../../binders/installer/I2-network-and-wifi.md)
 - [First-time setup](./for-administrators/first-time-setup.md)
 - [Deploy hub](../deploy/README.md) · [clinic/server/](../../clinic/server/README.md)
 - [In-app help: How it works](../../frontend/src/help/content.ts) (article `how-it-works`)

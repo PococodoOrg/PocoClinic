@@ -29,6 +29,7 @@ Use the printed checklists behind this page:
 2. [Security audit checklist](../security-audit-checklist.md) — monthly or quarterly  
 3. Export audit CSV (Admin → Audit log) → store offline / USB archive  
 4. If last **restore drill** was over **90 days** ago → schedule one (log on Section A3)  
+5. Spot-check EMR from a **staff iPad** on Wi‑Fi — see **B6**
 
 | Month | Monthly testing signed? | Security audit signed? | Audit CSV archived? | Initials |
 |-------|-------------------------|------------------------|---------------------|----------|

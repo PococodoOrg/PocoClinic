@@ -1,4 +1,10 @@
 /** Raw markdown loaded at build time (paths outside binder-printer/). */
+import instCover from '../../docs/binders/installer/README.md?raw';
+import instI1 from '../../docs/binders/installer/I1-prerequisites.md?raw';
+import instI2 from '../../docs/binders/installer/I2-network-and-wifi.md?raw';
+import instI3 from '../../docs/binders/installer/I3-server-install.md?raw';
+import instI4 from '../../docs/binders/installer/I4-hardening-and-tls.md?raw';
+import instI5 from '../../docs/binders/installer/I5-handoff-checklist.md?raw';
 import clinicCover from '../../docs/ops/binder/README.md?raw';
 import clinicA1 from '../../docs/ops/emergency-procedures.md?raw';
 import clinicA2 from '../../docs/ops/binder/A2-paper-fallback.md?raw';
@@ -8,6 +14,7 @@ import clinicB2 from '../../docs/ops/monthly-testing-checklist.md?raw';
 import clinicB3 from '../../docs/ops/security-audit-checklist.md?raw';
 import clinicB4 from '../../docs/ops/administrator-runbook.md?raw';
 import clinicB5 from '../../docs/ops/physical-security-binder.md?raw';
+import clinicB6 from '../../docs/ops/binder/B6-network-and-wifi-at-site.md?raw';
 import clinicC1 from '../../docs/ops/binder/C1-what-is-pococlinic.md?raw';
 import clinicC2 from '../../docs/ops/binder/C2-staff-how-to.md?raw';
 import clinicC3 from '../../docs/ops/binder/C3-administrator-how-to.md?raw';
@@ -23,6 +30,12 @@ import safeVault from '../../docs/ops/safe-credentials-vault.md?raw';
 
 /** Map of path keys used in manifest.ts `file` fields → markdown source */
 export const markdownByFile: Record<string, string> = {
+  '../docs/binders/installer/README.md': instCover,
+  '../docs/binders/installer/I1-prerequisites.md': instI1,
+  '../docs/binders/installer/I2-network-and-wifi.md': instI2,
+  '../docs/binders/installer/I3-server-install.md': instI3,
+  '../docs/binders/installer/I4-hardening-and-tls.md': instI4,
+  '../docs/binders/installer/I5-handoff-checklist.md': instI5,
   '../docs/ops/binder/README.md': clinicCover,
   '../docs/ops/emergency-procedures.md': clinicA1,
   '../docs/ops/binder/A2-paper-fallback.md': clinicA2,
@@ -32,6 +45,7 @@ export const markdownByFile: Record<string, string> = {
   '../docs/ops/security-audit-checklist.md': clinicB3,
   '../docs/ops/administrator-runbook.md': clinicB4,
   '../docs/ops/physical-security-binder.md': clinicB5,
+  '../docs/ops/binder/B6-network-and-wifi-at-site.md': clinicB6,
   '../docs/ops/binder/C1-what-is-pococlinic.md': clinicC1,
   '../docs/ops/binder/C2-staff-how-to.md': clinicC2,
   '../docs/ops/binder/C3-administrator-how-to.md': clinicC3,

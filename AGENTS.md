@@ -7,7 +7,7 @@ For **coding agents and contributors**. Clinic admins: start at [docs/guide/](./
 | Path | What it is |
 |------|------------|
 | [adr/](./adr/README.md) | Architecture Decision Records — **why** we chose things |
-| [docs/](./docs/README.md) | Product, ops binders, vision, features, network |
+| [docs/](./docs/README.md) | Product, ops binders ([hub](./docs/binders/README.md)), vision, features, network |
 | [devices/](./devices/README.md) | Per-device ops (start: [Raspberry Pi](./devices/raspberry-pi/README.md)) |
 | [binder-printer/](./binder-printer/README.md) | Print binders utility (not the EMR) |
 | [clinic/](./clinic/README.md) | Post-deploy ops — server install tree, cron, env (see [ADR-0016](./adr/0016-clinic-runtime-packaging.md)) |

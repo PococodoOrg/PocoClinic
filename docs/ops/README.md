@@ -4,9 +4,18 @@ Printable runbooks, checklists, and tooling for clinic administrators and contri
 
 ← [Docs hub](../README.md) · [Repo README](../../README.md)
 
-## Physical ops binder
+## Physical binders
 
-**Assemble and print:** [**Ops binder**](./binder/README.md)
+**All binders:** [**binders hub**](../binders/README.md)
+
+| Binder | Audience |
+|--------|----------|
+| [**Installer**](../binders/installer/README.md) | Deploy tech — network, install, TLS, handoff |
+| [**Site operations**](./binder/README.md) | Clinic desk — emergency, periodic, how-to |
+| [**Pi device**](../../devices/raspberry-pi/binder/README.md) | Pi cabinet — hardware / kiosk |
+| [**Safe vault**](./safe-credentials-vault.md) | Safe only — secrets |
+
+**Print:** [**Site operations binder**](./binder/README.md) (sections A · B · C below).
 
 Three uses only (binder stays closed otherwise):
 

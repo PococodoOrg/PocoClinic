@@ -3,11 +3,11 @@
 Standalone **print utility** for PocoClinic paper binders.  
 **Not part of the EMR** — run it on an admin PC when assembling binders.
 
-← [Repo README](../README.md) · Clinic binder source: [docs/ops/binder](../docs/ops/binder/README.md) · Pi binder: [devices/raspberry-pi/binder](../devices/raspberry-pi/binder/README.md)
+← [Repo README](../README.md) · [Binders hub](../docs/binders/README.md) · Site ops: [docs/ops/binder](../docs/ops/binder/README.md) · Installer: [docs/binders/installer](../docs/binders/installer/README.md) · Pi: [devices/raspberry-pi/binder](../devices/raspberry-pi/binder/README.md)
 
 ## What it does
 
-1. Asks which binder(s) you need (clinic-wide ops, Raspberry Pi device, optional safe vault template)
+1. Asks which binder(s) you need (**installer**, **site operations**, Raspberry Pi device, optional safe vault template)
 2. Lets you tick sections/pages
 3. Opens a print-ready preview → use the browser **Print** dialog (PDF or paper)
 
@@ -31,11 +31,12 @@ Then open the URL shown (default http://localhost:5199).
 
 ## Binders included
 
-| Pack | Source |
-|------|--------|
-| Clinic ops | `docs/ops/binder/` (+ linked runbooks/checklists) |
-| Raspberry Pi | `devices/raspberry-pi/binder/` |
-| Safe vault (blank template) | `docs/ops/safe-credentials-vault.md` — print blank only; fill by hand |
+| Pack | Source | Audience |
+|------|--------|----------|
+| **Installer** | `docs/binders/installer/` | Deploy tech — install day through handoff |
+| **Site operations** | `docs/ops/binder/` (+ linked runbooks) | Clinic admin desk |
+| **Raspberry Pi** | `devices/raspberry-pi/binder/` | Pi cabinet |
+| **Safe vault (blank template)** | `docs/ops/safe-credentials-vault.md` | Safe only — print blank; fill by hand |
 
 ## Notes
 
@@ -46,6 +47,8 @@ Then open the URL shown (default http://localhost:5199).
 
 ## Related
 
-- [Clinic ops binder](../docs/ops/binder/README.md)
+- [Binders hub](../docs/binders/README.md)
+- [Installer binder](../docs/binders/installer/README.md)
+- [Site operations binder](../docs/ops/binder/README.md)
 - [Raspberry Pi binder](../devices/raspberry-pi/binder/README.md)
 - [Devices hub](../devices/README.md)

@@ -21,8 +21,10 @@ Human-facing docs for PocoClinic. Architecture **decisions** live in root [`adr/
 | [FEATURES.md](./FEATURES.md) | Feature status / roadmap checklist |
 | [NETWORK-AND-SECURITY.md](./NETWORK-AND-SECURITY.md) | LAN assumptions + defensive security |
 | [guide/](./guide/README.md) | Clinic & staff guides (also feed in-app / static help) |
-| [ops/](./ops/README.md) | Runbooks, checklists, tools catalog, **printed binder** |
-| [ops/binder/](./ops/binder/README.md) | Clinic-wide paper binder (A emergency · B periodic · C help) |
+| [ops/](./ops/README.md) | Runbooks, checklists, tools catalog, **printed binders** |
+| [binders/](./binders/README.md) | **Binder hub** — installer vs site ops vs Pi vs vault |
+| [ops/binder/](./ops/binder/README.md) | **Site operations** paper binder (A emergency · B periodic · C help) |
+| [binders/installer/](./binders/installer/README.md) | **Installer** paper binder (I1–I5) |
 | [deploy/](./deploy/README.md) | Release tarball vs microSD image · [DEPLOYMENT-BOUNDARY](./deploy/DEPLOYMENT-BOUNDARY.md) |
 | [IN-APP-HELP.md](./IN-APP-HELP.md) | How in-app help content is maintained |
 | [adr/](./adr/README.md) | **Stub only** → real ADRs are at [`/adr`](../adr/README.md) |

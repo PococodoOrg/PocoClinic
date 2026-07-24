@@ -36,8 +36,9 @@ For people **thinking about PocoClinic**, new administrators reading ahead, or f
 | [docs/guide/evaluating-pococlinic.md](./guide/evaluating-pococlinic.md) | Prospective clinics |
 | [docs/guide/for-administrators/](./guide/for-administrators/README.md) | Setup and ops |
 | [docs/guide/for-staff/](./guide/for-staff/README.md) | Daily staff workflows |
-| [docs/ops/administrator-runbook.md](./ops/administrator-runbook.md) | Printable binder (daily backup) |
-| [docs/ops/binder/README.md](./ops/binder/README.md) | **Physical ops binder** — A emergency · B weekly/monthly · C system help |
+| [docs/binders/](./binders/README.md) | **Binder hub** — installer vs site ops vs Pi vs vault |
+| [docs/binders/installer/](./binders/installer/README.md) | **Installer binder** — network, install, TLS, handoff |
+| [docs/ops/binder/README.md](./ops/binder/README.md) | **Site operations binder** — A emergency · B weekly/monthly · C system help |
 | [devices/raspberry-pi/binder/README.md](../devices/raspberry-pi/binder/README.md) | **Pi device binder** — print-me A/B/C for the server |
 | [binder-printer/README.md](../binder-printer/README.md) | Standalone utility to print binders — [`clinic/workstation/`](../clinic/workstation/README.md) |
 | [docs/ops/safe-credentials-vault.md](./ops/safe-credentials-vault.md) | **Print → fill → lock in safe → delete digital copies** |
