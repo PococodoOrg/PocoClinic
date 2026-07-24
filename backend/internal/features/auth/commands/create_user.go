@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
 	"github.com/dksch/pococlinic/internal/features/auth/domain"
 )
 
@@ -33,6 +34,10 @@ func NewCreateUserHandler(repo domain.CreateUserRepository) CreateUserHandler {
 
 // Handle processes the create user command
 func (h *createUserHandler) Handle(ctx context.Context, cmd CreateUserCommand) (*domain.User, string, error) {
+	if !domain.IsAssignableStaffRole(cmd.Role) {
+		return nil, "", pkgerrors.NewAPIError(pkgerrors.ErrValidation, "Invalid role")
+	}
+
 	user := domain.NewUser(cmd.Email, cmd.Name, cmd.Role)
 
 	// Generate the initial key and credentials
@@ -40,7 +45,7 @@ func (h *createUserHandler) Handle(ctx context.Context, cmd CreateUserCommand) (
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to generate key: %w", err)
 	}
-	user.SetKeyCredential(keyCred)
+	user.SetKeyCredential(keyCred, key)
 
 	// Generate default PIN credentials
 	pinCred, err := domain.GeneratePINCredential("0000")
@@ -48,11 +53,11 @@ func (h *createUserHandler) Handle(ctx context.Context, cmd CreateUserCommand) (
 		return nil, "", fmt.Errorf("failed to generate PIN: %w", err)
 	}
 	user.SetPINCredential(pinCred)
+	user.MustChangePIN = true
 
-	// Save the user
 	err = h.userRepository.Create(ctx, user)
 	if err != nil {
-		return nil, "", fmt.Errorf("failed to create user: %w", err)
+		return nil, "", err
 	}
 
 	return user, key, nil

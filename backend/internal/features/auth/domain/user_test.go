@@ -42,7 +42,7 @@ func TestCredentials(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to generate key: %v", err)
 	}
-	user.SetKeyCredential(keyCred)
+	user.SetKeyCredential(keyCred, key)
 	if user.KeyCredential != keyCred {
 		t.Error("Expected key credential to be set")
 	}

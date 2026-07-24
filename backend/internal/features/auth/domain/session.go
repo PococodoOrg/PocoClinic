@@ -20,6 +20,7 @@ const (
 type Claims struct {
 	jwt.RegisteredClaims
 	UserID    string    `json:"uid"`
+	SessionID string    `json:"sid,omitempty"`
 	Role      Role      `json:"role"`
 	TokenType TokenType `json:"type"`
 }
@@ -38,11 +39,12 @@ type Session struct {
 
 // TokenConfig holds JWT token configuration
 type TokenConfig struct {
-	AccessTokenSecret  []byte
-	RefreshTokenSecret []byte
-	AccessTokenTTL     time.Duration
-	RefreshTokenTTL    time.Duration
-	Issuer             string
+	AccessTokenSecret    []byte
+	RefreshTokenSecret   []byte
+	AccessTokenTTL       time.Duration
+	RefreshTokenTTL      time.Duration
+	SessionInactivityTTL time.Duration
+	Issuer               string
 }
 
 // NewSession creates a new session for a user
@@ -61,17 +63,17 @@ func NewSession(userID uuid.UUID, userAgent, ipAddress string, expiresAt time.Ti
 
 // GenerateTokens creates both access and refresh tokens
 func (s *Session) GenerateTokens(user *User, config TokenConfig) (accessToken string, refreshToken string, err error) {
-	accessToken, err = generateToken(TokenTypeAccess, user, config.AccessTokenSecret, config.AccessTokenTTL, config.Issuer)
+	accessToken, err = generateToken(TokenTypeAccess, user, s.ID.String(), config.AccessTokenSecret, config.AccessTokenTTL, config.Issuer)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to generate access token: %w", err)
 	}
 
-	refreshToken, err = generateToken(TokenTypeRefresh, user, config.RefreshTokenSecret, config.RefreshTokenTTL, config.Issuer)
+	refreshToken, err = generateToken(TokenTypeRefresh, user, "", config.RefreshTokenSecret, config.RefreshTokenTTL, config.Issuer)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to generate refresh token: %w", err)
 	}
 
-	s.RefreshToken = refreshToken
+	s.RefreshToken = HashRefreshToken(refreshToken)
 	return accessToken, refreshToken, nil
 }
 
@@ -99,7 +101,7 @@ func ValidateToken(tokenString string, tokenType TokenType, secret []byte) (*Cla
 }
 
 // generateToken creates a new JWT token
-func generateToken(tokenType TokenType, user *User, secret []byte, ttl time.Duration, issuer string) (string, error) {
+func generateToken(tokenType TokenType, user *User, sessionID string, secret []byte, ttl time.Duration, issuer string) (string, error) {
 	now := time.Now()
 	claims := Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -110,6 +112,7 @@ func generateToken(tokenType TokenType, user *User, secret []byte, ttl time.Dura
 			Subject:   user.ID.String(),
 		},
 		UserID:    user.ID.String(),
+		SessionID: sessionID,
 		Role:      user.Role,
 		TokenType: tokenType,
 	}

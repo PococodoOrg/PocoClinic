@@ -3,6 +3,8 @@ package infrastructure
 import (
 	"context"
 	"fmt"
+	"sort"
+	"strings"
 	"sync"
 
 	"github.com/dksch/pococlinic/internal/features/auth/domain"
@@ -29,7 +31,7 @@ func (r *MemoryUserRepository) Create(ctx context.Context, user *domain.User) er
 	defer r.mu.Unlock()
 
 	if _, exists := r.emails[user.Email]; exists {
-		return fmt.Errorf("email %s already registered", user.Email)
+		return domain.ErrEmailTakenError(user.Email)
 	}
 
 	r.users[user.ID.String()] = user
@@ -72,7 +74,7 @@ func (r *MemoryUserRepository) GetByID(ctx context.Context, id string) (*domain.
 
 	user, exists := r.users[id]
 	if !exists {
-		return nil, fmt.Errorf("user not found")
+		return nil, domain.ErrUserNotFoundError
 	}
 
 	return user, nil
@@ -85,10 +87,82 @@ func (r *MemoryUserRepository) GetByEmail(ctx context.Context, email string) (*d
 
 	id, exists := r.emails[email]
 	if !exists {
-		return nil, fmt.Errorf("user not found")
+		return nil, domain.ErrUserNotFoundError
 	}
 
 	return r.users[id], nil
+}
+
+// FindByKey retrieves a user whose badge key matches the provided value.
+func (r *MemoryUserRepository) FindByKey(ctx context.Context, key string) (*domain.User, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	lookup := domain.KeyLookup(key)
+	for _, user := range r.users {
+		if user.KeyLookup != "" && user.KeyLookup == lookup {
+			if user.KeyCredential != nil && user.KeyCredential.Validate(key) {
+				return user, nil
+			}
+			return nil, domain.ErrInvalidCredentialsError
+		}
+	}
+
+	return nil, domain.ErrInvalidCredentialsError
+}
+
+// ListPaginated returns a paginated list of users with optional search.
+func (r *MemoryUserRepository) ListPaginated(ctx context.Context, page, pageSize int, search string) ([]*domain.User, int64, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	all := make([]*domain.User, 0, len(r.users))
+	for _, user := range r.users {
+		if matchesUserSearch(user, search) {
+			all = append(all, user)
+		}
+	}
+
+	sort.Slice(all, func(i, j int) bool {
+		return strings.ToLower(all[i].Name) < strings.ToLower(all[j].Name)
+	})
+
+	totalCount := int64(len(all))
+	start := (page - 1) * pageSize
+	if start >= len(all) {
+		return []*domain.User{}, totalCount, nil
+	}
+
+	end := start + pageSize
+	if end > len(all) {
+		end = len(all)
+	}
+
+	return all[start:end], totalCount, nil
+}
+
+// CountByRole returns how many users have the given role.
+func (r *MemoryUserRepository) CountByRole(ctx context.Context, role domain.Role) (int64, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	var count int64
+	for _, user := range r.users {
+		if user.Role == role {
+			count++
+		}
+	}
+	return count, nil
+}
+
+func matchesUserSearch(user *domain.User, search string) bool {
+	if search == "" {
+		return true
+	}
+	search = strings.ToLower(strings.TrimSpace(search))
+	return strings.Contains(strings.ToLower(user.Name), search) ||
+		strings.Contains(strings.ToLower(user.Email), search) ||
+		strings.Contains(strings.ToLower(string(user.Role)), search)
 }
 
 // MemorySessionRepository is a simple in-memory implementation of the session repository
@@ -123,8 +197,16 @@ func (r *MemorySessionRepository) Update(ctx context.Context, session *domain.Se
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	if _, exists := r.sessions[session.ID.String()]; !exists {
+	existing, exists := r.sessions[session.ID.String()]
+	if !exists {
 		return fmt.Errorf("session not found")
+	}
+
+	if existing.RefreshToken != "" && existing.RefreshToken != session.RefreshToken {
+		delete(r.tokens, existing.RefreshToken)
+	}
+	if session.RefreshToken != "" {
+		r.tokens[session.RefreshToken] = session.ID.String()
 	}
 
 	r.sessions[session.ID.String()] = session
@@ -144,6 +226,31 @@ func (r *MemorySessionRepository) Delete(ctx context.Context, id string) error {
 	delete(r.sessions, id)
 	if session.RefreshToken != "" {
 		delete(r.tokens, session.RefreshToken)
+	}
+	return nil
+}
+
+// DeleteByUserID removes all sessions for a user.
+func (r *MemorySessionRepository) DeleteByUserID(ctx context.Context, userID string) error {
+	return r.DeleteByUserIDExcept(ctx, userID, "")
+}
+
+// DeleteByUserIDExcept removes all sessions for a user except the given session ID.
+func (r *MemorySessionRepository) DeleteByUserIDExcept(ctx context.Context, userID, exceptSessionID string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	for id, session := range r.sessions {
+		if session.UserID.String() != userID {
+			continue
+		}
+		if exceptSessionID != "" && id == exceptSessionID {
+			continue
+		}
+		delete(r.sessions, id)
+		if session.RefreshToken != "" {
+			delete(r.tokens, session.RefreshToken)
+		}
 	}
 	return nil
 }
