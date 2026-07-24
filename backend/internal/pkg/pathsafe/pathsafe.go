@@ -64,6 +64,30 @@ func ValidateBackupFilename(name string) error {
 	return nil
 }
 
+// OpenBackupFile opens a validated backup bundle under rootDir.
+func OpenBackupFile(rootDir, filename string) (*os.File, error) {
+	if err := ValidateBackupFilename(filename); err != nil {
+		return nil, err
+	}
+	path, err := JoinRoot(rootDir, filename)
+	if err != nil {
+		return nil, err
+	}
+	return os.Open(path)
+}
+
+// StatBackupFile returns metadata for a validated backup bundle under rootDir.
+func StatBackupFile(rootDir, filename string) (os.FileInfo, error) {
+	if err := ValidateBackupFilename(filename); err != nil {
+		return nil, err
+	}
+	path, err := JoinRoot(rootDir, filename)
+	if err != nil {
+		return nil, err
+	}
+	return os.Stat(path)
+}
+
 // ValidateArchiveEntry rejects tar paths that could escape on extract (zip slip).
 func ValidateArchiveEntry(name string) error {
 	name = strings.TrimSpace(name)

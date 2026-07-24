@@ -73,6 +73,52 @@ func TestValidateArchiveEntry(t *testing.T) {
 	}
 }
 
+func TestOpenBackupFileRejectsTraversal(t *testing.T) {
+	root := t.TempDir()
+	_, err := pathsafe.OpenBackupFile(root, "../pococlinic-backup-evil.tar.gz")
+	if err == nil {
+		t.Fatal("expected traversal filename to be rejected")
+	}
+}
+
+func TestOpenBackupFileOpensValidBundle(t *testing.T) {
+	root := t.TempDir()
+	filename := "pococlinic-backup-20260101-120000.tar.gz"
+	path, err := pathsafe.JoinRoot(root, filename)
+	if err != nil {
+		t.Fatalf("JoinRoot: %v", err)
+	}
+	if err := os.WriteFile(path, []byte("test"), 0o644); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+
+	file, err := pathsafe.OpenBackupFile(root, filename)
+	if err != nil {
+		t.Fatalf("OpenBackupFile: %v", err)
+	}
+	_ = file.Close()
+}
+
+func TestStatBackupFile(t *testing.T) {
+	root := t.TempDir()
+	filename := "pococlinic-backup-20260101-120000.tar.gz"
+	path, err := pathsafe.JoinRoot(root, filename)
+	if err != nil {
+		t.Fatalf("JoinRoot: %v", err)
+	}
+	if err := os.WriteFile(path, []byte("test"), 0o644); err != nil {
+		t.Fatalf("WriteFile: %v", err)
+	}
+
+	info, err := pathsafe.StatBackupFile(root, filename)
+	if err != nil {
+		t.Fatalf("StatBackupFile: %v", err)
+	}
+	if info.Size() != 4 {
+		t.Fatalf("unexpected size: %d", info.Size())
+	}
+}
+
 func TestValidateRelativeKey(t *testing.T) {
 	if err := pathsafe.ValidateRelativeKey("patient-id/doc-id"); err != nil {
 		t.Fatalf("expected valid key: %v", err)

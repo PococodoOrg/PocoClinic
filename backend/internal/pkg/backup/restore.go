@@ -36,7 +36,7 @@ func Open(rootDir, filename string) (*Archive, error) {
 		return nil, err
 	}
 
-	files, err := readArchiveFiles(path)
+	files, err := readArchiveFiles(rootDir, filename)
 	if err != nil {
 		return nil, err
 	}
@@ -186,19 +186,19 @@ func List(dir string) ([]Info, error) {
 			Filename: name,
 			Path:     path,
 		}
-		if manifest, err := readManifestFromArchive(path); err == nil {
+		if manifest, err := readManifestFromArchive(dir, name); err == nil {
 			info.CreatedAt = manifest.CreatedAt
 			info.Manifest = manifest
 		} else {
-			info.CreatedAt = fileModTime(path)
+			info.CreatedAt = fileModTime(dir, name)
 		}
 		result = append(result, info)
 	}
 	return result, nil
 }
 
-func readArchiveFiles(path string) (map[string][]byte, error) {
-	file, err := os.Open(path)
+func readArchiveFiles(rootDir, filename string) (map[string][]byte, error) {
+	file, err := pathsafe.OpenBackupFile(rootDir, filename)
 	if err != nil {
 		return nil, err
 	}
