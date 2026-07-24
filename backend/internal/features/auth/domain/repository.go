@@ -11,6 +11,9 @@ type UserRepository interface {
 	Delete(ctx context.Context, id string) error
 	GetByID(ctx context.Context, id string) (*User, error)
 	GetByEmail(ctx context.Context, email string) (*User, error)
+	FindByKey(ctx context.Context, key string) (*User, error)
+	ListPaginated(ctx context.Context, page, pageSize int, search string) ([]*User, int64, error)
+	CountByRole(ctx context.Context, role Role) (int64, error)
 }
 
 // SessionRepository defines the interface for session persistence
@@ -21,6 +24,8 @@ type SessionRepository interface {
 	GetByID(ctx context.Context, id string) (*Session, error)
 	GetByRefreshToken(ctx context.Context, token string) (*Session, error)
 	DeleteExpired(ctx context.Context) error
+	DeleteByUserID(ctx context.Context, userID string) error
+	DeleteByUserIDExcept(ctx context.Context, userID, exceptSessionID string) error
 }
 
 // CreateUserRepository defines the minimal interface for user creation
@@ -28,9 +33,11 @@ type CreateUserRepository interface {
 	Create(ctx context.Context, user *User) error
 }
 
-// ValidateUserRepository defines the minimal interface for user validation
-type ValidateUserRepository interface {
+// LoginUserRepository defines persistence needed during login.
+type LoginUserRepository interface {
 	GetByEmail(ctx context.Context, email string) (*User, error)
+	FindByKey(ctx context.Context, key string) (*User, error)
+	Update(ctx context.Context, user *User) error
 }
 
 // CreateSessionRepository defines the minimal interface for session creation
@@ -42,4 +49,9 @@ type CreateSessionRepository interface {
 type RefreshSessionRepository interface {
 	GetByRefreshToken(ctx context.Context, token string) (*Session, error)
 	Update(ctx context.Context, session *Session) error
+}
+
+// RefreshUserRepository defines user lookup needed during token refresh
+type RefreshUserRepository interface {
+	GetByID(ctx context.Context, id string) (*User, error)
 }

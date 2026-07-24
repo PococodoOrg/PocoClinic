@@ -32,6 +32,9 @@ type User struct {
 	FailedAttempts int         `json:"-"`
 	LockedUntil    *time.Time  `json:"-"`
 	LastLogin      *time.Time  `json:"lastLogin,omitempty"`
+	MustChangePIN  bool        `json:"mustChangePin"`
+	IsActive       bool        `json:"isActive"`
+	KeyLookup      string      `json:"-"`
 	CreatedAt      time.Time   `json:"createdAt"`
 	UpdatedAt      time.Time   `json:"updatedAt"`
 }
@@ -44,14 +47,16 @@ func NewUser(email, name string, role Role) *User {
 		Email:     email,
 		Name:      name,
 		Role:      role,
+		IsActive:  true,
 		CreatedAt: now,
 		UpdatedAt: now,
 	}
 }
 
-// SetKeyCredential sets the user's key credential
-func (u *User) SetKeyCredential(cred *Credential) {
+// SetKeyCredential sets the user's key credential and lookup fingerprint.
+func (u *User) SetKeyCredential(cred *Credential, plaintextKey string) {
 	u.KeyCredential = cred
+	u.KeyLookup = KeyLookup(plaintextKey)
 	u.UpdatedAt = time.Now()
 }
 
@@ -67,6 +72,14 @@ func (u *User) ValidateCredentials(key, pin string) bool {
 		return false
 	}
 	return u.KeyCredential.Validate(key) && u.PINCredential.Validate(pin)
+}
+
+// ValidatePIN validates only the user's PIN.
+func (u *User) ValidatePIN(pin string) bool {
+	if u.PINCredential == nil {
+		return false
+	}
+	return u.PINCredential.Validate(pin)
 }
 
 // IsLocked checks if the user account is locked
@@ -91,6 +104,12 @@ func (u *User) RecordFailedAttempt() {
 func (u *User) ResetFailedAttempts() {
 	u.FailedAttempts = 0
 	u.LockedUntil = nil
+	u.UpdatedAt = time.Now()
+}
+
+// ClearMustChangePIN marks the user's PIN as personalized.
+func (u *User) ClearMustChangePIN() {
+	u.MustChangePIN = false
 	u.UpdatedAt = time.Now()
 }
 

@@ -65,11 +65,12 @@ func TestTokenGeneration(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, accessToken)
 	assert.NotEmpty(t, refreshToken)
-	assert.Equal(t, refreshToken, suite.defaultSession.RefreshToken)
+	assert.Equal(t, HashRefreshToken(refreshToken), suite.defaultSession.RefreshToken)
 
 	accessClaims, err := ValidateToken(accessToken, TokenTypeAccess, suite.defaultConfig.AccessTokenSecret)
 	assert.NoError(t, err)
 	assert.Equal(t, suite.defaultUser.ID.String(), accessClaims.UserID)
+	assert.Equal(t, suite.defaultSession.ID.String(), accessClaims.SessionID)
 	assert.Equal(t, suite.defaultUser.Role, accessClaims.Role)
 	assert.Equal(t, TokenTypeAccess, accessClaims.TokenType)
 

@@ -5,11 +5,40 @@ import (
 	"fmt"
 	"time"
 
+	auditdomain "github.com/dksch/pococlinic/internal/features/audit/domain"
 	"github.com/dksch/pococlinic/internal/features/auth/domain"
+	"github.com/google/uuid"
 )
 
-// LoginCommand represents the login command
-type LoginCommand struct {
+const (
+	LoginModeStaff = "staff"
+	LoginModeAdmin = "admin"
+)
+
+// LoginResponse represents a successful authentication response
+type LoginResponse struct {
+	User         *domain.User `json:"user"`
+	AccessToken  string       `json:"accessToken"`
+	RefreshToken string       `json:"-"`
+}
+
+type loginAttemptContext struct {
+	Mode      string
+	Email     string
+	IPAddress string
+	UserAgent string
+}
+
+// StaffLoginCommand authenticates via badge QR key + PIN (daily staff sign-in)
+type StaffLoginCommand struct {
+	Key       string `json:"key" binding:"required"`
+	PIN       string `json:"pin" binding:"required,len=4"`
+	UserAgent string `json:"userAgent"`
+	IPAddress string `json:"ipAddress"`
+}
+
+// AdminLoginCommand authenticates via email + key + PIN (bootstrap and administrator setup)
+type AdminLoginCommand struct {
 	Email     string `json:"email" binding:"required,email"`
 	Key       string `json:"key" binding:"required"`
 	PIN       string `json:"pin" binding:"required,len=4"`
@@ -17,81 +46,139 @@ type LoginCommand struct {
 	IPAddress string `json:"ipAddress"`
 }
 
-// LoginResponse represents the login response
-type LoginResponse struct {
-	User        *domain.User `json:"user"`
-	AccessToken string       `json:"accessToken"`
-}
-
-// LoginHandler handles user login
+// LoginHandler handles staff and administrator login flows
 type LoginHandler interface {
-	Handle(ctx context.Context, cmd LoginCommand) (*LoginResponse, error)
+	HandleStaff(ctx context.Context, cmd StaffLoginCommand) (*LoginResponse, error)
+	HandleAdmin(ctx context.Context, cmd AdminLoginCommand) (*LoginResponse, error)
 }
 
-// loginHandler implements LoginHandler
 type loginHandler struct {
-	userRepository    domain.ValidateUserRepository
+	userRepository    domain.LoginUserRepository
 	sessionRepository domain.CreateSessionRepository
 	tokenConfig       domain.TokenConfig
+	auditLogger       auditdomain.Logger
 }
 
 // NewLoginHandler creates a new handler for user login
 func NewLoginHandler(
-	userRepo domain.ValidateUserRepository,
+	userRepo domain.LoginUserRepository,
 	sessionRepo domain.CreateSessionRepository,
 	tokenConfig domain.TokenConfig,
+	auditLogger auditdomain.Logger,
 ) LoginHandler {
 	return &loginHandler{
 		userRepository:    userRepo,
 		sessionRepository: sessionRepo,
 		tokenConfig:       tokenConfig,
+		auditLogger:       auditLogger,
 	}
 }
 
-// Handle processes the login command
-func (h *loginHandler) Handle(ctx context.Context, cmd LoginCommand) (*LoginResponse, error) {
-	// Get user by email
+// HandleStaff processes badge + PIN login
+func (h *loginHandler) HandleStaff(ctx context.Context, cmd StaffLoginCommand) (*LoginResponse, error) {
+	user, err := h.userRepository.FindByKey(ctx, cmd.Key)
+	if err != nil {
+		h.logAttempt(nil, loginAttemptContext{
+			Mode: LoginModeStaff, IPAddress: cmd.IPAddress, UserAgent: cmd.UserAgent,
+		}, auditdomain.EventLoginFailure, false, map[string]string{"reason": "invalid_credentials"})
+		return nil, domain.ErrInvalidCredentialsError
+	}
+
+	return h.completeLogin(ctx, user, cmd.Key, cmd.PIN, loginAttemptContext{
+		Mode: LoginModeStaff, IPAddress: cmd.IPAddress, UserAgent: cmd.UserAgent,
+	})
+}
+
+// HandleAdmin processes email + key + PIN login for initial setup and break-glass access
+func (h *loginHandler) HandleAdmin(ctx context.Context, cmd AdminLoginCommand) (*LoginResponse, error) {
 	user, err := h.userRepository.GetByEmail(ctx, cmd.Email)
 	if err != nil {
-		return nil, fmt.Errorf("invalid credentials")
+		h.logAttempt(nil, loginAttemptContext{
+			Mode: LoginModeAdmin, Email: cmd.Email, IPAddress: cmd.IPAddress, UserAgent: cmd.UserAgent,
+		}, auditdomain.EventLoginFailure, false, map[string]string{"reason": "invalid_credentials"})
+		return nil, domain.ErrInvalidCredentialsError
 	}
 
-	// Check if account is locked
+	if user.Role != domain.RoleAdmin {
+		h.logAttempt(&user.ID, loginAttemptContext{
+			Mode: LoginModeAdmin, Email: cmd.Email, IPAddress: cmd.IPAddress, UserAgent: cmd.UserAgent,
+		}, auditdomain.EventLoginFailure, false, map[string]string{"reason": "invalid_credentials"})
+		return nil, domain.ErrInvalidCredentialsError
+	}
+
+	return h.completeLogin(ctx, user, cmd.Key, cmd.PIN, loginAttemptContext{
+		Mode: LoginModeAdmin, Email: cmd.Email, IPAddress: cmd.IPAddress, UserAgent: cmd.UserAgent,
+	})
+}
+
+func (h *loginHandler) completeLogin(
+	ctx context.Context,
+	user *domain.User,
+	key, pin string,
+	attempt loginAttemptContext,
+) (*LoginResponse, error) {
+	if !user.IsActive {
+		h.logAttempt(&user.ID, attempt, auditdomain.EventLoginFailure, false, map[string]string{"reason": "account_inactive"})
+		return nil, domain.ErrAccountInactiveError
+	}
+
 	if user.IsLocked() {
-		return nil, fmt.Errorf("account is locked")
+		h.logAttempt(&user.ID, attempt, auditdomain.EventLoginLocked, false, map[string]string{"reason": "account_locked"})
+		return nil, domain.ErrAccountLockedError
 	}
 
-	// Validate credentials
-	if !user.ValidateCredentials(cmd.Key, cmd.PIN) {
+	if !user.ValidateCredentials(key, pin) {
 		user.RecordFailedAttempt()
-		return nil, fmt.Errorf("invalid credentials")
+		_ = h.userRepository.Update(ctx, user)
+		h.logAttempt(&user.ID, attempt, auditdomain.EventLoginFailure, false, map[string]string{"reason": "invalid_credentials"})
+		return nil, domain.ErrInvalidCredentialsError
 	}
 
-	// Create new session
 	session := domain.NewSession(
 		user.ID,
-		cmd.UserAgent,
-		cmd.IPAddress,
-		time.Now().Add(24*time.Hour),
+		attempt.UserAgent,
+		attempt.IPAddress,
+		time.Now().Add(h.tokenConfig.SessionInactivityTTL),
 	)
 
-	// Generate tokens
-	accessToken, _, err := session.GenerateTokens(user, h.tokenConfig)
+	accessToken, refreshToken, err := session.GenerateTokens(user, h.tokenConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate tokens: %w", err)
 	}
 
-	// Save session
-	err = h.sessionRepository.Create(ctx, session)
-	if err != nil {
+	if err := h.sessionRepository.Create(ctx, session); err != nil {
 		return nil, fmt.Errorf("failed to create session: %w", err)
 	}
 
-	// Record successful login
 	user.RecordLogin()
+	_ = h.userRepository.Update(ctx, user)
+	h.logAttempt(&user.ID, attempt, auditdomain.EventLoginSuccess, true, map[string]string{"mode": attempt.Mode})
 
 	return &LoginResponse{
-		User:        user,
-		AccessToken: accessToken,
+		User:         user,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}, nil
+}
+
+func (h *loginHandler) logAttempt(userID *uuid.UUID, attempt loginAttemptContext, eventType string, success bool, details map[string]string) {
+	if h.auditLogger == nil {
+		return
+	}
+	if details == nil {
+		details = map[string]string{}
+	}
+	details["loginMode"] = attempt.Mode
+	if attempt.Email != "" {
+		details["email"] = attempt.Email
+	}
+
+	h.auditLogger.Log(context.Background(), auditdomain.Event{
+		EventType: eventType,
+		UserID:    userID,
+		IPAddress: attempt.IPAddress,
+		UserAgent: attempt.UserAgent,
+		Details:   details,
+		Success:   success,
+	})
 }

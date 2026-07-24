@@ -79,10 +79,23 @@ func GenerateKey() (string, *Credential, error) {
 	return base64.URLEncoding.EncodeToString(key), cred, nil
 }
 
+// ValidatePINFormat checks that a PIN is exactly four digits.
+func ValidatePINFormat(pin string) error {
+	if len(pin) != 4 {
+		return fmt.Errorf("PIN must be exactly 4 digits")
+	}
+	for _, char := range pin {
+		if char < '0' || char > '9' {
+			return fmt.Errorf("PIN must contain only digits")
+		}
+	}
+	return nil
+}
+
 // GeneratePINCredential generates credentials for a PIN
 func GeneratePINCredential(pin string) (*Credential, error) {
-	if len(pin) != 4 {
-		return nil, fmt.Errorf("PIN must be exactly 4 digits")
+	if err := ValidatePINFormat(pin); err != nil {
+		return nil, err
 	}
 
 	return NewCredential(pin)
