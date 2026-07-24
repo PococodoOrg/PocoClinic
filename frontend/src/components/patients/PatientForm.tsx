@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useForm } from '@mantine/form';
 import {
   TextInput,
@@ -11,12 +11,22 @@ import {
   NumberInput,
   SegmentedControl,
   Text,
+  Loader,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
-import { Patient, PatientFormData, Gender } from '../../types/patient';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Patient,
+  PatientFormData,
+  Gender,
+  PatientFieldRequirements,
+  DEFAULT_PATIENT_FIELD_REQUIREMENTS,
+} from '../../types/patient';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
 import { ValidationError } from '../../api/patients';
+import { fetchPatientFieldRequirements } from '../../api/patients';
+import { getErrorMessage } from '../../utils/apiError';
 
 interface PatientFormProps {
   initialValues?: Patient;
@@ -26,16 +36,112 @@ interface PatientFormProps {
 
 type MeasurementUnit = 'metric' | 'standard';
 
-// Conversion functions
 const inchesToCm = (inches: number) => inches * 2.54;
-const cmToInches = (cm: number) => cm / 2.54;
 const lbsToKg = (lbs: number) => lbs * 0.453592;
-const kgToLbs = (kg: number) => kg / 0.453592;
+
+function buildValidators(
+  requirements: PatientFieldRequirements,
+  heightUnit: MeasurementUnit,
+  weightUnit: MeasurementUnit,
+) {
+  const requiredText = (required: boolean, label: string) => (value?: string | null) => {
+    if (!required) {
+      return null;
+    }
+    if (!value || value.trim().length === 0) {
+      return `${label} is required`;
+    }
+    return null;
+  };
+
+  return {
+    firstName: requiredText(requirements.firstName, 'First name'),
+    lastName: requiredText(requirements.lastName, 'Last name'),
+    middleName: requiredText(requirements.middleName, 'Middle name'),
+    dateOfBirth: (value: Date | null) => {
+      if (!requirements.dateOfBirth) {
+        return null;
+      }
+      return !value ? 'Date of birth is required' : null;
+    },
+    gender: (value: Gender | null | undefined) => {
+      if (!requirements.gender) {
+        return null;
+      }
+      return !value ? 'Gender is required' : null;
+    },
+    email: (value?: string) => {
+      if (requirements.email && (!value || value.trim().length === 0)) {
+        return 'Email is required';
+      }
+      if (value && value.trim().length > 0 && !/^\S+@\S+\.\S+$/.test(value)) {
+        return 'Invalid email format';
+      }
+      return null;
+    },
+    phoneNumber: (value?: string) => {
+      if (requirements.phoneNumber && (!value || value.trim().length === 0)) {
+        return 'Phone number is required';
+      }
+      if (value && value.trim().length > 0 && !/^\+?[\d\s-()]+$/.test(value)) {
+        return 'Invalid phone number format';
+      }
+      return null;
+    },
+    street: requiredText(requirements.addressStreet, 'Street address'),
+    city: requiredText(requirements.addressCity, 'City'),
+    state: requiredText(requirements.addressState, 'State'),
+    zipCode: (value?: string) => {
+      if (requirements.addressPostalCode && (!value || value.trim().length === 0)) {
+        return 'ZIP code is required';
+      }
+      if (value && value.trim().length > 0 && !/^\d{5}(-\d{4})?$/.test(value)) {
+        return 'Invalid ZIP code format (e.g., 12345 or 12345-6789)';
+      }
+      return null;
+    },
+    height: (value?: number | null) => {
+      if (requirements.height && (value === null || value === undefined)) {
+        return 'Height is required';
+      }
+      if (value !== null && value !== undefined) {
+        const cmValue = heightUnit === 'standard' ? inchesToCm(value) : value;
+        if (cmValue <= 0 || cmValue > 300) {
+          return 'Invalid height';
+        }
+      }
+      return null;
+    },
+    weight: (value?: number | null) => {
+      if (requirements.weight && (value === null || value === undefined)) {
+        return 'Weight is required';
+      }
+      if (value !== null && value !== undefined) {
+        const kgValue = weightUnit === 'standard' ? lbsToKg(value) : value;
+        if (kgValue <= 0 || kgValue > 500) {
+          return 'Invalid weight';
+        }
+      }
+      return null;
+    },
+  };
+}
 
 export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormProps) {
   const navigate = useNavigate();
   const [heightUnit, setHeightUnit] = useState<MeasurementUnit>('metric');
   const [weightUnit, setWeightUnit] = useState<MeasurementUnit>('metric');
+
+  const { data: requirements = DEFAULT_PATIENT_FIELD_REQUIREMENTS, isLoading: requirementsLoading } = useQuery({
+    queryKey: ['patient-field-requirements'],
+    queryFn: fetchPatientFieldRequirements,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const validators = useMemo(
+    () => buildValidators(requirements, heightUnit, weightUnit),
+    [requirements, heightUnit, weightUnit],
+  );
 
   const form = useForm<PatientFormData>({
     initialValues: initialValues ? {
@@ -52,6 +158,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
     } : {
       firstName: '',
       lastName: '',
+      middleName: '',
       dateOfBirth: null,
       gender: 'unknown' as Gender,
       email: '',
@@ -64,64 +171,25 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
       height: null,
       weight: null,
     },
-
-    validate: {
-      firstName: (value) => (!value || value.trim().length === 0 ? 'First name is required' : null),
-      lastName: (value) => (!value || value.trim().length === 0 ? 'Last name is required' : null),
-      dateOfBirth: (value) => (!value ? 'Date of birth is required' : null),
-      gender: (value) => (!value ? 'Gender is required' : null),
-      email: (value) => {
-        if (!value || value.trim().length === 0) return 'Email is required';
-        if (!/^\S+@\S+\.\S+$/.test(value)) return 'Invalid email format';
-        return null;
-      },
-      phoneNumber: (value) => {
-        if (!value || value.trim().length === 0) return 'Phone number is required';
-        if (!/^\+?[\d\s-()]+$/.test(value)) return 'Invalid phone number format';
-        return null;
-      },
-      zipCode: (value?: string) => {
-        if (!value) return null;
-        if (!/^\d{5}(-\d{4})?$/.test(value)) return 'Invalid ZIP code format (e.g., 12345 or 12345-6789)';
-        return null;
-      },
-      height: (value?: number | null) => {
-        if (value !== null && value !== undefined) {
-          const cmValue = heightUnit === 'standard' ? inchesToCm(value) : value;
-          if (cmValue <= 0 || cmValue > 300) return 'Invalid height';
-        }
-        return null;
-      },
-      weight: (value?: number | null) => {
-        if (value !== null && value !== undefined) {
-          const kgValue = weightUnit === 'standard' ? lbsToKg(value) : value;
-          if (kgValue <= 0 || kgValue > 500) return 'Invalid weight';
-        }
-        return null;
-      },
-    },
+    validate: validators,
   });
 
   const handleSubmit = async (values: PatientFormData) => {
     try {
-      // Convert measurements to metric before submitting
       const submitValues: PatientFormData = {
         ...values,
-        phoneNumber: values.phoneNumber.trim(), // Ensure phoneNumber is trimmed
-        // Structure address fields into an Address object
+        phoneNumber: values.phoneNumber?.trim() ?? '',
         address: values.street?.trim() || values.city?.trim() || values.state?.trim() || values.zipCode?.trim() ? {
           street: values.street?.trim() || '',
           city: values.city?.trim() || '',
           state: values.state?.trim() || '',
           postalCode: values.zipCode?.trim() || '',
-          country: 'US' // Default to US for now
+          country: 'US',
         } : undefined,
-        // Remove individual address fields
         street: undefined,
         city: undefined,
         state: undefined,
         zipCode: undefined,
-        // Convert measurements to metric
         height: values.height ? (heightUnit === 'standard' ? inchesToCm(values.height) : values.height) : null,
         weight: values.weight ? (weightUnit === 'standard' ? lbsToKg(values.weight) : values.weight) : null,
       };
@@ -138,12 +206,21 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
       } else {
         notifications.show({
           title: 'Error',
-          message: error instanceof Error ? error.message : 'Failed to save patient',
-          color: 'red'
+          message: getErrorMessage(error, 'Failed to save patient'),
+          color: 'red',
         });
       }
     }
   };
+
+  if (requirementsLoading) {
+    return (
+      <Group justify="center" py="xl">
+        <Loader size="sm" />
+        <Text size="sm" c="dimmed">Loading form settings…</Text>
+      </Group>
+    );
+  }
 
   return (
     <Box component="form" onSubmit={form.onSubmit(handleSubmit)}>
@@ -151,7 +228,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
         <Grid>
           <Grid.Col span={6}>
             <TextInput
-              required
+              required={requirements.firstName}
               label="First Name"
               placeholder="Enter first name"
               {...form.getInputProps('firstName')}
@@ -159,7 +236,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
           </Grid.Col>
           <Grid.Col span={6}>
             <TextInput
-              required
+              required={requirements.lastName}
               label="Last Name"
               placeholder="Enter last name"
               {...form.getInputProps('lastName')}
@@ -167,10 +244,17 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
           </Grid.Col>
         </Grid>
 
+        <TextInput
+          required={requirements.middleName}
+          label="Middle Name"
+          placeholder="Enter middle name"
+          {...form.getInputProps('middleName')}
+        />
+
         <Grid>
           <Grid.Col span={6}>
             <DateInput
-              required
+              required={requirements.dateOfBirth}
               label="Date of Birth"
               placeholder="Select date"
               maxDate={new Date()}
@@ -179,7 +263,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
           </Grid.Col>
           <Grid.Col span={6}>
             <Select
-              required
+              required={requirements.gender}
               label="Gender"
               placeholder="Select gender"
               data={[
@@ -196,7 +280,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
         <Grid>
           <Grid.Col span={6}>
             <TextInput
-              required
+              required={requirements.email}
               label="Email"
               placeholder="Enter email"
               type="email"
@@ -205,7 +289,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
           </Grid.Col>
           <Grid.Col span={6}>
             <TextInput
-              required
+              required={requirements.phoneNumber}
               label="Phone Number"
               placeholder="Enter phone number"
               {...form.getInputProps('phoneNumber')}
@@ -214,6 +298,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
         </Grid>
 
         <TextInput
+          required={requirements.addressStreet}
           label="Address"
           placeholder="Enter street address"
           {...form.getInputProps('street')}
@@ -222,6 +307,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
         <Grid>
           <Grid.Col span={4}>
             <TextInput
+              required={requirements.addressCity}
               label="City"
               placeholder="Enter city"
               {...form.getInputProps('city')}
@@ -229,6 +315,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
           </Grid.Col>
           <Grid.Col span={4}>
             <TextInput
+              required={requirements.addressState}
               label="State"
               placeholder="Enter state"
               {...form.getInputProps('state')}
@@ -236,6 +323,7 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
           </Grid.Col>
           <Grid.Col span={4}>
             <TextInput
+              required={requirements.addressPostalCode}
               label="ZIP Code"
               placeholder="Enter ZIP code"
               {...form.getInputProps('zipCode')}
@@ -247,7 +335,9 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
           <Grid.Col span={6}>
             <Stack gap="xs">
               <Group justify="space-between">
-                <Text size="sm" fw={500}>Height</Text>
+                <Text size="sm" fw={500}>
+                  Height{requirements.height ? ' *' : ''}
+                </Text>
                 <SegmentedControl
                   size="xs"
                   value={heightUnit}
@@ -272,7 +362,9 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
           <Grid.Col span={6}>
             <Stack gap="xs">
               <Group justify="space-between">
-                <Text size="sm" fw={500}>Weight</Text>
+                <Text size="sm" fw={500}>
+                  Weight{requirements.weight ? ' *' : ''}
+                </Text>
                 <SegmentedControl
                   size="xs"
                   value={weightUnit}
@@ -304,4 +396,4 @@ export function PatientForm({ initialValues, onSubmit, isLoading }: PatientFormP
       </Stack>
     </Box>
   );
-} 
+}

@@ -1,0 +1,25 @@
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .usb-rotation-panel,
+  .usb-rotation-panel *,
+  .backup-sticker,
+  .backup-sticker * {
+    visibility: visible;
+  }
+
+  .usb-rotation-panel,
+  .backup-sticker {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  .usb-label-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

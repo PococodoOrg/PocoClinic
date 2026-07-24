@@ -5,6 +5,7 @@ import { PatientFormData } from '../types/patient';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { notifications } from '@mantine/notifications';
 import { useNavigate } from 'react-router-dom';
+import { getErrorMessage } from '../utils/apiError';
 
 export default function CreatePatient() {
   const navigate = useNavigate();
@@ -22,10 +23,10 @@ export default function CreatePatient() {
       });
       navigate('/patients');
     },
-    onError: (error: Error) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: 'Error',
-        message: error.message || 'Failed to create patient',
+        message: getErrorMessage(error, 'Failed to create patient'),
         color: 'red'
       });
     }
