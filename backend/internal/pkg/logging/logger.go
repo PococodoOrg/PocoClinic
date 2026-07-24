@@ -45,12 +45,17 @@ func (l *Logger) WithContext(ctx context.Context) *Logger {
 	return l
 }
 
-// Error logs an error with additional context
+// Error logs an error with additional context. Error text is sanitized for log injection.
 func (l *Logger) Error(msg string, err error, args ...any) {
 	if err != nil {
-		newArgs := append([]any{"error", err}, args...)
-		l.Logger.Error(msg, newArgs...)
+		newArgs := append([]any{"error", SanitizeString(err.Error())}, args...)
+		l.Logger.Error(sanitizeLogMessage(msg), newArgs...)
 	}
+}
+
+// Info logs an informational message. String values are sanitized for log injection.
+func (l *Logger) Info(msg string, args ...any) {
+	l.Logger.Info(sanitizeLogMessage(msg), sanitizeLogArgs(args...)...)
 }
 
 // RequestLogger creates a middleware for logging HTTP requests
@@ -65,14 +70,14 @@ func (l *Logger) RequestLogger() func(next http.Handler) http.Handler {
 			// Process request
 			next.ServeHTTP(rw, r)
 
-			// Log request details
+			// Log request details (sanitize user-controlled header/path values).
 			l.Info("HTTP Request",
 				"method", r.Method,
-				"path", r.URL.Path,
+				"path", SanitizeString(r.URL.Path),
 				"status", rw.status,
 				"duration", time.Since(start),
-				"ip", r.RemoteAddr,
-				"user_agent", r.UserAgent(),
+				"ip", SanitizeString(r.RemoteAddr),
+				"user_agent", SanitizeString(r.UserAgent()),
 			)
 		})
 	}

@@ -74,11 +74,11 @@ func main() {
 	}
 	defer pool.Close()
 
-	logger.Info("Restoring database from backup", "file", target)
+	logger.Info("Restoring database from backup", "file", filepath.Base(target))
 	if err := backup.Restore(ctx, pool, target, cfg.Storage.DocumentsDir); err != nil {
 		logger.Error("Restore failed", err)
 		os.Exit(1)
 	}
 
-	logger.Info("Restore completed successfully", "file", target)
+	logger.Info("Restore completed successfully", "file", filepath.Base(target))
 }
