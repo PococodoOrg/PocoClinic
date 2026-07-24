@@ -19,9 +19,24 @@ export type BinderPack = {
 
 export const binderPacks: BinderPack[] = [
   {
+    id: 'installer',
+    name: 'Installer binder',
+    deviceLabel: 'Deploy technician (install day)',
+    description:
+      'Network/Wi‑Fi, tarball install, hardening, LAN TLS, and handoff checklist. Archive after sign-off — clinic keeps the site ops binder.',
+    pages: [
+      { id: 'inst-cover', title: 'Cover & print order', file: '../docs/binders/installer/README.md', section: 'Cover' },
+      { id: 'inst-i1', title: 'Prerequisites', file: '../docs/binders/installer/I1-prerequisites.md', section: 'I — Install' },
+      { id: 'inst-i2', title: 'Network & Wi‑Fi', file: '../docs/binders/installer/I2-network-and-wifi.md', section: 'I — Install' },
+      { id: 'inst-i3', title: 'Server install', file: '../docs/binders/installer/I3-server-install.md', section: 'I — Install' },
+      { id: 'inst-i4', title: 'Hardening & TLS', file: '../docs/binders/installer/I4-hardening-and-tls.md', section: 'I — Install' },
+      { id: 'inst-i5', title: 'Handoff checklist', file: '../docs/binders/installer/I5-handoff-checklist.md', section: 'I — Install' },
+    ],
+  },
+  {
     id: 'clinic-ops',
-    name: 'Clinic ops binder',
-    deviceLabel: 'All clinics (device-independent)',
+    name: 'Site operations binder',
+    deviceLabel: 'Clinic admin desk (at the site)',
     description:
       'Emergency paper care, weekly/monthly checks, and staff/admin how-to. Store closed; open when needed.',
     pages: [
@@ -34,6 +49,7 @@ export const binderPacks: BinderPack[] = [
       { id: 'clinic-b3', title: 'Security audit checklist', file: '../docs/ops/security-audit-checklist.md', section: 'B — Weekly / monthly' },
       { id: 'clinic-b4', title: 'Backup & restore runbook', file: '../docs/ops/administrator-runbook.md', section: 'B — Weekly / monthly' },
       { id: 'clinic-b5', title: 'Physical security', file: '../docs/ops/physical-security-binder.md', section: 'B — Weekly / monthly' },
+      { id: 'clinic-b6', title: 'Network & Wi‑Fi at the site', file: '../docs/ops/binder/B6-network-and-wifi-at-site.md', section: 'B — Weekly / monthly' },
       { id: 'clinic-c1', title: 'What is PocoClinic', file: '../docs/ops/binder/C1-what-is-pococlinic.md', section: 'C — System help' },
       { id: 'clinic-c2', title: 'Staff how-to', file: '../docs/ops/binder/C2-staff-how-to.md', section: 'C — System help' },
       { id: 'clinic-c3', title: 'Administrator how-to', file: '../docs/ops/binder/C3-administrator-how-to.md', section: 'C — System help' },
@@ -44,7 +60,7 @@ export const binderPacks: BinderPack[] = [
     name: 'Raspberry Pi device binder',
     deviceLabel: 'Raspberry Pi server',
     description:
-      'Pi-only emergency steps, periodic checks, and device help. Print in addition to the clinic ops binder.',
+      'Pi-only emergency steps, periodic checks, and device help. Print in addition to the site operations binder.',
     pages: [
       { id: 'pi-cover', title: 'Cover & print order', file: '../devices/raspberry-pi/binder/README.md', section: 'Cover' },
       { id: 'pi-a1', title: 'Pi will not start / no network', file: '../devices/raspberry-pi/binder/A1-pi-emergency.md', section: 'A — Emergency' },

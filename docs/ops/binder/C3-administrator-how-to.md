@@ -3,7 +3,7 @@
 **Ops binder · Section C (System help)** · Device-independent.  
 Scheduled checks: **Section B**. Outages: **Section A**. Secrets: **safe vault**.
 
-**Admin login:** `/login/admin` · **URL:** `http://________________________`
+**Admin login:** `/login/admin` · **URL:** `https://________________________`
 
 ---
 

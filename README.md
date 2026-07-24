@@ -19,8 +19,8 @@ Full intent: [docs/VISION.md](./docs/VISION.md) · Security model: [docs/NETWORK
 |------------|------------|
 | **Understand the product** (evaluate for a clinic) | [Documentation guide](./docs/guide/README.md) → [What is PocoClinic?](./docs/guide/evaluating-pococlinic.md) |
 | **See why we chose X** (architecture) | [**adr/**](./adr/README.md) — especially [0014](./adr/0014-private-lan-only-deployment.md) (scope) and [0015](./adr/0015-clinic-database-engine.md) (database) |
-| **Run / administer a clinic** | [For administrators](./docs/guide/for-administrators/README.md) · [Ops hub](./docs/ops/README.md) · [Ops binder](./docs/ops/binder/README.md) |
-| **Set up a Raspberry Pi server** | [devices/raspberry-pi](./devices/raspberry-pi/README.md) · [clinic/server/](./clinic/server/README.md) (tarball install) |
+| **Run / administer a clinic** | [For administrators](./docs/guide/for-administrators/README.md) · [Ops hub](./docs/ops/README.md) · [Binders](./docs/binders/README.md) |
+| **Install or replace a server** | [Installer binder](./docs/binders/installer/README.md) · [clinic/server/](./clinic/server/README.md) · [Raspberry Pi](./devices/raspberry-pi/README.md) |
 | **Print paper binders** | [binder-printer](./binder-printer/README.md) · [`clinic/workstation/`](./clinic/workstation/README.md) — not part of the EMR |
 | **Packaged clinic server ops** | [`clinic/server/`](./clinic/server/README.md) — install, cron, env wrappers (shipped in tarball) |
 | **Develop or contribute code** | [Getting started](#getting-started) · [AGENTS.md](./AGENTS.md) · [FEATURES.md](./docs/FEATURES.md) |

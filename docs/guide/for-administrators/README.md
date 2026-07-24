@@ -23,16 +23,17 @@ Administrators set up the server, manage staff and badges, protect data with USB
 | [Backup & recovery](./backup-and-recovery.md) | USB rotation, verify, restore, drills |
 | [Troubleshooting](./troubleshooting.md) | Common problems |
 
-## Printable binder
+## Printable binders
 
-**Assemble:**
+**Hub:** [All binders](../../binders/README.md) · **Print:** [binder-printer](../../../binder-printer/README.md) · [`clinic/workstation/`](../../../clinic/workstation/README.md) · repo-root `print-binder.bat`
 
-1. [Clinic ops binder](../../ops/binder/README.md) — emergency · weekly/monthly · system help  
-2. If the server is a Pi: [Pi device binder](../../../devices/raspberry-pi/binder/README.md)  
-3. [Safe vault](../../ops/safe-credentials-vault.md) — blank → fill → lock in safe  
-
-**Print helper (not the EMR):** [binder-printer](../../../binder-printer/README.md) · [`clinic/workstation/`](../../../clinic/workstation/README.md) · repo-root `print-binder.bat` (forwarder).
+| Binder | When |
+|--------|------|
+| [**Installer**](../../binders/installer/README.md) | Deploy tech — install through handoff (I1–I5) |
+| [**Site operations**](../../ops/binder/README.md) | Clinic desk — emergency · weekly/monthly · system help |
+| [**Pi device**](../../../devices/raspberry-pi/binder/README.md) | Pi cabinet (if Pi server) |
+| [**Safe vault**](../../ops/safe-credentials-vault.md) | Safe only — blank → fill → lock |
 
 ## Emergency contacts
 
-Fill in **Help → Clinic emergency contacts** in the EMR (stored locally in the browser). Also maintain a paper copy in the ops binder.
+Fill in **Help → Clinic emergency contacts** in the EMR (stored locally in the browser). Also maintain a paper copy in the **site operations binder** (Section A).

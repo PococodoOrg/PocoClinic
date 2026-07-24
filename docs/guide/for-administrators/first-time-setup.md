@@ -81,16 +81,22 @@ Secrets must not stay on the server forever. Complete once at setup:
 1. Print the blank [Safe vault credentials sheet](../../ops/safe-credentials-vault.md) (or Help → **Safe vault credentials** → Print)
 2. Handwrite admin email/key/PIN, `JWT_*` secrets, `DOCUMENT_ENCRYPTION_KEY`, and `DATABASE_URL`
 3. Add emergency contacts and safe key holders; sign with a witness
-4. Place the filled sheet in the ops binder and **lock the binder in the safe**
+4. Place the filled sheet in the **safe** — not loose in a desk binder
 5. Delete `data/bootstrap-admin-once.txt` and any digital copies of the filled values
 
-## 6b. Assemble the ops binder
+## 6b. Assemble binders
 
-Print packs with [`print-binder.bat`](../../../print-binder.bat) (forwards to [`clinic/workstation/`](../../../clinic/workstation/README.md)) or [binder-printer](../../../binder-printer/README.md):
+Print with [`print-binder.bat`](../../../print-binder.bat) (forwards to [`clinic/workstation/`](../../../clinic/workstation/README.md)) or [binder-printer](../../../binder-printer/README.md). See the [binders hub](../../binders/README.md).
 
-- **Clinic ops** — A emergency · B weekly/monthly · C system help ([docs/ops/binder](../../ops/binder/README.md))
-- **Raspberry Pi** (if used) — device binder ([devices/raspberry-pi/binder](../../../devices/raspberry-pi/binder/README.md))
-- **Safe vault** — blank template → fill → lock → delete digital copies
+**Installer (deploy tech):**
+
+- [**Installer binder**](../../binders/installer/README.md) — I1 prerequisites through I5 handoff (network, install, TLS)
+- [**Raspberry Pi device binder**](../../../devices/raspberry-pi/binder/README.md) (if Pi server)
+
+**Clinic (after handoff):**
+
+- [**Site operations binder**](../../ops/binder/README.md) — A emergency · B weekly/monthly · C system help (admin desk)
+- **Safe vault** — blank template → fill → lock in safe → delete digital copies
 
 Store binders closed; open for those uses only.
 
@@ -130,7 +136,8 @@ Point staff to:
 - [ ] Admin dashboard shows Database + Connected
 - [ ] No pending migrations
 - [ ] Safe vault sheet printed, locked in safe, digital copies deleted
-- [ ] Desk ops binder assembled (sections A / B / C)
+- [ ] Installer handoff signed (I5) if using deploy tech
+- [ ] Site operations binder at admin desk (sections A / B / C)
 - [ ] At least one staff account with printed badge
 - [ ] First backup verified
 - [ ] Health check passed

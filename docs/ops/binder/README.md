@@ -1,7 +1,9 @@
-# PocoClinic operations binder
+# PocoClinic site operations binder
 
-**Store this binder closed** (cabinet or shelf near the admin area).  
-Open it for the three uses below — not for everyday charting (that is in the EMR Help center).
+**For clinic administrators and staff at the site** — store closed (cabinet or shelf near the admin area).  
+Open for the three uses below — not for everyday charting (that is in the EMR Help center).
+
+**Not for install day:** deploy technicians use the separate [**installer binder**](../../binders/installer/README.md), then hand off with Section I5.
 
 Secrets stay on a **separate** sheet in the **safe**: [Safe vault credentials](../safe-credentials-vault.md).
 
@@ -21,7 +23,7 @@ Secrets stay on a **separate** sheet in the **safe**: [Safe vault credentials](.
 | **2. Weekly / monthly** | You are doing **scheduled** checks, audits, or backup drills (not daily tick sheets) | **B** |
 | **3. System help** | You need **printed** how-to that is the same on every workstation (no device-specific notes) | **C** |
 
-**Easiest print path:** [binder printer](../../../binder-printer/README.md) via [`clinic/workstation/print-binder.bat`](../../../clinic/workstation/print-binder.bat) or repo-root `print-binder.bat` → choose **Clinic ops binder**.
+**Easiest print path:** [binder printer](../../../binder-printer/README.md) via [`clinic/workstation/print-binder.bat`](../../../clinic/workstation/print-binder.bat) or repo-root `print-binder.bat` → choose **Site operations binder**.
 
 Day-to-day patient work stays in the browser. Daily USB backup status is on the **Admin dashboard** — do not keep a daily paper log in this binder.
 
@@ -50,6 +52,7 @@ Print **double-sided** when possible. Use three tab dividers: **A · B · C**.
 | B3 | [Security audit checklist](../security-audit-checklist.md) |
 | B4 | [Backup & restore runbook](../administrator-runbook.md) (how to run backups/drills — no daily log) |
 | B5 | [Physical security](../physical-security-binder.md) |
+| B6 | [Network & Wi‑Fi at the site](./B6-network-and-wifi-at-site.md) |
 
 ### Section C — System help (device-independent)
 
@@ -65,7 +68,7 @@ These pages describe the product the same way on every PC, laptop, or tablet. Do
 
 - [ ] Cover (this page)
 - [ ] Section A — A1, A2, A3 (+ contacts)
-- [ ] Section B — B1–B5
+- [ ] Section B — B1–B6
 - [ ] Section C — C1–C3 (extra C2 copies optional for training)
 - [ ] SAFE — vault sheet filled, locked, digital copies deleted
 - [ ] USB rotation labels (from Admin dashboard) stored with USB drives, not required in the binder
@@ -84,8 +87,9 @@ These pages describe the product the same way on every PC, laptop, or tablet. Do
 
 ## Related (do not stuff the whole repo into the binder)
 
+- [All binders (hub)](../../binders/README.md) · [Installer binder](../../binders/installer/README.md)
 - [Ops hub](../README.md)
-- [Binder printer utility](../../../binder-printer/README.md) — pick clinic / Pi / vault packs
+- [Binder printer utility](../../../binder-printer/README.md) — site ops / installer / Pi / vault packs
 - [Raspberry Pi device binder](../../../devices/raspberry-pi/binder/README.md)
 - [In-app Help](../../IN-APP-HELP.md) — searchable on the LAN when the system is up
-- [First-time setup](../../guide/for-administrators/first-time-setup.md) — install once
+- [First-time setup](../../guide/for-administrators/first-time-setup.md) — install once (installer binder for print)
