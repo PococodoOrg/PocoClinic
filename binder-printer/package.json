@@ -1,0 +1,19 @@
+{
+  "name": "pococlinic-binder-printer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Standalone utility to print PocoClinic ops binders (not part of the EMR)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "marked": "^15.0.7"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "vite": "^6.2.0"
+  }
+}

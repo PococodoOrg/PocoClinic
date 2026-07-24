@@ -1,0 +1,91 @@
+{
+    "scenarios": {
+    "smoke": {
+      "label": "Endpoint smoke (all personas, short)",
+      "users": 4,
+      "spawn_rate": 1,
+      "duration": "60s",
+      "description": "Quick sweep of all persona routes.",
+      "weights": {
+        "admin": 1,
+        "manager": 1,
+        "clinician": 1,
+        "clerk": 1
+      }
+    },
+    "tiny": {
+      "label": "Tiny clinic (2-3 staff, low concurrency)",
+      "users": 4,
+      "spawn_rate": 1,
+      "duration": "90s",
+      "description": "One admin, one manager, one clinician, one clerk.",
+      "weights": {
+        "admin": 1,
+        "manager": 1,
+        "clinician": 1,
+        "clerk": 1
+      }
+    },
+    "small": {
+      "label": "Small clinic (4–7 staff)",
+      "users": 5,
+      "spawn_rate": 1,
+      "duration": "120s",
+      "weights": {
+        "admin": 1,
+        "manager": 1,
+        "clinician": 2,
+        "clerk": 1
+      }
+    },
+    "medium": {
+      "label": "Medium clinic (8–13 staff)",
+      "users": 10,
+      "spawn_rate": 1,
+      "duration": "180s",
+      "weights": {
+        "admin": 1,
+        "manager": 1,
+        "clinician": 4,
+        "clerk": 4
+      }
+    },
+    "large": {
+      "label": "Large clinic (14–20 staff)",
+      "users": 17,
+      "spawn_rate": 1,
+      "duration": "240s",
+      "weights": {
+        "admin": 1,
+        "manager": 2,
+        "clinician": 7,
+        "clerk": 7
+      }
+    },
+    "xlarge": {
+      "label": "Very large clinic (21–50 staff)",
+      "users": 35,
+      "spawn_rate": 1,
+      "duration": "300s",
+      "weights": {
+        "admin": 2,
+        "manager": 3,
+        "clinician": 15,
+        "clerk": 15
+      }
+    },
+    "stress100": {
+      "label": "Stress probe (100 concurrent users)",
+      "users": 100,
+      "spawn_rate": 1,
+      "duration": "300s",
+      "description": "Same 4 badge credentials shared across VUs; login once per persona.",
+      "weights": {
+        "admin": 5,
+        "manager": 5,
+        "clinician": 45,
+        "clerk": 45
+      }
+    }
+  }
+}

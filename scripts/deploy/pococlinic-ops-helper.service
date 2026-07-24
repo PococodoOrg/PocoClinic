@@ -1,0 +1,19 @@
+[Unit]
+Description=PocoClinic Backup Helper (localhost only)
+After=pococlinic.service
+Requires=pococlinic.service
+
+[Service]
+Type=simple
+User=pococlinic
+Group=pococlinic
+EnvironmentFile=/etc/pococlinic/env
+Environment=OPS_HELPER_HOST=127.0.0.1
+Environment=OPS_HELPER_PORT=9090
+WorkingDirectory=/opt/pococlinic
+ExecStart=/opt/pococlinic/ops-helper
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
