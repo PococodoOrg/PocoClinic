@@ -1,0 +1,66 @@
+/* Help center layout and print styles */
+
+.help-sidebar {
+  position: sticky;
+  top: 1rem;
+}
+
+.help-article-card:hover {
+  border-color: var(--mantine-color-blue-4);
+}
+
+.help-admin-banner {
+  background: light-dark(
+    var(--mantine-color-grape-0),
+    var(--mantine-color-dark-6)
+  );
+}
+
+.admin-help-panel {
+  background: light-dark(
+    var(--mantine-color-gray-0),
+    var(--mantine-color-dark-7)
+  );
+}
+
+.admin-setup-step {
+  border-left: 3px solid var(--mantine-color-blue-5);
+}
+
+.admin-setup-step--done {
+  border-left-color: var(--mantine-color-green-5);
+  opacity: 0.85;
+}
+
+.admin-guide-task {
+  height: 100%;
+}
+
+.admin-dashboard .mantine-Tabs-panel {
+  min-height: 200px;
+}
+
+@media print {
+  .help-no-print {
+    display: none !important;
+  }
+
+  .help-hub {
+    max-width: 100%;
+  }
+
+  .help-article-view {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .help-sidebar {
+    position: static;
+  }
+}
+
+@media (min-width: 1024px) {
+  .help-article-view {
+    min-height: 480px;
+  }
+}

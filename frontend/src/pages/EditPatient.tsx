@@ -1,11 +1,11 @@
-import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Container, Title, Paper, Text, Button, Group, Stack } from '@mantine/core';
 import { PatientForm } from '../components/patients/PatientForm';
-import { PatientFormData, Patient } from '../types/patient';
-import { patientApi, getPatient, updatePatient } from '../api/patients';
+import { PatientFormData } from '../types/patient';
+import { getPatient, updatePatient } from '../api/patients';
 import { notifications } from '@mantine/notifications';
+import { getErrorMessage } from '../utils/apiError';
 
 export default function EditPatient() {
   const { id } = useParams<{ id: string }>();
@@ -31,10 +31,10 @@ export default function EditPatient() {
       });
       navigate(`/patients/${id}`);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       notifications.show({
         title: 'Error',
-        message: error.message || 'Failed to update patient',
+        message: getErrorMessage(error, 'Failed to update patient'),
         color: 'red',
       });
     },

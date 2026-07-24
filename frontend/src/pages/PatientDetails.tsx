@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { 
   Text, 
@@ -11,28 +11,49 @@ import {
   Stack,
   Badge,
   Divider,
-  LoadingOverlay
+  LoadingOverlay,
+  Modal,
 } from '@mantine/core';
-import { useQuery } from '@tanstack/react-query';
-import { fetchPatient } from '../api/patients';
-import { IconArrowLeft, IconEdit, IconMail, IconPhone, IconMapPin, IconUser } from '@tabler/icons-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { deletePatient, fetchPatient } from '../api/patients';
+import { IconArrowLeft, IconEdit, IconMail, IconPhone, IconMapPin, IconUser, IconTrash } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
+import { PatientFormsSection } from '../components/forms/PatientFormsSection';
+import { PatientNotesSection } from '../components/patients/PatientNotesSection';
+import { PatientDocumentsSection } from '../components/patients/PatientDocumentsSection';
+import { PatientExerciseLogSection } from '../components/patients/PatientExerciseLogSection';
 
 export default function PatientDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const { data: patient, isLoading, error } = useQuery({
     queryKey: ['patient', id],
     queryFn: () => fetchPatient(id!),
+    enabled: Boolean(id),
   });
 
-  // Add console logging to debug
-  React.useEffect(() => {
-    if (patient) {
-      console.log('Patient data:', patient);
-    }
-  }, [patient]);
+  const deleteMutation = useMutation({
+    mutationFn: () => deletePatient(id!),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['patients'] });
+      notifications.show({
+        title: 'Patient deleted',
+        message: 'The patient record was removed successfully.',
+        color: 'green',
+      });
+      navigate('/patients');
+    },
+    onError: () => {
+      notifications.show({
+        title: 'Error',
+        message: 'Failed to delete patient. Please try again.',
+        color: 'red',
+      });
+    },
+  });
 
   if (error) {
     notifications.show({
@@ -72,13 +93,12 @@ export default function PatientDetails() {
   }
 
   return (
-    <Container size="lg">
+    <Stack gap="lg">
       <Paper radius="md" p="xl" withBorder>
         <LoadingOverlay visible={isLoading} />
-        
-        <Stack>
-          {/* Header Section */}
-          <Group justify="space-between" align="flex-start">
+
+        <Stack gap="lg">
+          <Group justify="space-between" align="flex-start" className="workstation-page-header" wrap="wrap">
             <Group>
               <Button 
                 variant="light" 
@@ -89,14 +109,48 @@ export default function PatientDetails() {
               </Button>
               <Title order={2}>{patient.firstName} {patient.lastName}</Title>
             </Group>
-            <Button 
-              variant="light" 
-              leftSection={<IconEdit size={16} />}
-              onClick={() => navigate(`/patients/${id}/edit`)}
-            >
-              Edit Patient
-            </Button>
+            <Group>
+              <Button 
+                variant="light" 
+                leftSection={<IconEdit size={16} />}
+                onClick={() => navigate(`/patients/${id}/edit`)}
+              >
+                Edit Patient
+              </Button>
+              <Button
+                variant="light"
+                color="red"
+                leftSection={<IconTrash size={16} />}
+                onClick={() => setDeleteModalOpen(true)}
+              >
+                Delete
+              </Button>
+            </Group>
           </Group>
+
+          <Modal
+            opened={deleteModalOpen}
+            onClose={() => setDeleteModalOpen(false)}
+            title="Delete patient"
+          >
+            <Stack>
+              <Text>
+                Are you sure you want to delete {patient.firstName} {patient.lastName}? This action cannot be undone.
+              </Text>
+              <Group justify="flex-end">
+                <Button variant="default" onClick={() => setDeleteModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  color="red"
+                  loading={deleteMutation.isPending}
+                  onClick={() => deleteMutation.mutate()}
+                >
+                  Delete Patient
+                </Button>
+              </Group>
+            </Stack>
+          </Modal>
 
           <Divider />
 
@@ -165,8 +219,27 @@ export default function PatientDetails() {
               </Stack>
             </Grid.Col>
           </Grid>
+
+          <Divider className="patient-chart-full-width" />
+
+          <div className="patient-chart-clinical">
+            <PatientNotesSection patientId={patient.id} />
+            <PatientDocumentsSection patientId={patient.id} />
+          </div>
+
+          <Divider className="patient-chart-full-width" />
+
+          <div className="patient-chart-full-width">
+            <PatientExerciseLogSection patientId={patient.id} />
+          </div>
+
+          <Divider className="patient-chart-full-width" />
+
+          <div className="patient-chart-full-width">
+            <PatientFormsSection patientId={patient.id} />
+          </div>
         </Stack>
       </Paper>
-    </Container>
+    </Stack>
   );
 } 

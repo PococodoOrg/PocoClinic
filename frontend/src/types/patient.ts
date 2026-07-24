@@ -1,5 +1,37 @@
 export type Gender = 'male' | 'female' | 'other' | 'unknown';
 
+export interface PatientFieldRequirements {
+  firstName: boolean;
+  lastName: boolean;
+  middleName: boolean;
+  dateOfBirth: boolean;
+  gender: boolean;
+  email: boolean;
+  phoneNumber: boolean;
+  addressStreet: boolean;
+  addressCity: boolean;
+  addressState: boolean;
+  addressPostalCode: boolean;
+  height: boolean;
+  weight: boolean;
+}
+
+export const DEFAULT_PATIENT_FIELD_REQUIREMENTS: PatientFieldRequirements = {
+  firstName: true,
+  lastName: true,
+  middleName: false,
+  dateOfBirth: true,
+  gender: true,
+  email: false,
+  phoneNumber: false,
+  addressStreet: false,
+  addressCity: false,
+  addressState: false,
+  addressPostalCode: false,
+  height: false,
+  weight: false,
+};
+
 export interface Address {
   street: string;
   city: string;
