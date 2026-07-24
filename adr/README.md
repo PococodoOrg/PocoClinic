@@ -15,6 +15,7 @@ ADRs capture **why** we chose something, what we rejected, and what that implies
 | 4 | [0012 — Backup & recovery](./0012-backup-and-recovery-ops.md) | USB backups non-technical admins can run |
 | 5 | [0011 — Badge + PIN](./0011-employee-badge-authentication.md) | Staff auth shaped for front desk, not SSO |
 | 6 | [0016 — Clinic runtime packaging](./0016-clinic-runtime-packaging.md) | `clinic/` vs `scripts/` — what ships on the Pi |
+| 7 | [0017 — Pi hardening & LAN TLS](./0017-raspberry-pi-hardening-and-lan-tls.md) | Firewall, local CA, HTTPS on the LAN |
 
 Related (not an ADR): [Deployment boundary](../docs/deploy/DEPLOYMENT-BOUNDARY.md) · [clinic/](../clinic/README.md) — tarball install tree vs microSD image.
 
@@ -38,6 +39,7 @@ Related (not an ADR): [Deployment boundary](../docs/deploy/DEPLOYMENT-BOUNDARY.m
 | [0014](./0014-private-lan-only-deployment.md) | Private LAN-only deployment | Accepted | Product scope |
 | [0015](./0015-clinic-database-engine.md) | Clinic database engine | **Accepted — testing** | SQLite only |
 | [0016](./0016-clinic-runtime-packaging.md) | Clinic runtime packaging | Accepted | `clinic/` vs `scripts/` split |
+| [0017](./0017-raspberry-pi-hardening-and-lan-tls.md) | Pi hardening and LAN TLS | Accepted | Firewall, local CA, HTTPS |
 
 ## Format (keep it GitHub-readable)
 

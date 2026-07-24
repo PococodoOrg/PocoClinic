@@ -1,0 +1,37 @@
+# PocoClinic LAN HTTPS — Caddy reverse proxy (recommended on Raspberry Pi).
+#
+# 1. Generate certs: sudo clinic/server/scripts/generate-lan-tls.sh
+# 2. Copy this file: sudo cp Caddyfile.example /etc/caddy/Caddyfile
+# 3. Set in /etc/pococlinic/env:
+#      SERVER_HOST=127.0.0.1
+#      SERVER_PORT=8080
+#      ALLOWED_ORIGIN=https://pococlinic.local
+#      TRUSTED_PROXIES=127.0.0.1
+# 4. sudo systemctl enable --now caddy pococlinic
+#
+# Caddy terminates TLS; the Go app stays on loopback :8080.
+
+{
+	# Local clinic LAN — no ACME / public internet
+	auto_https disable_redirects
+}
+
+pococlinic.local {
+	tls /etc/pococlinic/tls/server.crt /etc/pococlinic/tls/server.key
+
+	@http {
+		protocol http
+	}
+	redir @http https://{host}{uri}
+
+	reverse_proxy 127.0.0.1:8080 {
+		header_up X-Forwarded-Proto {scheme}
+		header_up X-Forwarded-Host {host}
+	}
+}
+
+# Optional: also answer on LAN IP if DNS is not set up yet
+# :443 {
+# 	tls /etc/pococlinic/tls/server.crt /etc/pococlinic/tls/server.key
+# 	reverse_proxy 127.0.0.1:8080
+# }

@@ -53,12 +53,24 @@ if [[ -d "${SCRIPT_DIR}/cron" ]]; then
   cp -a "${SCRIPT_DIR}/cron" "${INSTALL_ROOT}/cron"
 fi
 
+if [[ -d "${SCRIPT_DIR}/scripts" ]]; then
+  rm -rf "${INSTALL_ROOT}/scripts"
+  cp -a "${SCRIPT_DIR}/scripts" "${INSTALL_ROOT}/scripts"
+  chmod +x "${INSTALL_ROOT}/scripts/"*.sh 2>/dev/null || true
+fi
+
+if [[ -d "${SCRIPT_DIR}/caddy" ]]; then
+  rm -rf "${INSTALL_ROOT}/caddy"
+  cp -a "${SCRIPT_DIR}/caddy" "${INSTALL_ROOT}/caddy"
+fi
+
 chmod +x "${INSTALL_ROOT}/pococlinic" "${INSTALL_ROOT}/ops-helper" "${INSTALL_ROOT}/migrate" \
   "${INSTALL_ROOT}/backup" "${INSTALL_ROOT}/restore" "${INSTALL_ROOT}/audit-purge"
 
 if [[ ! -f "${ENV_FILE}" ]]; then
   cp "${SCRIPT_DIR}/env.template" "${ENV_FILE}"
-  chmod 600 "${ENV_FILE}"
+  chown root:"${POCO_USER}" "${ENV_FILE}"
+  chmod 640 "${ENV_FILE}"
   echo "Created ${ENV_FILE} — edit JWT secrets and ALLOWED_ORIGIN before starting."
 else
   echo "Keeping existing ${ENV_FILE}"
@@ -79,6 +91,9 @@ echo "  2. Ensure DATABASE_URL points at the SQLite file"
 echo "  3. sudo ${INSTALL_ROOT}/bin/migrate"
 echo "  4. sudo systemctl enable pococlinic pococlinic-ops-helper"
 echo "  5. sudo systemctl start pococlinic pococlinic-ops-helper"
-echo "  6. Optional cron: sudo cp ${INSTALL_ROOT}/cron/pococlinic-backup /etc/cron.d/"
+echo "  6. Harden + TLS: sudo ${INSTALL_ROOT}/scripts/harden-pi.sh"
+echo "                 sudo ${INSTALL_ROOT}/scripts/generate-lan-tls.sh"
+echo "     See devices/raspberry-pi/hardening.md and tls-lan.md"
+echo "  7. Optional cron: sudo cp ${INSTALL_ROOT}/cron/pococlinic-backup /etc/cron.d/"
 echo ""
 echo "Install complete."

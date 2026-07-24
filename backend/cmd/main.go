@@ -288,8 +288,18 @@ func main() {
 	}
 
 	go func() {
-		logger.Info("Starting server", "host", cfg.Server.Host, "port", cfg.Server.Port)
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if cfg.Server.TLSEnabled() {
+			logger.Info("Starting server with TLS",
+				"host", cfg.Server.Host,
+				"port", cfg.Server.Port,
+				"cert", cfg.Server.TLSCertFile,
+			)
+			err = srv.ListenAndServeTLS(cfg.Server.TLSCertFile, cfg.Server.TLSKeyFile)
+		} else {
+			logger.Info("Starting server", "host", cfg.Server.Host, "port", cfg.Server.Port)
+			err = srv.ListenAndServe()
+		}
+		if err != nil && err != http.ErrServerClosed {
 			logger.Error("Server failed to start", err)
 			os.Exit(1)
 		}

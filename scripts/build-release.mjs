@@ -139,6 +139,8 @@ function main() {
   );
   copyRecursive(path.join(repoRoot, 'clinic/server/cron'), path.join(stagingRoot, 'cron'));
   copyRecursive(path.join(repoRoot, 'clinic/server/bin'), path.join(stagingRoot, 'bin'));
+  copyRecursive(path.join(repoRoot, 'clinic/server/scripts'), path.join(stagingRoot, 'scripts'));
+  copyRecursive(path.join(repoRoot, 'clinic/server/caddy'), path.join(stagingRoot, 'caddy'));
 
   // 5. Operator docs (subset)
   fs.mkdirSync(path.join(stagingRoot, 'docs'), { recursive: true });

@@ -72,8 +72,15 @@ type AuthConfig struct {
 
 // ServerConfig holds all server-related configuration
 type ServerConfig struct {
-	Port int
-	Host string
+	Port        int
+	Host        string
+	TLSCertFile string
+	TLSKeyFile  string
+}
+
+// TLSEnabled reports whether the API should listen with TLS.
+func (s ServerConfig) TLSEnabled() bool {
+	return strings.TrimSpace(s.TLSCertFile) != "" && strings.TrimSpace(s.TLSKeyFile) != ""
 }
 
 // SecurityConfig holds all security-related configuration
@@ -102,6 +109,13 @@ func LoadConfig() (*Config, error) {
 	}
 	config.Server.Port = port
 	config.Server.Host = getEnvOrDefault("SERVER_HOST", "localhost")
+	config.Server.TLSCertFile = strings.TrimSpace(getEnvOrDefault("SERVER_TLS_CERT", ""))
+	config.Server.TLSKeyFile = strings.TrimSpace(getEnvOrDefault("SERVER_TLS_KEY", ""))
+	if config.Server.TLSEnabled() {
+		if err := validateTLSFiles(config.Server.TLSCertFile, config.Server.TLSKeyFile); err != nil {
+			return nil, err
+		}
+	}
 
 	// Security configuration
 	config.Security.AllowedOrigins = []string{
@@ -201,6 +215,19 @@ func validateProductionSecrets(cfg *Config) error {
 		return fmt.Errorf("DOCUMENT_ENCRYPTION_KEY must decode to %d bytes in production", doccrypto.KeySize)
 	}
 
+	return nil
+}
+
+func validateTLSFiles(certFile, keyFile string) error {
+	for _, path := range []string{certFile, keyFile} {
+		info, err := os.Stat(path)
+		if err != nil {
+			return fmt.Errorf("TLS file not readable (%s): %w", path, err)
+		}
+		if info.IsDir() {
+			return fmt.Errorf("TLS path is a directory: %s", path)
+		}
+	}
 	return nil
 }
 
