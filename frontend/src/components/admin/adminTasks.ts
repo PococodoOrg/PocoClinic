@@ -72,7 +72,7 @@ export function buildAdminTasks(status: SystemStatus): AdminTask[] {
     hint: healthCheckDue()
       ? 'Run system health check on the admin dashboard'
       : 'Health check run this month',
-    path: '/admin?tab=overview',
+    path: '/admin?tab=backup',
   });
 
   tasks.push({

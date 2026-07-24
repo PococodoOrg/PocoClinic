@@ -6,14 +6,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "node ./node_modules/typescript-7/bin/tsc --noEmit && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "marked": "^18.0.7"
   },
   "devDependencies": {
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
+    "typescript-7": "npm:typescript@^7.0.2",
     "vite": "^8.1.5"
   }
 }

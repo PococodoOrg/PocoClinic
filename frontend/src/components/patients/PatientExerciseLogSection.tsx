@@ -35,9 +35,11 @@ import {
 import { getErrorMessage } from '../../utils/apiError';
 import { formatSessionSummary, progressionHint } from '../../utils/exerciseLog';
 import { parseNumberInput } from '../../utils/numberInput';
+import { ViewAllChartLink } from './ViewAllChartLink';
 
 interface PatientExerciseLogSectionProps {
   patientId: string;
+  previewLimit?: number;
 }
 
 const STATUS_OPTIONS = [
@@ -57,7 +59,7 @@ function statusColor(status: ExercisePlanStatus): string {
   }
 }
 
-export function PatientExerciseLogSection({ patientId }: PatientExerciseLogSectionProps) {
+export function PatientExerciseLogSection({ patientId, previewLimit }: PatientExerciseLogSectionProps) {
   const queryClient = useQueryClient();
   const isTablet = useMediaQuery(TABLET_MEDIA_QUERY);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
@@ -232,6 +234,13 @@ export function PatientExerciseLogSection({ patientId }: PatientExerciseLogSecti
     return Array.from(names).slice(0, 8);
   }, [entries]);
 
+  const isPreview = previewLimit !== undefined;
+  const visibleEntries = isPreview ? entries.slice(0, previewLimit) : entries;
+  const showViewAll =
+    isPreview && (entries.length > previewLimit || plans.length > 1);
+  const viewAllLabel = plans.length > 1 ? 'exercise log' : 'sessions';
+  const viewAllTotal = plans.length > 1 ? plans.length : entries.length;
+
   return (
     <Stack gap="md" className="patient-chart-full-width">
       <Group justify="space-between" align="flex-start" wrap="wrap">
@@ -246,6 +255,7 @@ export function PatientExerciseLogSection({ patientId }: PatientExerciseLogSecti
           onClick={() => setPlanModalOpen(true)}
           size={isTablet ? 'md' : 'sm'}
           className="touch-control"
+          style={isPreview ? { display: 'none' } : undefined}
         >
           New plan
         </Button>
@@ -260,6 +270,22 @@ export function PatientExerciseLogSection({ patientId }: PatientExerciseLogSecti
           No exercise plans yet. Create a plan for home or in-clinic PT, then log sessions to track
           improvement.
         </Text>
+      ) : isPreview ? (
+        selectedPlan ? (
+          <Stack gap="xs">
+            <Text size="sm">
+              <Text span fw={600}>
+                {selectedPlan.name}
+              </Text>
+              {plans.length > 1 && (
+                <Text span c="dimmed">
+                  {' '}
+                  · {plans.length} plans total
+                </Text>
+              )}
+            </Text>
+          </Stack>
+        ) : null
       ) : (
         <Stack gap="sm" role="list" aria-label="Exercise plans">
           {plans.map((plan) => {
@@ -301,6 +327,7 @@ export function PatientExerciseLogSection({ patientId }: PatientExerciseLogSecti
 
       {selectedPlan && (
         <Stack gap="md">
+          {!isPreview && (
           <Group justify="space-between" wrap="wrap" gap="sm">
             <Select
               label="Plan status"
@@ -340,6 +367,7 @@ export function PatientExerciseLogSection({ patientId }: PatientExerciseLogSecti
               </Button>
             </Group>
           </Group>
+          )}
 
           {entriesLoading ? (
             <Text c="dimmed" aria-live="polite">
@@ -349,8 +377,8 @@ export function PatientExerciseLogSection({ patientId }: PatientExerciseLogSecti
             <Text c="dimmed">No sessions logged yet. Tap Log session after each exercise set.</Text>
           ) : (
             <Stack gap="sm" role="list" aria-label="Exercise sessions">
-              {entries.map((entry) => {
-                const hint = progressionHint(entries, entry);
+              {visibleEntries.map((entry) => {
+                const hint = isPreview ? null : progressionHint(entries, entry);
                 return (
                   <div key={entry.id} className="patient-list-card" role="listitem">
                     <Group justify="space-between" align="flex-start" wrap="nowrap">
@@ -371,6 +399,7 @@ export function PatientExerciseLogSection({ patientId }: PatientExerciseLogSecti
                           </Text>
                         )}
                       </Stack>
+                      {!isPreview && (
                       <Button
                         variant="subtle"
                         color="red"
@@ -380,11 +409,20 @@ export function PatientExerciseLogSection({ patientId }: PatientExerciseLogSecti
                       >
                         <IconTrash size={16} />
                       </Button>
+                      )}
                     </Group>
                   </div>
                 );
               })}
             </Stack>
+          )}
+
+          {showViewAll && (
+            <ViewAllChartLink
+              to={`/patients/${patientId}/exercise-log`}
+              total={viewAllTotal}
+              label={viewAllLabel}
+            />
           )}
         </Stack>
       )}
