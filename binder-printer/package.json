@@ -10,10 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "marked": "^15.0.7"
+    "marked": "^15.0.12"
   },
   "devDependencies": {
-    "typescript": "^5.8.2",
-    "vite": "^6.2.0"
+    "typescript": "^5.9.3",
+    "vite": "^6.4.3"
   }
 }
