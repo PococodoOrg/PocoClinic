@@ -1,0 +1,16 @@
+[Unit]
+Description=PocoClinic EMR API and web server
+After=network.target
+
+[Service]
+Type=simple
+User=pococlinic
+Group=pococlinic
+EnvironmentFile=/etc/pococlinic/env
+WorkingDirectory=/opt/pococlinic
+ExecStart=/opt/pococlinic/pococlinic
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

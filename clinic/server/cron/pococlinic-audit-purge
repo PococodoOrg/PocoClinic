@@ -1,0 +1,5 @@
+# Monthly audit purge (1st of month, 2 AM) — requires AUDIT_RETENTION_DAYS in env
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+0 2 1 * * root /opt/pococlinic/bin/audit-purge >> /var/log/pococlinic/audit-purge.log 2>&1

@@ -1,0 +1,5 @@
+# Daily backup at 6 PM — install: sudo cp cron/pococlinic-backup /etc/cron.d/pococlinic-backup
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+0 18 * * * root /opt/pococlinic/bin/backup >> /var/log/pococlinic/backup.log 2>&1

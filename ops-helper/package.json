@@ -1,0 +1,30 @@
+{
+  "name": "pococlinic-ops-helper",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "build:pi": "tsc && vite build --mode pi",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@mantine/core": "^7.17.3",
+    "@mantine/hooks": "^7.17.2",
+    "@mantine/notifications": "^7.17.3",
+    "@tabler/icons-react": "^3.31.0",
+    "@tanstack/react-query": "^5.79.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.6.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.12",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.3.3",
+    "vite": "^6.3.5"
+  }
+}
