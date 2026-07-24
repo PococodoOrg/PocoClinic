@@ -1,6 +1,18 @@
 import { vi } from 'vitest';
 import '@testing-library/jest-dom/vitest';
-import './mocks/setup';
+
+class ResizeObserverMock {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+window.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
+
+// Mantine Combobox/Select calls scrollIntoView (missing in jsdom).
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = vi.fn();
+}
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -13,4 +25,4 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-}); 
+});

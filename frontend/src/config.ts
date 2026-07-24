@@ -34,7 +34,7 @@ const envConfigs: Record<string, Partial<Config>> = {
     apiUrl: 'http://localhost:8080'
   },
   production: {
-    apiUrl: 'https://api.pococlinic.com'
+    apiUrl: ''
   }
 }
 

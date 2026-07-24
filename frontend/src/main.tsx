@@ -1,13 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import '@mantine/core/styles.css'
-import { MantineProvider } from '@mantine/core'
+import './styles/help.css'
+import './styles/workstation.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <MantineProvider>
+    <ErrorBoundary>
       <App />
-    </MantineProvider>
+    </ErrorBoundary>
   </React.StrictMode>
-) 
+)
