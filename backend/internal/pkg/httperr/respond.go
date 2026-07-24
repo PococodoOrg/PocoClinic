@@ -176,8 +176,9 @@ func writeMapped(c *gin.Context, logger *logging.Logger, mapped MappedError, err
 		logger.Error("request failed",
 			err,
 			"method", c.Request.Method,
-			"path", c.FullPath(),
+			"path", logging.SanitizeString(c.FullPath()),
 			"status", mapped.Status,
+			"code", mapped.Code,
 		)
 	}
 

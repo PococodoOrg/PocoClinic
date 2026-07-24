@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/backup"
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/config"
@@ -39,5 +40,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger.Info("Backup created successfully", "path", path)
+	logger.Info("Backup created successfully", "file", filepath.Base(path))
 }

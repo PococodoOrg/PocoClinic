@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"runtime/debug"
 
@@ -15,12 +16,12 @@ func Recovery(logger *logging.Logger) gin.HandlerFunc {
 		defer func() {
 			if recovered := recover(); recovered != nil {
 				if logger != nil {
-					logger.Logger.Error("panic recovered",
-						"panic", recovered,
+					logger.Error("panic recovered",
+						fmt.Errorf("panic: %v", recovered),
 						"method", c.Request.Method,
-						"path", c.Request.URL.Path,
-						"stack", string(debug.Stack()),
+						"path", logging.SanitizeString(c.Request.URL.Path),
 					)
+					logger.Logger.Error("panic stack trace", "stack", string(debug.Stack()))
 				}
 
 				if c.Writer.Written() {
