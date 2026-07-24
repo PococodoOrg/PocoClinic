@@ -31,9 +31,11 @@ import {
   groupTemplatesByGroup,
 } from '../../types/form';
 import { getErrorMessage } from '../../utils/apiError';
+import { ViewAllChartLink } from '../patients/ViewAllChartLink';
 
 interface PatientFormsSectionProps {
   patientId: string;
+  previewLimit?: number;
 }
 
 interface FormModalState {
@@ -252,7 +254,7 @@ function HistoryToggle({ patientId, entryId }: { patientId: string; entryId: str
   );
 }
 
-export function PatientFormsSection({ patientId }: PatientFormsSectionProps) {
+export function PatientFormsSection({ patientId, previewLimit }: PatientFormsSectionProps) {
   const queryClient = useQueryClient();
   const [modalState, setModalState] = useState<FormModalState | null>(null);
 
@@ -281,6 +283,23 @@ export function PatientFormsSection({ patientId }: PatientFormsSectionProps) {
     () => groupTemplatesByGroup(groups, templates),
     [groups, templates],
   );
+
+  const templateNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    templates.forEach((template) => map.set(template.id, template.name));
+    return map;
+  }, [templates]);
+
+  const recentSubmissions = useMemo(() => {
+    return [...submissions]
+      .sort(
+        (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+      )
+      .slice(0, previewLimit ?? submissions.length);
+  }, [submissions, previewLimit]);
+
+  const isPreview = previewLimit !== undefined;
+  const showViewAll = isPreview && submissions.length > previewLimit;
 
   const saveMutation = useMutation({
     mutationFn: ({
@@ -329,6 +348,48 @@ export function PatientFormsSection({ patientId }: PatientFormsSectionProps) {
         <Text c="dimmed" size="sm">
           No form templates are available yet. Admins can create them under Forms in the header.
         </Text>
+      ) : isPreview ? (
+        <>
+          {submissions.length === 0 ? (
+            <Text c="dimmed" size="sm">
+              No form activity yet for this patient.
+            </Text>
+          ) : (
+            <Stack gap="sm" role="list" aria-label="Recent form activity">
+              {recentSubmissions.map((submission) => {
+                const name =
+                  submission.templateName ?? templateNameById.get(submission.templateId) ?? 'Form';
+                const answerPreview = Object.values(submission.answers)[0];
+                return (
+                  <Paper key={submission.entryId} withBorder p="md" role="listitem">
+                    <Stack gap={4}>
+                      <Group justify="space-between" wrap="nowrap">
+                        <Text fw={600} size="sm" lineClamp={1}>
+                          {name}
+                        </Text>
+                        <Text size="xs" c="dimmed">
+                          {new Date(submission.updatedAt).toLocaleString()}
+                        </Text>
+                      </Group>
+                      {answerPreview !== undefined && (
+                        <Text size="sm" c="dimmed" lineClamp={2}>
+                          {formatAnswerValue(answerPreview)}
+                        </Text>
+                      )}
+                    </Stack>
+                  </Paper>
+                );
+              })}
+            </Stack>
+          )}
+          {showViewAll && (
+            <ViewAllChartLink
+              to={`/patients/${patientId}/forms`}
+              total={submissions.length}
+              label="form entries"
+            />
+          )}
+        </>
       ) : (
         groupedTemplates.map(({ group, templates: groupTemplates }) => (
           <Stack key={group.id} gap="sm">

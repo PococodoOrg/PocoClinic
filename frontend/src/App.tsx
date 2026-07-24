@@ -18,6 +18,9 @@ const PatientList = lazy(() => import('./components/patients/PatientList').then(
 const CreatePatient = lazy(() => import('./pages/CreatePatient'));
 const HelpAndSupport = lazy(() => import('./pages/HelpAndSupport'));
 const PatientDetails = lazy(() => import('./pages/PatientDetails'));
+const PatientNotesListPage = lazy(() => import('./pages/PatientNotesListPage'));
+const PatientExerciseLogListPage = lazy(() => import('./pages/PatientExerciseLogListPage'));
+const PatientFormsListPage = lazy(() => import('./pages/PatientFormsListPage'));
 const EditPatient = lazy(() => import('./pages/EditPatient'));
 const Users = lazy(() => import('./pages/Users'));
 const CreateUser = lazy(() => import('./pages/CreateUser'));
@@ -68,6 +71,9 @@ export default function App() {
                             <Route path="/help/:articleId" element={<HelpAndSupport />} />
                             <Route path="/account/pin" element={<ChangePin />} />
                             <Route path="/patients/:id" element={<PatientDetails />} />
+                            <Route path="/patients/:id/notes" element={<PatientNotesListPage />} />
+                            <Route path="/patients/:id/exercise-log" element={<PatientExerciseLogListPage />} />
+                            <Route path="/patients/:id/forms" element={<PatientFormsListPage />} />
                             <Route path="/patients/:id/edit" element={<EditPatient />} />
                             <Route
                               path="/forms"

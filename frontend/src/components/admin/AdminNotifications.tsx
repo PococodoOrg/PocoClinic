@@ -299,9 +299,9 @@ function buildNotifications(status: SystemStatus): NotificationItem[] {
 
       message: 'Run a health check on the Backup & maintenance tab to verify storage and document integrity.',
 
-      actionLabel: 'Admin dashboard',
+      actionLabel: 'Backup & maintenance',
 
-      actionPath: '/admin',
+      actionPath: '/admin?tab=backup',
 
     });
 

@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
-    "build:pi": "tsc && vite build --mode pi",
+    "build": "node ./node_modules/typescript-7/bin/tsc && vite build",
+    "build:pi": "node ./node_modules/typescript-7/bin/tsc && vite build --mode pi",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -24,7 +24,8 @@
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
+    "typescript-7": "npm:typescript@^7.0.2",
     "vite": "^8.1.5"
   }
 }

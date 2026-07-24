@@ -23,12 +23,14 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { getErrorMessage } from '../../utils/apiError';
 import { PatientNote } from '../../types/patientNote';
+import { ViewAllChartLink } from './ViewAllChartLink';
 
 interface PatientNotesSectionProps {
   patientId: string;
+  previewLimit?: number;
 }
 
-export function PatientNotesSection({ patientId }: PatientNotesSectionProps) {
+export function PatientNotesSection({ patientId, previewLimit }: PatientNotesSectionProps) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [draft, setDraft] = useState('');
@@ -116,6 +118,8 @@ export function PatientNotesSection({ patientId }: PatientNotesSectionProps) {
   const isAdmin = user?.role === 'admin';
   const canEdit = (note: PatientNote) => isAuthor(note);
   const canDelete = (note: PatientNote) => isAuthor(note) || isAdmin;
+  const visibleNotes = previewLimit ? notes.slice(0, previewLimit) : notes;
+  const showViewAll = previewLimit !== undefined && notes.length > previewLimit;
 
   return (
     <Stack gap="md">
@@ -151,8 +155,8 @@ export function PatientNotesSection({ patientId }: PatientNotesSectionProps) {
       ) : notes.length === 0 ? (
         <Text c="dimmed" size="sm">No clinical notes yet.</Text>
       ) : (
-        <Timeline active={notes.length} bulletSize={24} lineWidth={2}>
-          {notes.map((note) => (
+        <Timeline active={visibleNotes.length} bulletSize={24} lineWidth={2}>
+          {visibleNotes.map((note) => (
             <Timeline.Item
               key={note.id}
               title={
@@ -197,6 +201,14 @@ export function PatientNotesSection({ patientId }: PatientNotesSectionProps) {
             </Timeline.Item>
           ))}
         </Timeline>
+      )}
+
+      {showViewAll && (
+        <ViewAllChartLink
+          to={`/patients/${patientId}/notes`}
+          total={notes.length}
+          label="notes"
+        />
       )}
 
       <Modal

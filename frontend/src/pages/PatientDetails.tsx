@@ -22,6 +22,7 @@ import { PatientFormsSection } from '../components/forms/PatientFormsSection';
 import { PatientNotesSection } from '../components/patients/PatientNotesSection';
 import { PatientDocumentsSection } from '../components/patients/PatientDocumentsSection';
 import { PatientExerciseLogSection } from '../components/patients/PatientExerciseLogSection';
+import { PATIENT_CHART_PREVIEW_LIMIT } from '../constants/patientChart';
 
 export default function PatientDetails() {
   const { id } = useParams<{ id: string }>();
@@ -223,20 +224,20 @@ export default function PatientDetails() {
           <Divider className="patient-chart-full-width" />
 
           <div className="patient-chart-clinical">
-            <PatientNotesSection patientId={patient.id} />
+            <PatientNotesSection patientId={patient.id} previewLimit={PATIENT_CHART_PREVIEW_LIMIT} />
             <PatientDocumentsSection patientId={patient.id} />
           </div>
 
           <Divider className="patient-chart-full-width" />
 
           <div className="patient-chart-full-width">
-            <PatientExerciseLogSection patientId={patient.id} />
+            <PatientExerciseLogSection patientId={patient.id} previewLimit={PATIENT_CHART_PREVIEW_LIMIT} />
           </div>
 
           <Divider className="patient-chart-full-width" />
 
           <div className="patient-chart-full-width">
-            <PatientFormsSection patientId={patient.id} />
+            <PatientFormsSection patientId={patient.id} previewLimit={PATIENT_CHART_PREVIEW_LIMIT} />
           </div>
         </Stack>
       </Paper>

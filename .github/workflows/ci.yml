@@ -38,7 +38,7 @@ jobs:
       - name: Install
         run: npm ci
       - name: Typecheck
-        run: npx tsc --noEmit
+        run: node ./node_modules/typescript-7/bin/tsc --noEmit
       - name: Lint
         run: npm run lint
       - name: Test
