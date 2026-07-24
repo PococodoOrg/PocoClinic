@@ -9,6 +9,9 @@
     "build:pi": "node ./node_modules/typescript-7/bin/tsc && vite build --mode pi",
     "preview": "vite preview"
   },
+  "overrides": {
+    "react-router": "8.3.0"
+  },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@mantine/core": "^9.4.2",

@@ -16,6 +16,9 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "overrides": {
+    "react-router": "8.3.0"
+  },
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@mantine/core": "^9.4.2",
@@ -43,7 +46,7 @@
     "@typescript-eslint/parser": "^8.65.0",
     "@vitejs/plugin-react": "^6.0.4",
     "esbuild": "^0.28.1",
-    "eslint": "^10.7.0",
+    "eslint": "^10.8.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
