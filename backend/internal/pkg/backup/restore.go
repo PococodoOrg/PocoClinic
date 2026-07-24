@@ -13,9 +13,13 @@ import (
 	"strings"
 
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/pathsafe"
 )
 
-// Archive is an opened backup bundle.
+const (
+	maxArchiveEntrySize = 512 << 20 // 512 MiB per tar entry
+	maxArchiveEntries   = 10_000
+)
 type Archive struct {
 	Path     string
 	Manifest Manifest
@@ -122,10 +126,16 @@ func restoreDocumentFiles(archive *Archive, documentsDir string) error {
 			continue
 		}
 		rel := strings.TrimPrefix(name, "documents/")
-		if rel == "" || strings.Contains(rel, "..") {
+		if rel == "" {
 			continue
 		}
-		target := filepath.Join(documentsDir, filepath.FromSlash(rel))
+		if err := pathsafe.ValidateRelativeKey(rel); err != nil {
+			continue
+		}
+		target, err := pathsafe.JoinRoot(documentsDir, filepath.FromSlash(rel))
+		if err != nil {
+			return fmt.Errorf("write document %s: %w", rel, err)
+		}
 		if err := os.MkdirAll(filepath.Dir(target), 0o750); err != nil {
 			return err
 		}
@@ -160,7 +170,10 @@ func List(dir string) ([]Info, error) {
 
 	result := make([]Info, 0, len(candidates))
 	for _, name := range candidates {
-		path := filepathJoin(dir, name)
+		path, err := pathsafe.JoinRoot(dir, name)
+		if err != nil {
+			continue
+		}
 		info := Info{
 			Filename: name,
 			Path:     path,
@@ -202,16 +215,24 @@ func readArchiveFiles(path string) (map[string][]byte, error) {
 		if header.Typeflag != tar.TypeReg {
 			continue
 		}
+		if len(files) >= maxArchiveEntries {
+			return nil, fmt.Errorf("archive contains too many entries")
+		}
+		if err := pathsafe.ValidateArchiveEntry(header.Name); err != nil {
+			return nil, fmt.Errorf("archive entry %q: %w", header.Name, err)
+		}
+		if header.Size < 0 || header.Size > maxArchiveEntrySize {
+			return nil, fmt.Errorf("archive entry too large: %s", header.Name)
+		}
 
-		content, err := io.ReadAll(tr)
+		content, err := io.ReadAll(io.LimitReader(tr, maxArchiveEntrySize+1))
 		if err != nil {
 			return nil, err
+		}
+		if int64(len(content)) > maxArchiveEntrySize {
+			return nil, fmt.Errorf("archive entry too large: %s", header.Name)
 		}
 		files[header.Name] = content
 	}
 	return files, nil
-}
-
-func filepathJoin(dir, name string) string {
-	return strings.TrimRight(dir, `/\`) + string(os.PathSeparator) + name
 }

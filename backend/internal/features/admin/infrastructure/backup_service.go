@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
-	"strings"
 	"sync"
 	"time"
 
 	admindomain "github.com/PococodoOrg/PocoClinic/internal/features/admin/domain"
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/backup"
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/pathsafe"
 )
 
 // BackupService runs backup operations against the configured database.
@@ -79,23 +79,29 @@ func (s *BackupService) RestoreBackup(ctx context.Context, filename string) erro
 	if s.pool == nil {
 		return fmt.Errorf("restore requires persistent database storage")
 	}
-	if err := validateBackupFilename(filename); err != nil {
+	if err := pathsafe.ValidateBackupFilename(filename); err != nil {
 		return err
 	}
 
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	path := filepath.Join(s.dir, filename)
+	path, err := pathsafe.JoinRoot(s.dir, filename)
+	if err != nil {
+		return err
+	}
 	return backup.Restore(ctx, s.pool, path, s.documentsDir)
 }
 
 func (s *BackupService) VerifyBackup(ctx context.Context, filename string) (*admindomain.BackupVerifyResult, error) {
 	_ = ctx
-	if err := validateBackupFilename(filename); err != nil {
+	if err := pathsafe.ValidateBackupFilename(filename); err != nil {
 		return nil, err
 	}
-	path := filepath.Join(s.dir, filename)
+	path, err := pathsafe.JoinRoot(s.dir, filename)
+	if err != nil {
+		return nil, err
+	}
 	archive, err := backup.Open(path)
 	if err != nil {
 		return &admindomain.BackupVerifyResult{
@@ -132,19 +138,6 @@ func (s *BackupService) VerifyBackup(ctx context.Context, filename string) (*adm
 		result.Message = "backup integrity check failed"
 	}
 	return result, nil
-}
-
-func validateBackupFilename(filename string) error {
-	if filename == "" {
-		return fmt.Errorf("backup filename is required")
-	}
-	if strings.Contains(filename, "..") || strings.Contains(filename, "/") || strings.Contains(filename, "\\") {
-		return fmt.Errorf("invalid backup filename")
-	}
-	if !strings.HasPrefix(filename, "pococlinic-backup-") || !strings.HasSuffix(filename, ".tar.gz") {
-		return fmt.Errorf("invalid backup filename")
-	}
-	return nil
 }
 
 var _ admindomain.BackupManager = (*BackupService)(nil)

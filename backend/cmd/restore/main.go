@@ -11,6 +11,7 @@ import (
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/config"
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/logging"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/pathsafe"
 )
 
 func main() {
@@ -48,8 +49,22 @@ func main() {
 			os.Exit(1)
 		}
 		target = latest.Path
-	} else if !filepath.IsAbs(target) {
-		target = filepath.Join(cfg.Backup.Dir, target)
+	} else if filepath.IsAbs(target) {
+		if err := pathsafe.ValidateBackupFilename(filepath.Base(target)); err != nil {
+			logger.Error("Invalid backup file", err)
+			os.Exit(1)
+		}
+	} else {
+		if err := pathsafe.ValidateBackupFilename(target); err != nil {
+			logger.Error("Invalid backup file", err)
+			os.Exit(1)
+		}
+		resolved, err := pathsafe.JoinRoot(cfg.Backup.Dir, target)
+		if err != nil {
+			logger.Error("Invalid backup file path", err)
+			os.Exit(1)
+		}
+		target = resolved
 	}
 
 	pool, err := database.OpenPool(ctx, cfg.Database.URL)

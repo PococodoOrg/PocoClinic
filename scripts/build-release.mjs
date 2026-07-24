@@ -96,6 +96,7 @@ function main() {
   const opsStatic = path.join(repoRoot, 'backend/cmd/ops-helper/static');
   fs.rmSync(opsStatic, { recursive: true, force: true });
   copyRecursive(path.join(repoRoot, 'ops-helper/dist'), opsStatic);
+  copyRecursive(path.join(repoRoot, 'ops-helper/dist'), path.join(stagingRoot, 'ops-helper-static'));
 
   // 3. Go binaries (linux cross-compile)
   const goEnv = {

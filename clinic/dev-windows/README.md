@@ -16,4 +16,6 @@ Repo-root `.bat` files (`backup.bat`, etc.) forward here so paths stay stable.
 | `run-ops-helper.bat` | Desktop ops-helper UI |
 | `run-ops-helper-pi.bat` | Pi-touch ops-helper layout |
 
-Set `DATABASE_URL` before use, e.g. `set DATABASE_URL=./data/pococlinic.db` from `backend/`.
+Set `DATABASE_URL` before use, e.g. copy `backend/.env.example` to `backend/.env` with `DATABASE_URL=./data/pococlinic.db`, then run `migrate.bat`.
+
+`run-ops-helper.bat` checks for Go and Node (on first UI build), creates `data/` and `backups/` if missing, waits for the server before opening the browser, and requires `backend/.env` when `DATABASE_URL` is not set in the shell.

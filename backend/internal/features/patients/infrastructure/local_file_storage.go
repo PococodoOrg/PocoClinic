@@ -6,8 +6,8 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strings"
 
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/pathsafe"
 	"github.com/google/uuid"
 )
 
@@ -25,15 +25,28 @@ func NewLocalFileStorage(rootDir string) (*LocalFileStorage, error) {
 
 func (s *LocalFileStorage) Save(ctx context.Context, patientID string, content io.Reader, maxBytes int64) (storageKey string, size int64, err error) {
 	_ = ctx
+	if _, err := uuid.Parse(patientID); err != nil {
+		return "", 0, fmt.Errorf("invalid patient id")
+	}
+
 	docID := uuid.New().String()
 	storageKey = filepath.ToSlash(filepath.Join(patientID, docID))
+	if err := pathsafe.ValidateRelativeKey(storageKey); err != nil {
+		return "", 0, err
+	}
 
-	dir := filepath.Join(s.rootDir, patientID)
+	dir, err := pathsafe.JoinRoot(s.rootDir, patientID)
+	if err != nil {
+		return "", 0, err
+	}
 	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return "", 0, err
 	}
 
-	path := filepath.Join(s.rootDir, patientID, docID)
+	path, err := pathsafe.JoinRoot(s.rootDir, patientID, docID)
+	if err != nil {
+		return "", 0, err
+	}
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY|os.O_EXCL, 0o640)
 	if err != nil {
 		return "", 0, err
@@ -74,21 +87,8 @@ func (s *LocalFileStorage) RootDir() string {
 }
 
 func (s *LocalFileStorage) resolve(storageKey string) (string, error) {
-	clean := filepath.Clean(storageKey)
-	if clean == ".." || strings.HasPrefix(clean, ".."+string(os.PathSeparator)) {
-		return "", fmt.Errorf("invalid storage key")
-	}
-	full := filepath.Join(s.rootDir, filepath.FromSlash(clean))
-	absRoot, err := filepath.Abs(s.rootDir)
-	if err != nil {
+	if err := pathsafe.ValidateRelativeKey(storageKey); err != nil {
 		return "", err
 	}
-	absFull, err := filepath.Abs(full)
-	if err != nil {
-		return "", err
-	}
-	if !strings.HasPrefix(absFull, absRoot+string(os.PathSeparator)) && absFull != absRoot {
-		return "", fmt.Errorf("invalid storage path")
-	}
-	return full, nil
+	return pathsafe.JoinRoot(s.rootDir, filepath.FromSlash(storageKey))
 }

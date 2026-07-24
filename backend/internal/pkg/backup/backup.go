@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/pathsafe"
 )
 
 const (
@@ -52,7 +53,13 @@ func Create(ctx context.Context, db *database.DB, dir, documentsDir, appVersion 
 
 	stamp := time.Now().UTC().Format("20060102-150405")
 	filename := fmt.Sprintf("pococlinic-backup-%s.tar.gz", stamp)
-	path := filepath.Join(dir, filename)
+	if err := pathsafe.ValidateBackupFilename(filename); err != nil {
+		return "", err
+	}
+	path, err := pathsafe.JoinRoot(dir, filename)
+	if err != nil {
+		return "", err
+	}
 
 	tmpDB, err := os.CreateTemp(dir, "pococlinic-backup-*.sqlite")
 	if err != nil {

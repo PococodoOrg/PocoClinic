@@ -11,6 +11,7 @@ import (
 
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/backup"
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/pathsafe"
 	"github.com/gin-gonic/gin"
 )
 
@@ -144,7 +145,7 @@ func (s *Server) verifyBackup(c *gin.Context) {
 		respondBadRequest(c, "Please choose a backup file to verify.")
 		return
 	}
-	if err := validateBackupFilename(req.Filename); err != nil {
+	if err := pathsafe.ValidateBackupFilename(req.Filename); err != nil {
 		respondBadRequest(c, "Invalid backup filename.")
 		return
 	}
@@ -177,7 +178,13 @@ func (s *Server) restoreBackup(c *gin.Context) {
 		respondBadRequest(c, "Type RESTORE exactly to confirm.")
 		return
 	}
-	if err := validateBackupFilename(req.Filename); err != nil {
+	if err := pathsafe.ValidateBackupFilename(req.Filename); err != nil {
+		respondBadRequest(c, "Invalid backup filename.")
+		return
+	}
+
+	path, err := pathsafe.JoinRoot(s.backupDir, req.Filename)
+	if err != nil {
 		respondBadRequest(c, "Invalid backup filename.")
 		return
 	}
@@ -185,7 +192,6 @@ func (s *Server) restoreBackup(c *gin.Context) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	path := filepath.Join(s.backupDir, req.Filename)
 	if err := backup.Restore(c.Request.Context(), s.pool, path, s.documentsDir); err != nil {
 		respondOperationError(c, err)
 		return
@@ -237,7 +243,10 @@ func (s *Server) buildStatus(ctx context.Context) (*Status, error) {
 }
 
 func (s *Server) verifyBackupFile(filename string) (*VerifyResult, error) {
-	path := filepath.Join(s.backupDir, filename)
+	path, err := pathsafe.JoinRoot(s.backupDir, filename)
+	if err != nil {
+		return nil, err
+	}
 	archive, err := backup.Open(path)
 	if err != nil {
 		return &VerifyResult{
@@ -311,19 +320,6 @@ func backupAgeStatus(ageHours float64) string {
 	default:
 		return "critical"
 	}
-}
-
-func validateBackupFilename(filename string) error {
-	if filename == "" {
-		return fmt.Errorf("backup filename is required")
-	}
-	if strings.Contains(filename, "..") || strings.Contains(filename, "/") || strings.Contains(filename, "\\") {
-		return fmt.Errorf("invalid backup filename")
-	}
-	if !strings.HasPrefix(filename, "pococlinic-backup-") || !strings.HasSuffix(filename, ".tar.gz") {
-		return fmt.Errorf("invalid backup filename")
-	}
-	return nil
 }
 
 // LocalhostMiddleware rejects requests that did not originate from the local machine.

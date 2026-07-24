@@ -30,7 +30,7 @@ fi
 mkdir -p "${INSTALL_ROOT}" /var/lib/pococlinic/backups /var/lib/pococlinic/documents /etc/pococlinic /var/log/pococlinic
 
 # Application tree (binaries + static UI) — replaced on upgrade
-for item in pococlinic ops-helper migrate backup restore audit-purge static install.sh env.template MANIFEST.json; do
+for item in pococlinic ops-helper ops-helper-static migrate backup restore audit-purge static install.sh env.template MANIFEST.json; do
   if [[ -e "${SCRIPT_DIR}/${item}" ]]; then
     rm -rf "${INSTALL_ROOT}/${item}"
     cp -a "${SCRIPT_DIR}/${item}" "${INSTALL_ROOT}/${item}"
