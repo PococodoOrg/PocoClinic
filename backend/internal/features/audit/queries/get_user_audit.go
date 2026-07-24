@@ -3,8 +3,8 @@ package queries
 import (
 	"context"
 
-	auditdomain "github.com/dksch/pococlinic/internal/features/audit/domain"
-	"github.com/dksch/pococlinic/internal/pkg/pagination"
+	auditdomain "github.com/PococodoOrg/PocoClinic/internal/features/audit/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/pagination"
 )
 
 // GetUserAuditQuery retrieves audit history for a staff member.

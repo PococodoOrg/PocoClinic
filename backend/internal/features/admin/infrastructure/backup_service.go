@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	admindomain "github.com/dksch/pococlinic/internal/features/admin/domain"
-	"github.com/dksch/pococlinic/internal/pkg/backup"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	admindomain "github.com/PococodoOrg/PocoClinic/internal/features/admin/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/backup"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 // BackupService runs backup operations against the configured database.

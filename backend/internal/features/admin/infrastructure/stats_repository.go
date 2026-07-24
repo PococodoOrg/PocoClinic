@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	admindomain "github.com/dksch/pococlinic/internal/features/admin/domain"
-	authdomain "github.com/dksch/pococlinic/internal/features/auth/domain"
-	formdomain "github.com/dksch/pococlinic/internal/features/forms/domain"
-	patientdomain "github.com/dksch/pococlinic/internal/features/patients/domain"
-	"github.com/dksch/pococlinic/internal/pkg/backup"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	admindomain "github.com/PococodoOrg/PocoClinic/internal/features/admin/domain"
+	authdomain "github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
+	formdomain "github.com/PococodoOrg/PocoClinic/internal/features/forms/domain"
+	patientdomain "github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/backup"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 // StatsRepository loads admin metrics from SQL or in-memory stores.

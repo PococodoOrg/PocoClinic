@@ -3,7 +3,7 @@ package queries
 import (
 	"context"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
 )
 
 type ListNotesQuery struct {

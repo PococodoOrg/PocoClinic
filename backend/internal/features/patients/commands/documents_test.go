@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
-	patientinfra "github.com/dksch/pococlinic/internal/features/patients/infrastructure"
-	"github.com/dksch/pococlinic/internal/pkg/doccrypto"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	patientinfra "github.com/PococodoOrg/PocoClinic/internal/features/patients/infrastructure"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/doccrypto"
 	"github.com/google/uuid"
 )
 

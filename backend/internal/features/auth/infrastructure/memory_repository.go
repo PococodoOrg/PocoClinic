@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
 )
 
 // MemoryUserRepository is a simple in-memory implementation of the user repository

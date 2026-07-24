@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
-	"github.com/dksch/pococlinic/internal/features/patients/infrastructure"
-	"github.com/dksch/pococlinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/infrastructure"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

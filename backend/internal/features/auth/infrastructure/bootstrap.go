@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/dksch/pococlinic/internal/features/auth/commands"
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/commands"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
 )
 
 // SeedDefaultAdmin creates a default admin user when one does not exist yet.

@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/pkg/config"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/config"
 	"github.com/gin-gonic/gin"
 )
 

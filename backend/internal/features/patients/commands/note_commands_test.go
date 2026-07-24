@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

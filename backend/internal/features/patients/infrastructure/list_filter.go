@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
 )
 
 func buildPatientListWhere(filter domain.PatientListFilter) (string, []any) {

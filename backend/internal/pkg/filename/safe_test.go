@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dksch/pococlinic/internal/pkg/filename"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/filename"
 )
 
 func TestSafeAttachmentFilename(t *testing.T) {

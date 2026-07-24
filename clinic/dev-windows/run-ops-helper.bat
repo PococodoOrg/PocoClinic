@@ -3,8 +3,8 @@ setlocal
 echo PocoClinic Backup Helper (localhost only)
 echo.
 if "%DATABASE_URL%"=="" (
-  echo Tip: set DATABASE_URL for backup/restore. See .env.example
-  echo   set DATABASE_URL=./data/pococlinic.db
+  echo Tip: set DATABASE_URL in backend\.env for backup/restore.
+  echo   Example: DATABASE_URL=./data/pococlinic.db
   echo.
 )
 

@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/audit/domain"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/features/audit/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 	"github.com/google/uuid"
 )
 

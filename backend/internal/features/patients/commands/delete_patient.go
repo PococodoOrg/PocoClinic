@@ -3,8 +3,8 @@ package commands
 import (
 	"context"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
-	"github.com/dksch/pococlinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
 )
 
 // DeletePatientHandler handles patient deletion

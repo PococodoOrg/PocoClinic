@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"testing"
 
-	authdomain "github.com/dksch/pococlinic/internal/features/auth/domain"
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
+	authdomain "github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
 )
 
 func TestMapKnownErrors(t *testing.T) {

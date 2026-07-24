@@ -5,9 +5,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 type SQLExerciseLogRepository struct {

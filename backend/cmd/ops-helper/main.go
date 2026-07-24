@@ -10,11 +10,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/pkg/config"
-	"github.com/dksch/pococlinic/internal/pkg/database"
-	"github.com/dksch/pococlinic/internal/pkg/logging"
-	"github.com/dksch/pococlinic/internal/pkg/middleware"
-	"github.com/dksch/pococlinic/internal/pkg/opshelper"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/config"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/logging"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/middleware"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/opshelper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,6 +31,14 @@ func main() {
 	host := getenv("OPS_HELPER_HOST", "127.0.0.1")
 	port := getenv("OPS_HELPER_PORT", "9090")
 	mainAppURL := getenv("OPS_HELPER_MAIN_APP_URL", "http://localhost:3000")
+	healthCheckURL := getenv("OPS_HELPER_HEALTH_URL", "")
+	if healthCheckURL == "" {
+		apiHost := cfg.Server.Host
+		if apiHost == "0.0.0.0" {
+			apiHost = "127.0.0.1"
+		}
+		healthCheckURL = fmt.Sprintf("http://%s:%d/health", apiHost, cfg.Server.Port)
+	}
 
 	var pool *database.DB
 	if cfg.Database.URL != "" {
@@ -48,7 +56,7 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Recovery(), middleware.SecurityHeaders(), opshelper.LocalhostMiddleware())
 
-	opshelper.NewServer(pool, cfg.Backup.Dir, cfg.Storage.DocumentsDir, cfg.App.Version, mainAppURL).RegisterRoutes(router)
+	opshelper.NewServer(pool, cfg.Backup.Dir, cfg.Storage.DocumentsDir, cfg.App.Version, mainAppURL, healthCheckURL).RegisterRoutes(router)
 
 	router.GET("/", func(c *gin.Context) {
 		if staticDir := resolveStaticDir(); staticDir != "" {

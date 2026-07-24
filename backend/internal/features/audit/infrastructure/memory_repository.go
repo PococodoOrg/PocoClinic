@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/audit/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/audit/domain"
 	"github.com/google/uuid"
 )
 

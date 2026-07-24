@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	authdomain "github.com/dksch/pococlinic/internal/features/auth/domain"
-	authinfra "github.com/dksch/pococlinic/internal/features/auth/infrastructure"
-	"github.com/dksch/pococlinic/internal/features/forms/domain"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	authdomain "github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
+	authinfra "github.com/PococodoOrg/PocoClinic/internal/features/auth/infrastructure"
+	"github.com/PococodoOrg/PocoClinic/internal/features/forms/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 	"github.com/google/uuid"
 )
 

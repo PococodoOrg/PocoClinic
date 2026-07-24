@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
 )
 
 // MemoryRepository is a simple in-memory implementation of the PatientRepository interface

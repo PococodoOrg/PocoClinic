@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dksch/pococlinic/internal/features/forms/domain"
-	forminfra "github.com/dksch/pococlinic/internal/features/forms/infrastructure"
+	"github.com/PococodoOrg/PocoClinic/internal/features/forms/domain"
+	forminfra "github.com/PococodoOrg/PocoClinic/internal/features/forms/infrastructure"
 	"github.com/google/uuid"
 )
 

@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/audit/domain"
-	"github.com/dksch/pococlinic/internal/pkg/logging"
+	"github.com/PococodoOrg/PocoClinic/internal/features/audit/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/logging"
 	"github.com/google/uuid"
 )
 

@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 func TestSQLPatientRepository_CreateListSearch(t *testing.T) {

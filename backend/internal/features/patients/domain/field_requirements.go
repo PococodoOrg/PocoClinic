@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
 )
 
 const patientFieldRequirementsKey = "patient_field_requirements"

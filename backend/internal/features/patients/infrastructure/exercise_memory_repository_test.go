@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
 	"github.com/google/uuid"
 )
 

@@ -10,6 +10,19 @@ export interface HelperStatus {
   appVersion: string;
   backupDir: string;
   mainAppUrl: string;
+  mainAppOnline: boolean;
+}
+
+export interface BackupVerifyResult {
+  filename: string;
+  valid: boolean;
+  checkedAt: string;
+  message?: string;
+  summary?: {
+    tableRows?: Record<string, number>;
+    documentFiles?: number;
+  };
+  integrityIssues?: string[];
 }
 
 export interface BackupEntry {
@@ -39,8 +52,15 @@ export function fetchBackups(): Promise<{ backups: BackupEntry[] }> {
   return request<{ backups: BackupEntry[] }>('/api/backups');
 }
 
-export function createBackup(): Promise<{ filename: string; message: string }> {
+export function createBackup(): Promise<{ filename: string; path: string; message: string }> {
   return request('/api/backups', { method: 'POST' });
+}
+
+export function verifyBackup(filename: string): Promise<BackupVerifyResult> {
+  return request('/api/backups/verify', {
+    method: 'POST',
+    body: JSON.stringify({ filename }),
+  });
 }
 
 export function restoreBackup(filename: string, confirmText: string): Promise<{ message: string }> {

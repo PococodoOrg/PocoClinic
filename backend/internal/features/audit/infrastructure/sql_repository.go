@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/audit/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/audit/domain"
 	"github.com/google/uuid"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 const auditSelectQuery = `

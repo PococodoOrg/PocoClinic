@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
 )
 
 func sniffAndValidateContent(content io.Reader, declaredType, fileName string) (string, io.Reader, error) {

@@ -3,11 +3,11 @@ package middleware
 import (
 	"context"
 
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
-	"github.com/dksch/pococlinic/internal/pkg/config"
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
-	"github.com/dksch/pococlinic/internal/pkg/httperr"
-	"github.com/dksch/pococlinic/internal/pkg/logging"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/config"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/httperr"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/logging"
 	"github.com/gin-gonic/gin"
 )
 

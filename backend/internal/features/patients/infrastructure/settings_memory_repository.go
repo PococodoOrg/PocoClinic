@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
 )
 
 // MemorySettingsRepository stores clinic settings in memory for dev without SQLite.

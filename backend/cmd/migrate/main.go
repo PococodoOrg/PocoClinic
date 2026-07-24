@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/dksch/pococlinic/internal/pkg/config"
-	"github.com/dksch/pococlinic/internal/pkg/database"
-	"github.com/dksch/pococlinic/internal/pkg/logging"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/config"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/logging"
 )
 
 func main() {

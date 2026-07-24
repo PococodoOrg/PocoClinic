@@ -1,4 +1,4 @@
-module github.com/dksch/pococlinic
+module github.com/PococodoOrg/PocoClinic
 
 go 1.25.0
 

@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
-	"github.com/dksch/pococlinic/internal/pkg/logging"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/logging"
 	"github.com/gin-gonic/gin"
 )
 

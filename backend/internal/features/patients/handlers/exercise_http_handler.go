@@ -3,13 +3,13 @@ package handlers
 import (
 	"net/http"
 
-	auditdomain "github.com/dksch/pococlinic/internal/features/audit/domain"
-	authdomain "github.com/dksch/pococlinic/internal/features/auth/domain"
-	"github.com/dksch/pococlinic/internal/features/auth/middleware"
-	"github.com/dksch/pococlinic/internal/features/patients/commands"
-	"github.com/dksch/pococlinic/internal/features/patients/queries"
-	"github.com/dksch/pococlinic/internal/pkg/httperr"
-	"github.com/dksch/pococlinic/internal/pkg/logging"
+	auditdomain "github.com/PococodoOrg/PocoClinic/internal/features/audit/domain"
+	authdomain "github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/middleware"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/commands"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/queries"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/httperr"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/logging"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
