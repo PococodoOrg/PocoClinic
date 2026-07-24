@@ -23,8 +23,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Log error to error reporting service
-    console.error('Error caught by boundary:', error, errorInfo)
+    if (import.meta.env.DEV) {
+      console.error('Error caught by boundary:', error, errorInfo);
+    }
   }
 
   handleReset = () => {
@@ -46,7 +47,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
               <Text size="sm">
                 We apologize for the inconvenience. Please try refreshing the page or contact support if the problem persists.
               </Text>
-              {this.state.error && (
+              {import.meta.env.DEV && this.state.error && (
                 <Text size="xs" c="dimmed">
                   Error: {this.state.error.message}
                 </Text>
