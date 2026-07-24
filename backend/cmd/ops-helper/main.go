@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -113,12 +114,20 @@ func getenv(key, fallback string) string {
 
 func resolveStaticDir() string {
 	candidates := []string{
-		"static",
-		"../../../ops-helper/dist",
+		"cmd/ops-helper/static",
+		"ops-helper-static",
+		"../ops-helper/dist",
+	}
+	if exe, err := os.Executable(); err == nil {
+		exeDir := filepath.Dir(exe)
+		candidates = append([]string{
+			filepath.Join(exeDir, "ops-helper-static"),
+		}, candidates...)
 	}
 	for _, candidate := range candidates {
-		if info, err := os.Stat(candidate + "/index.html"); err == nil && !info.IsDir() {
-			return candidate
+		indexHTML := filepath.Join(candidate, "index.html")
+		if info, err := os.Stat(indexHTML); err == nil && !info.IsDir() {
+			return filepath.Clean(candidate)
 		}
 	}
 	return ""

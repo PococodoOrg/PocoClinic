@@ -1,6 +1,12 @@
 package backup
 
-import "testing"
+import (
+	"archive/tar"
+	"compress/gzip"
+	"os"
+	"path/filepath"
+	"testing"
+)
 
 func TestAppendDocumentFilesEmptyDir(t *testing.T) {
 	dir := t.TempDir()
@@ -62,5 +68,38 @@ func TestArchiveVerifyDetectsTampering(t *testing.T) {
 	}
 	if err := archive.Verify(); err == nil {
 		t.Fatal("expected checksum verification to fail")
+	}
+}
+
+func TestReadArchiveRejectsZipSlip(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "evil.tar.gz")
+	file, err := os.Create(path)
+	if err != nil {
+		t.Fatalf("create archive: %v", err)
+	}
+	gz := gzip.NewWriter(file)
+	tw := tar.NewWriter(gz)
+	if err := tw.WriteHeader(&tar.Header{
+		Name:     "../escape.txt",
+		Typeflag: tar.TypeReg,
+		Size:     4,
+	}); err != nil {
+		t.Fatalf("write header: %v", err)
+	}
+	if _, err := tw.Write([]byte("evil")); err != nil {
+		t.Fatalf("write body: %v", err)
+	}
+	if err := tw.Close(); err != nil {
+		t.Fatalf("close tar: %v", err)
+	}
+	if err := gz.Close(); err != nil {
+		t.Fatalf("close gzip: %v", err)
+	}
+	if err := file.Close(); err != nil {
+		t.Fatalf("close file: %v", err)
+	}
+
+	if _, err := readArchiveFiles(path); err == nil {
+		t.Fatal("expected zip-slip archive to be rejected")
 	}
 }

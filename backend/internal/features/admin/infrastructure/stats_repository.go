@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 	patientdomain "github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/backup"
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/pathsafe"
 )
 
 // StatsRepository loads admin metrics from SQL or in-memory stores.
@@ -395,7 +395,10 @@ func documentsStorageReady(dir string) bool {
 	if err := os.MkdirAll(dir, 0o750); err != nil {
 		return false
 	}
-	probe := filepath.Join(dir, ".write-probe")
+	probe, err := pathsafe.JoinRoot(dir, ".write-probe")
+	if err != nil {
+		return false
+	}
 	if err := os.WriteFile(probe, []byte("ok"), 0o640); err != nil {
 		return false
 	}

@@ -10,6 +10,7 @@ import (
 
 	admindomain "github.com/PococodoOrg/PocoClinic/internal/features/admin/domain"
 	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/pathsafe"
 )
 
 // HealthCheckService runs live operational checks against the clinic server.
@@ -113,7 +114,12 @@ func (s *HealthCheckService) checkBackupDir() admindomain.HealthCheckItem {
 		item.Message = "Backup directory is not writable."
 		return item
 	}
-	probe := filepath.Join(s.backupDir, ".write-probe")
+	probe, err := pathsafe.JoinRoot(s.backupDir, ".write-probe")
+	if err != nil {
+		item.Status = "critical"
+		item.Message = "Backup directory is not writable."
+		return item
+	}
 	if err := os.WriteFile(probe, []byte("ok"), 0o640); err != nil {
 		item.Status = "critical"
 		item.Message = "Backup directory is not writable."
@@ -178,7 +184,11 @@ func (s *HealthCheckService) checkDocumentIntegrity(ctx context.Context) admindo
 			continue
 		}
 		diskKeys[ref.storageKey] = struct{}{}
-		path := filepath.Join(s.documentsDir, filepath.FromSlash(ref.storageKey))
+		path, err := pathsafe.JoinRoot(s.documentsDir, filepath.FromSlash(ref.storageKey))
+		if err != nil {
+			missingDisk++
+			continue
+		}
 		if _, err := os.Stat(path); err != nil {
 			missingDisk++
 		}

@@ -40,6 +40,15 @@ Follow @.cursor/rules/backend-api-conventions.mdc:
 - Inject `*logging.Logger` into handler structs; never crash the process on request errors.
 - All non-auth `/api/v1` routes must use `authMiddleware.RequireAuth()`; admin mutations also need `RequireRole(RoleAdmin)`.
 
+## File operations
+
+- Use `pkg/pathsafe` for any path built from user input, config, or archive contents.
+- `pathsafe.JoinRoot(baseDir, name)` — join under a root; rejects `..` and absolute escapes.
+- `pathsafe.ValidateBackupFilename` — backup bundle basenames only.
+- `pathsafe.ValidateArchiveEntry` — tar entries (zip-slip guard); cap read sizes when extracting.
+- `pkg/filename.SafeAttachmentFilename` — download / `Content-Disposition` names only.
+- Never `filepath.Join(base, untrusted)` without a containment check.
+
 ## Concurrency
 
 - No unnecessary spawning.
