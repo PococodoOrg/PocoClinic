@@ -1,6 +1,7 @@
 package security_test
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -23,28 +24,64 @@ func setupTestRouter() *gin.Engine {
 }
 
 func TestSecurityHeaders(t *testing.T) {
-	router := setupTestRouter()
-	router.Use(middleware.SecurityHeaders())
-	router.GET("/test", func(c *gin.Context) {
-		c.Status(http.StatusOK)
-	})
-
-	w := httptest.NewRecorder()
-	req := httptest.NewRequest("GET", "/test", nil)
-	router.ServeHTTP(w, req)
-
-	expectedHeaders := map[string]string{
-		"X-Content-Type-Options":    "nosniff",
-		"X-Frame-Options":           "DENY",
-		"X-XSS-Protection":          "1; mode=block",
-		"Strict-Transport-Security": "max-age=31536000; includeSubDomains",
-		"Content-Security-Policy":   middleware.ContentSecurityPolicy(),
-		"Referrer-Policy":           "strict-origin-when-cross-origin",
-		"Permissions-Policy":        "camera=(), microphone=(), geolocation=()",
+	baseHeaders := map[string]string{
+		"X-Content-Type-Options":  "nosniff",
+		"X-Frame-Options":         "DENY",
+		"X-XSS-Protection":        "1; mode=block",
+		"Content-Security-Policy": middleware.ContentSecurityPolicy(),
+		"Referrer-Policy":         "strict-origin-when-cross-origin",
+		"Permissions-Policy":      "camera=(), microphone=(), geolocation=()",
 	}
 
-	for header, expected := range expectedHeaders {
-		assert.Equal(t, expected, w.Header().Get(header), fmt.Sprintf("Expected header %s to be %s", header, expected))
+	tests := []struct {
+		name         string
+		setupRequest func(*http.Request)
+		wantHSTS     bool
+	}{
+		{
+			name:         "plain HTTP omits HSTS",
+			setupRequest: func(*http.Request) {},
+			wantHSTS:     false,
+		},
+		{
+			name: "HTTPS via X-Forwarded-Proto sets HSTS",
+			setupRequest: func(req *http.Request) {
+				req.Header.Set("X-Forwarded-Proto", "https")
+			},
+			wantHSTS: true,
+		},
+		{
+			name: "TLS request sets HSTS",
+			setupRequest: func(req *http.Request) {
+				req.TLS = &tls.ConnectionState{}
+			},
+			wantHSTS: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			router := setupTestRouter()
+			router.Use(middleware.SecurityHeaders())
+			router.GET("/test", func(c *gin.Context) {
+				c.Status(http.StatusOK)
+			})
+
+			w := httptest.NewRecorder()
+			req := httptest.NewRequest("GET", "/test", nil)
+			tt.setupRequest(req)
+			router.ServeHTTP(w, req)
+
+			for header, expected := range baseHeaders {
+				assert.Equal(t, expected, w.Header().Get(header), fmt.Sprintf("Expected header %s to be %s", header, expected))
+			}
+
+			if tt.wantHSTS {
+				assert.Equal(t, "max-age=31536000; includeSubDomains", w.Header().Get("Strict-Transport-Security"))
+			} else {
+				assert.Empty(t, w.Header().Get("Strict-Transport-Security"))
+			}
+		})
 	}
 }
 

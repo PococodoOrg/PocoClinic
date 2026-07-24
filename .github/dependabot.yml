@@ -4,7 +4,19 @@ updates:
     directory: "/frontend"
     schedule:
       interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/ops-helper"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "npm"
+    directory: "/binder-printer"
+    schedule:
+      interval: "daily"
   - package-ecosystem: "gomod"
     directory: "/backend"
     schedule:
       interval: "daily"
+  - package-ecosystem: "pip"
+    directory: "/loadtest"
+    schedule:
+      interval: "weekly"
