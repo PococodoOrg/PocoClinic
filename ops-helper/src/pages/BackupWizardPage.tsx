@@ -1,6 +1,7 @@
 import {
   Alert,
   Card,
+  Code,
   Group,
   List,
   Stack,
@@ -11,25 +12,34 @@ import {
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconCheck, IconCircleDashed, IconDeviceUsb, IconDownload } from '@tabler/icons-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createBackup } from '../api';
+import { BackupVerifyResult, createBackup, fetchStatus, verifyBackup } from '../api';
 import { TouchPrimaryButton } from '../components/TouchPrimaryButton';
 import { usePiTouch, useTouchUi } from '../context/PiTouchContext';
 
 export function BackupWizardPage() {
   const [active, setActive] = useState(0);
   const [resultFile, setResultFile] = useState<string | null>(null);
+  const [resultPath, setResultPath] = useState<string | null>(null);
+  const [verifyResult, setVerifyResult] = useState<BackupVerifyResult | null>(null);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { isPiTouch } = usePiTouch();
   const { stepperOrientation, textSize } = useTouchUi();
 
+  const { data: status } = useQuery({
+    queryKey: ['helper-status'],
+    queryFn: fetchStatus,
+  });
+
   const backupMutation = useMutation({
     mutationFn: createBackup,
     onSuccess: async (result) => {
       setResultFile(result.filename);
+      setResultPath(result.path);
+      setVerifyResult(null);
       setActive(2);
       await queryClient.invalidateQueries({ queryKey: ['helper-status'] });
       await queryClient.invalidateQueries({ queryKey: ['helper-backups'] });
@@ -38,11 +48,29 @@ export function BackupWizardPage() {
         message: result.message,
         color: 'teal',
       });
+      try {
+        const verified = await verifyBackup(result.filename);
+        setVerifyResult(verified);
+        notifications.show({
+          title: verified.valid ? 'Backup verified' : 'Verification failed',
+          message: verified.message ?? result.filename,
+          color: verified.valid ? 'green' : 'red',
+        });
+      } catch (error) {
+        notifications.show({
+          title: 'Verification skipped',
+          message: error instanceof Error ? error.message : 'Could not verify the new backup.',
+          color: 'yellow',
+        });
+      }
     },
     onError: (error: Error) => {
       notifications.show({ title: 'Backup failed', message: error.message, color: 'red' });
     },
   });
+
+  const backupFolder = status?.backupDir ?? 'backups folder on this computer';
+  const displayPath = resultPath ?? (resultFile ? `${backupFolder}\\${resultFile}` : null);
 
   return (
     <Stack gap="lg">
@@ -86,6 +114,9 @@ export function BackupWizardPage() {
               <Alert color="blue" variant="light" title="Saving a protected copy">
                 Patients, forms, and staff accounts will be saved on this device.
               </Alert>
+              <Text size={textSize} c="dimmed">
+                File location after backup: <Code>{backupFolder}</Code>
+              </Text>
               <TouchPrimaryButton
                 leftSection={<IconDownload size={22} />}
                 loading={backupMutation.isPending}
@@ -101,6 +132,23 @@ export function BackupWizardPage() {
               {resultFile && (
                 <Alert color="teal" variant="light" icon={<IconCheck size={18} />}>
                   Saved: <strong>{resultFile}</strong>
+                  {displayPath && (
+                    <>
+                      <br />
+                      <Text size="sm" mt="xs">
+                        Full path: <Code>{displayPath}</Code>
+                      </Text>
+                    </>
+                  )}
+                </Alert>
+              )}
+              {verifyResult && (
+                <Alert
+                  color={verifyResult.valid ? 'green' : 'red'}
+                  variant="light"
+                  title={verifyResult.valid ? 'Integrity check passed' : 'Integrity check failed'}
+                >
+                  {verifyResult.message}
                 </Alert>
               )}
               <List
@@ -112,11 +160,11 @@ export function BackupWizardPage() {
                   </ThemeIcon>
                 }
               >
-                <List.Item>Open the USB drive.</List.Item>
+                <List.Item>Open File Explorer and go to the backups folder above.</List.Item>
                 <List.Item>Copy the backup file onto the USB.</List.Item>
                 <List.Item>Wait until finished — do not unplug early.</List.Item>
               </List>
-              <TouchPrimaryButton onClick={() => setActive(3)} disabled={!resultFile}>
+              <TouchPrimaryButton onClick={() => setActive(3)} disabled={!resultFile || verifyResult?.valid === false}>
                 USB copy finished
               </TouchPrimaryButton>
             </Stack>

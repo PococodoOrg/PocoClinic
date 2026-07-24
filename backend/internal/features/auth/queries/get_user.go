@@ -3,7 +3,7 @@ package queries
 import (
 	"context"
 
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
 )
 
 // GetUserQuery represents the query to get a user

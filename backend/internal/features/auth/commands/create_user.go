@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
 )
 
 // CreateUserCommand represents the command to create a new user

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 func TestVerifyIntegritySQLitePayload(t *testing.T) {

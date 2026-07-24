@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/pkg/config"
-	"github.com/dksch/pococlinic/internal/pkg/middleware"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/config"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

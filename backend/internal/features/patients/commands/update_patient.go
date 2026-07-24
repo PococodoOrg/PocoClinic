@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
-	"github.com/dksch/pococlinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
 )
 
 // UpdatePatientCommand represents the command to update a patient

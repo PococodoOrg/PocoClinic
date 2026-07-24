@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	admindomain "github.com/dksch/pococlinic/internal/features/admin/domain"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	admindomain "github.com/PococodoOrg/PocoClinic/internal/features/admin/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 // ComplianceService runs operational HIPAA-oriented control checks.

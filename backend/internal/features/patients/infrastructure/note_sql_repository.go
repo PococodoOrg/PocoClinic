@@ -5,9 +5,9 @@ import (
 	"errors"
 	"time"
 
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 // SQLNoteRepository persists patient notes in SQLite.

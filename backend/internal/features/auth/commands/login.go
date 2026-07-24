@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	auditdomain "github.com/dksch/pococlinic/internal/features/audit/domain"
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
+	auditdomain "github.com/PococodoOrg/PocoClinic/internal/features/audit/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
 	"github.com/google/uuid"
 )
 

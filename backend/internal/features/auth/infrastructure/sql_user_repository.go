@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 // SQLUserRepository persists users in SQLite.

@@ -3,7 +3,7 @@ package handlers
 import (
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
 )
 
 // StaffUserJSON is the admin-facing staff account shape returned by auth APIs.

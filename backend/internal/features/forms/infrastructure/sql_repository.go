@@ -6,8 +6,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/dksch/pococlinic/internal/features/forms/domain"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/features/forms/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 type SQLRepository struct {

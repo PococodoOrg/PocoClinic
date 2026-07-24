@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/pkg/backup"
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/backup"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,6 +27,17 @@ type Status struct {
 	AppVersion        string     `json:"appVersion"`
 	BackupDir         string     `json:"backupDir"`
 	MainAppURL        string     `json:"mainAppUrl"`
+	MainAppOnline     bool       `json:"mainAppOnline"`
+}
+
+// VerifyResult reports manifest checksum verification for the helper UI.
+type VerifyResult struct {
+	Filename        string                  `json:"filename"`
+	Valid           bool                    `json:"valid"`
+	CheckedAt       time.Time               `json:"checkedAt"`
+	Message         string                  `json:"message,omitempty"`
+	Summary         *backup.ManifestSummary `json:"summary,omitempty"`
+	IntegrityIssues []string                `json:"integrityIssues,omitempty"`
 }
 
 // BackupEntry is a simplified backup row for the helper UI.
@@ -43,17 +54,19 @@ type Server struct {
 	backupDir     string
 	documentsDir  string
 	appVersion    string
-	mainAppURL    string
-	mu            sync.Mutex
+	mainAppURL      string
+	healthCheckURL  string
+	mu              sync.Mutex
 }
 
-func NewServer(pool *database.DB, backupDir, documentsDir, appVersion, mainAppURL string) *Server {
+func NewServer(pool *database.DB, backupDir, documentsDir, appVersion, mainAppURL, healthCheckURL string) *Server {
 	return &Server{
-		pool:         pool,
-		backupDir:    backupDir,
-		documentsDir: documentsDir,
-		appVersion:   appVersion,
-		mainAppURL:   mainAppURL,
+		pool:           pool,
+		backupDir:      backupDir,
+		documentsDir:   documentsDir,
+		appVersion:     appVersion,
+		mainAppURL:     mainAppURL,
+		healthCheckURL: healthCheckURL,
 	}
 }
 
@@ -63,6 +76,7 @@ func (s *Server) RegisterRoutes(router *gin.Engine) {
 		api.GET("/status", s.getStatus)
 		api.GET("/backups", s.listBackups)
 		api.POST("/backups", s.createBackup)
+		api.POST("/backups/verify", s.verifyBackup)
 		api.POST("/restore", s.restoreBackup)
 	}
 }
@@ -107,7 +121,7 @@ func (s *Server) createBackup(c *gin.Context) {
 
 	path, err := backup.Create(c.Request.Context(), s.pool, s.backupDir, s.documentsDir, s.appVersion)
 	if err != nil {
-		respondInternalError(c)
+		respondOperationError(c, err)
 		return
 	}
 
@@ -118,6 +132,29 @@ func (s *Server) createBackup(c *gin.Context) {
 		"createdAt": info.Manifest.CreatedAt,
 		"message":   "Backup completed successfully. Copy the file to your USB drive when ready.",
 	})
+}
+
+type verifyBackupRequest struct {
+	Filename string `json:"filename" binding:"required"`
+}
+
+func (s *Server) verifyBackup(c *gin.Context) {
+	var req verifyBackupRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		respondBadRequest(c, "Please choose a backup file to verify.")
+		return
+	}
+	if err := validateBackupFilename(req.Filename); err != nil {
+		respondBadRequest(c, "Invalid backup filename.")
+		return
+	}
+
+	result, err := s.verifyBackupFile(req.Filename)
+	if err != nil {
+		respondInternalError(c)
+		return
+	}
+	c.JSON(http.StatusOK, result)
 }
 
 type restoreRequest struct {
@@ -150,7 +187,7 @@ func (s *Server) restoreBackup(c *gin.Context) {
 
 	path := filepath.Join(s.backupDir, req.Filename)
 	if err := backup.Restore(c.Request.Context(), s.pool, path, s.documentsDir); err != nil {
-		respondInternalError(c)
+		respondOperationError(c, err)
 		return
 	}
 
@@ -184,6 +221,8 @@ func (s *Server) buildStatus(ctx context.Context) (*Status, error) {
 		status.BackupStatus = backupAgeStatus(age)
 	}
 
+	status.MainAppOnline = s.checkMainAppOnline(ctx)
+
 	if s.pool == nil {
 		return status, nil
 	}
@@ -195,6 +234,63 @@ func (s *Server) buildStatus(ctx context.Context) (*Status, error) {
 	}
 
 	return status, nil
+}
+
+func (s *Server) verifyBackupFile(filename string) (*VerifyResult, error) {
+	path := filepath.Join(s.backupDir, filename)
+	archive, err := backup.Open(path)
+	if err != nil {
+		return &VerifyResult{
+			Filename:  filename,
+			Valid:     false,
+			CheckedAt: time.Now().UTC(),
+			Message:   "This backup file could not be opened.",
+		}, nil
+	}
+	if err := archive.Verify(); err != nil {
+		return &VerifyResult{
+			Filename:  filename,
+			Valid:     false,
+			CheckedAt: time.Now().UTC(),
+			Message:   "Checksums in this backup do not match the file contents.",
+		}, nil
+	}
+
+	integrity := archive.VerifyIntegrity()
+	result := &VerifyResult{
+		Filename:  filename,
+		Valid:     integrity.Valid,
+		CheckedAt: time.Now().UTC(),
+		Summary:   &integrity.Summary,
+	}
+	if integrity.Valid {
+		result.Message = fmt.Sprintf(
+			"Backup verified (%d patients, %d document files).",
+			integrity.Summary.TableRows["patients"],
+			integrity.Summary.DocumentFiles,
+		)
+	} else {
+		result.IntegrityIssues = integrity.Issues
+		result.Message = "Backup integrity check failed."
+	}
+	return result, nil
+}
+
+func (s *Server) checkMainAppOnline(ctx context.Context) bool {
+	if strings.TrimSpace(s.healthCheckURL) == "" {
+		return false
+	}
+	client := &http.Client{Timeout: 2 * time.Second}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.healthCheckURL, nil)
+	if err != nil {
+		return false
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	return resp.StatusCode == http.StatusOK
 }
 
 func mapBackupEntry(item backup.Info) BackupEntry {

@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
 )
 
 // CreatePatientCommand represents the command to create a new patient

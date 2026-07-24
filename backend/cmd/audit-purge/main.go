@@ -9,11 +9,11 @@ import (
 	"strconv"
 	"time"
 
-	auditdomain "github.com/dksch/pococlinic/internal/features/audit/domain"
-	"github.com/dksch/pococlinic/internal/pkg/auditretention"
-	"github.com/dksch/pococlinic/internal/pkg/config"
-	"github.com/dksch/pococlinic/internal/pkg/database"
-	"github.com/dksch/pococlinic/internal/pkg/logging"
+	auditdomain "github.com/PococodoOrg/PocoClinic/internal/features/audit/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/auditretention"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/config"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/logging"
 	"github.com/google/uuid"
 )
 

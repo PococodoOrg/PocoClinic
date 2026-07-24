@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
 )
 
 type mockRefreshUserRepository struct {

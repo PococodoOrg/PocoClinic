@@ -3,8 +3,8 @@ package queries
 import (
 	"context"
 
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
-	"github.com/dksch/pococlinic/internal/pkg/pagination"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/pagination"
 )
 
 // GetUsersQuery represents the query to retrieve users

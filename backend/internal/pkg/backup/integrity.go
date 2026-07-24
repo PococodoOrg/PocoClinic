@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 // ManifestSummary captures row and file counts at backup time for integrity checks.

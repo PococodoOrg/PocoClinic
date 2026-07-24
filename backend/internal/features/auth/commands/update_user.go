@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	auditdomain "github.com/dksch/pococlinic/internal/features/audit/domain"
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
+	auditdomain "github.com/PococodoOrg/PocoClinic/internal/features/audit/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
 	"github.com/google/uuid"
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
 )
 
 // UpdateUserCommand updates staff profile fields.

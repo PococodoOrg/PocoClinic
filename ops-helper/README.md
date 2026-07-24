@@ -15,3 +15,15 @@ run-ops-helper.bat
 Pi / ARM builds: `build-ops-helper-pi.bat`, `run-ops-helper-pi.bat` → `clinic/dev-windows/run-ops-helper-pi.bat`.
 
 Binds to **localhost only** by design (see product constraints and ADR-0012). On a Pi touchscreen kiosk, see [devices/raspberry-pi/touchscreen-backup.md](../devices/raspberry-pi/touchscreen-backup.md).
+
+## What it includes
+
+| Feature | Route / API |
+|---------|-------------|
+| Backup health dashboard | `/` · `GET /api/status` |
+| Daily backup wizard | `/backup` · `POST /api/backups` |
+| Backup integrity verify | wizard auto-verify · `POST /api/backups/verify` |
+| Restore wizard (stop-EMR check) | `/restore` · `POST /api/restore` |
+| Printable checklist | `/checklist` (desktop layout) |
+
+Set `DATABASE_URL` in `backend/.env` before backup or restore. The helper loads that file automatically when started from `backend/` (as `run-ops-helper.bat` does).

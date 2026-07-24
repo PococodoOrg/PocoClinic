@@ -12,7 +12,7 @@ import { IconAlertTriangle } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchBackups, restoreBackup } from '../api';
+import { BackupVerifyResult, fetchBackups, fetchStatus, restoreBackup, verifyBackup } from '../api';
 import { BackupPicker } from '../components/BackupPicker';
 import { TouchPrimaryButton } from '../components/TouchPrimaryButton';
 import { usePiTouch, useTouchUi } from '../context/PiTouchContext';
@@ -21,14 +21,35 @@ export function RestoreWizardPage() {
   const [active, setActive] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [confirmText, setConfirmText] = useState('');
+  const [verifyResult, setVerifyResult] = useState<BackupVerifyResult | null>(null);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { isPiTouch } = usePiTouch();
   const { stepperOrientation } = useTouchUi();
 
+  const { data: status } = useQuery({
+    queryKey: ['helper-status'],
+    queryFn: fetchStatus,
+  });
+
   const { data, isLoading } = useQuery({
     queryKey: ['helper-backups'],
     queryFn: fetchBackups,
+  });
+
+  const verifyMutation = useMutation({
+    mutationFn: verifyBackup,
+    onSuccess: (result) => {
+      setVerifyResult(result);
+      notifications.show({
+        title: result.valid ? 'Backup verified' : 'Verification failed',
+        message: result.message ?? result.filename,
+        color: result.valid ? 'green' : 'red',
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({ title: 'Verification failed', message: error.message, color: 'red' });
+    },
   });
 
   const restoreMutation = useMutation({
@@ -45,12 +66,21 @@ export function RestoreWizardPage() {
 
   const backups = data?.backups ?? [];
   const canConfirm = confirmText.trim().toUpperCase() === 'RESTORE' && selected;
+  const mainAppRunning = status?.mainAppOnline ?? false;
+  const restoreBlocked = mainAppRunning || (verifyResult?.valid === false);
 
   return (
     <Stack gap="md">
       <Alert color="red" variant="filled" title="Careful" icon={<IconAlertTriangle size={22} />}>
         Restore replaces all clinic data. Everyone must sign out first.
       </Alert>
+
+      {mainAppRunning && (
+        <Alert color="orange" variant="light" title="Stop the main app first">
+          PocoClinic is still running. Stop it before restore (
+          <strong>sudo systemctl stop pococlinic</strong> on the server, or close the dev backend on this PC).
+        </Alert>
+      )}
 
       <Card withBorder padding={isPiTouch ? 'md' : 'xl'} radius="md">
         {!isPiTouch && (
@@ -79,11 +109,12 @@ export function RestoreWizardPage() {
               </Text>
               <Stack gap={8}>
                 <Text size={isPiTouch ? 'md' : 'sm'}>• All staff signed out</Text>
+                <Text size={isPiTouch ? 'md' : 'sm'}>• Main PocoClinic app stopped</Text>
                 <Text size={isPiTouch ? 'md' : 'sm'}>• Correct USB backup selected</Text>
                 <Text size={isPiTouch ? 'md' : 'sm'}>• Clinic leader approved</Text>
               </Stack>
-              <TouchPrimaryButton color="orange" onClick={() => setActive(1)}>
-                I understand
+              <TouchPrimaryButton color="orange" disabled={mainAppRunning} onClick={() => setActive(1)}>
+                {mainAppRunning ? 'Stop the main app first' : 'I understand'}
               </TouchPrimaryButton>
             </Stack>
           </Stepper.Step>
@@ -95,9 +126,35 @@ export function RestoreWizardPage() {
                 <Text c="dimmed">No backups found. Create a backup first or copy a file to the backups folder.</Text>
               )}
               {backups.length > 0 && (
-                <BackupPicker backups={backups} selected={selected} onSelect={setSelected} />
+                <BackupPicker
+                  backups={backups}
+                  selected={selected}
+                  onSelect={(filename) => {
+                    setSelected(filename);
+                    setVerifyResult(null);
+                  }}
+                />
               )}
-              <TouchPrimaryButton color="orange" disabled={!selected} onClick={() => setActive(2)}>
+              {selected && (
+                <TouchPrimaryButton
+                  color="orange"
+                  variant="light"
+                  loading={verifyMutation.isPending}
+                  onClick={() => verifyMutation.mutate(selected)}
+                >
+                  Verify this backup
+                </TouchPrimaryButton>
+              )}
+              {verifyResult && selected === verifyResult.filename && (
+                <Alert color={verifyResult.valid ? 'green' : 'red'} variant="light" title="Verification result">
+                  {verifyResult.message}
+                </Alert>
+              )}
+              <TouchPrimaryButton
+                color="orange"
+                disabled={!selected || verifyResult?.valid === false}
+                onClick={() => setActive(2)}
+              >
                 Use this backup
               </TouchPrimaryButton>
             </Stack>
@@ -119,7 +176,7 @@ export function RestoreWizardPage() {
               <TouchPrimaryButton
                 color="red"
                 loading={restoreMutation.isPending}
-                disabled={!canConfirm}
+                disabled={!canConfirm || restoreBlocked}
                 onClick={() => restoreMutation.mutate()}
               >
                 Restore clinic data
@@ -130,7 +187,8 @@ export function RestoreWizardPage() {
           <Stepper.Step label="Done" description="Verify">
             <Stack gap="md" mt="md">
               <Alert color="green" variant="light" title="Restore finished">
-                Have someone sign in and check a patient chart. Take a new backup right away.
+                Restart the main PocoClinic service if you stopped it, then have someone sign in and check a patient
+                chart. Take a new backup right away.
               </Alert>
               <TouchPrimaryButton color="teal" onClick={() => navigate('/backup')}>
                 Create new backup

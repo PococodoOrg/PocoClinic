@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/pkg/database"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/database"
 )
 
 // PurgeResult describes deleted audit rows.

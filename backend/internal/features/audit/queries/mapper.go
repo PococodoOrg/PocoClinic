@@ -3,7 +3,7 @@ package queries
 import (
 	"time"
 
-	auditdomain "github.com/dksch/pococlinic/internal/features/audit/domain"
+	auditdomain "github.com/PococodoOrg/PocoClinic/internal/features/audit/domain"
 )
 
 // AuditEntry is the API representation of an audit event.

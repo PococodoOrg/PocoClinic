@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/dksch/pococlinic/internal/features/patients/domain"
-	"github.com/dksch/pococlinic/internal/pkg/doccrypto"
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/features/patients/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/doccrypto"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
 	"github.com/google/uuid"
 )
 

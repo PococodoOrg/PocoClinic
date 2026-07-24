@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dksch/pococlinic/internal/features/auth/domain"
-	"github.com/dksch/pococlinic/internal/pkg/doccrypto"
+	"github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/doccrypto"
 	"github.com/gin-contrib/cors"
 )
 

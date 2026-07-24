@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	authdomain "github.com/dksch/pococlinic/internal/features/auth/domain"
-	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
-	"github.com/dksch/pococlinic/internal/pkg/logging"
+	authdomain "github.com/PococodoOrg/PocoClinic/internal/features/auth/domain"
+	pkgerrors "github.com/PococodoOrg/PocoClinic/internal/pkg/errors"
+	"github.com/PococodoOrg/PocoClinic/internal/pkg/logging"
 	"github.com/gin-gonic/gin"
 )
 
