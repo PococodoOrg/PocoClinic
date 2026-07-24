@@ -2,17 +2,20 @@ package commands
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/dksch/pococlinic/internal/features/patients/domain"
+	pkgerrors "github.com/dksch/pococlinic/internal/pkg/errors"
 )
 
 // CreatePatientCommand represents the command to create a new patient
 type CreatePatientCommand struct {
-	FirstName   string         `json:"firstName" binding:"required"`
-	LastName    string         `json:"lastName" binding:"required"`
+	FirstName   string         `json:"firstName"`
+	LastName    string         `json:"lastName"`
 	MiddleName  string         `json:"middleName"`
-	DateOfBirth domain.Date    `json:"dateOfBirth" binding:"required"`
-	Gender      domain.Gender  `json:"gender" binding:"required"`
+	DateOfBirth domain.Date    `json:"dateOfBirth"`
+	Gender      domain.Gender  `json:"gender"`
 	Email       string         `json:"email"`
 	PhoneNumber string         `json:"phoneNumber"`
 	Height      float64        `json:"height,omitempty"`
@@ -25,20 +28,64 @@ type CreatePatientHandler interface {
 	Handle(ctx context.Context, cmd CreatePatientCommand) (*domain.Patient, error)
 }
 
-// NewCreatePatientHandler creates a new handler for patient creation
 type createPatientHandler struct {
 	patientRepository domain.CreatePatientRepository
+	settings          domain.SettingsRepository
 }
 
-func NewCreatePatientHandler(repo domain.CreatePatientRepository) CreatePatientHandler {
+func NewCreatePatientHandler(repo domain.CreatePatientRepository, settings domain.SettingsRepository) CreatePatientHandler {
 	return &createPatientHandler{
 		patientRepository: repo,
+		settings:          settings,
 	}
 }
 
-// Handle processes the create patient command
 func (h *createPatientHandler) Handle(ctx context.Context, cmd CreatePatientCommand) (*domain.Patient, error) {
-	patient := domain.NewPatient(cmd.FirstName, cmd.LastName, cmd.DateOfBirth.Time(), cmd.Gender)
+	reqs, err := h.settings.GetPatientFieldRequirements(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("load patient field requirements: %w", err)
+	}
+
+	dob := ""
+	if !cmd.DateOfBirth.Time().IsZero() {
+		dob = cmd.DateOfBirth.Time().Format("2006-01-02")
+	}
+	var height *float64
+	if cmd.Height > 0 {
+		height = &cmd.Height
+	}
+	var weight *float64
+	if cmd.Weight > 0 {
+		weight = &cmd.Weight
+	}
+
+	if err := domain.ValidatePatientInput(domain.PatientInput{
+		FirstName:   cmd.FirstName,
+		LastName:    cmd.LastName,
+		MiddleName:  cmd.MiddleName,
+		DateOfBirth: dob,
+		Gender:      string(cmd.Gender),
+		Email:       cmd.Email,
+		PhoneNumber: cmd.PhoneNumber,
+		Address:     cmd.Address,
+		Height:      height,
+		Weight:      weight,
+	}, reqs); err != nil {
+		return nil, err
+	}
+
+	if dob == "" {
+		return nil, pkgerrors.NewAPIError(pkgerrors.ErrValidation, "Date of birth is required")
+	}
+	parsedDOB, err := time.Parse("2006-01-02", dob)
+	if err != nil {
+		return nil, pkgerrors.NewAPIError(pkgerrors.ErrValidation, "Invalid date of birth format")
+	}
+	if !domain.ValidGender(string(cmd.Gender)) {
+		return nil, pkgerrors.NewAPIError(pkgerrors.ErrValidation, "Invalid gender")
+	}
+
+	patient := domain.NewPatient(cmd.FirstName, cmd.LastName, parsedDOB, cmd.Gender)
 	patient.MiddleName = cmd.MiddleName
 	patient.Email = cmd.Email
 	patient.PhoneNumber = cmd.PhoneNumber
@@ -46,8 +93,7 @@ func (h *createPatientHandler) Handle(ctx context.Context, cmd CreatePatientComm
 	patient.Weight = cmd.Weight
 	patient.Address = cmd.Address
 
-	err := h.patientRepository.Create(ctx, patient)
-	if err != nil {
+	if err := h.patientRepository.Create(ctx, patient); err != nil {
 		return nil, err
 	}
 

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dksch/pococlinic/internal/features/patients/domain"
+	"github.com/dksch/pococlinic/internal/features/patients/infrastructure"
 	"github.com/dksch/pococlinic/internal/pkg/errors"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -52,20 +53,12 @@ func (m *MockPatientRepository) List(ctx context.Context) ([]*domain.Patient, er
 	return args.Get(0).([]*domain.Patient), args.Error(1)
 }
 
-func (m *MockPatientRepository) ListPaginated(ctx context.Context, page, pageSize int, search string) ([]*domain.Patient, int64, error) {
-	args := m.Called(ctx, page, pageSize, search)
+func (m *MockPatientRepository) ListPaginated(ctx context.Context, page, pageSize int, filter domain.PatientListFilter) ([]*domain.Patient, int64, error) {
+	args := m.Called(ctx, page, pageSize, filter)
 	if args.Get(0) == nil {
 		return nil, 0, args.Error(1)
 	}
 	return args.Get(0).([]*domain.Patient), args.Get(1).(int64), args.Error(2)
-}
-
-func (m *MockPatientRepository) GetPatientByID(ctx context.Context, id string) (*domain.Patient, error) {
-	args := m.Called(ctx, id)
-	if args.Get(0) == nil {
-		return nil, args.Error(1)
-	}
-	return args.Get(0).(*domain.Patient), args.Error(1)
 }
 
 func TestUpdatePatientHandler_Handle(t *testing.T) {
@@ -159,7 +152,7 @@ func TestUpdatePatientHandler_Handle(t *testing.T) {
 			tt.setupMock(mockRepo)
 
 			// Create the handler
-			handler := NewUpdatePatientHandler(mockRepo)
+			handler := NewUpdatePatientHandler(mockRepo, infrastructure.NewMemorySettingsRepository())
 
 			// Execute the handler
 			patient, err := handler.Handle(context.Background(), tt.cmd)

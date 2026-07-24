@@ -11,7 +11,7 @@ type PatientRepository interface {
 	Delete(ctx context.Context, id string) error
 	GetByID(ctx context.Context, id string) (*Patient, error)
 	List(ctx context.Context) ([]*Patient, error)
-	ListPaginated(ctx context.Context, page, pageSize int, search string) ([]*Patient, int64, error)
+	ListPaginated(ctx context.Context, page, pageSize int, filter PatientListFilter) ([]*Patient, int64, error)
 }
 
 // CreatePatientRepository defines the minimal interface for patient creation
@@ -21,5 +21,5 @@ type CreatePatientRepository interface {
 
 // GetPatientsRepository defines the minimal interface for patient retrieval
 type GetPatientsRepository interface {
-	ListPaginated(ctx context.Context, page, pageSize int, search string) ([]*Patient, int64, error)
+	ListPaginated(ctx context.Context, page, pageSize int, filter PatientListFilter) ([]*Patient, int64, error)
 }

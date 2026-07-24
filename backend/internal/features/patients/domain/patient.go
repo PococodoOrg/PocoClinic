@@ -119,5 +119,5 @@ func (p *Patient) Age() int {
 
 // GetPatientRepository defines the interface for retrieving a single patient by ID
 type GetPatientRepository interface {
-	GetPatientByID(ctx context.Context, id string) (*Patient, error)
+	GetByID(ctx context.Context, id string) (*Patient, error)
 }

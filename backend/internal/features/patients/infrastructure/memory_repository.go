@@ -3,7 +3,6 @@ package infrastructure
 import (
 	"context"
 	"fmt"
-	"strings"
 	"sync"
 
 	"github.com/dksch/pococlinic/internal/features/patients/domain"
@@ -87,15 +86,14 @@ func (r *MemoryRepository) List(ctx context.Context) ([]*domain.Patient, error) 
 	return patients, nil
 }
 
-// ListPaginated returns a paginated list of patients with optional search
-func (r *MemoryRepository) ListPaginated(ctx context.Context, page, pageSize int, search string) ([]*domain.Patient, int64, error) {
+// ListPaginated returns a paginated list of patients with optional filters.
+func (r *MemoryRepository) ListPaginated(ctx context.Context, page, pageSize int, filter domain.PatientListFilter) ([]*domain.Patient, int64, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	// Filter patients by search term if provided
-	var filteredPatients []*domain.Patient
+	filteredPatients := make([]*domain.Patient, 0, len(r.patients))
 	for _, patient := range r.patients {
-		if search == "" || strings.Contains(strings.ToLower(patient.FullName()), strings.ToLower(search)) {
+		if domain.MatchesFilter(patient, filter) {
 			filteredPatients = append(filteredPatients, patient)
 		}
 	}
@@ -112,17 +110,4 @@ func (r *MemoryRepository) ListPaginated(ctx context.Context, page, pageSize int
 	}
 
 	return filteredPatients[start:end], totalCount, nil
-}
-
-// GetPatientByID retrieves a patient by their ID
-func (r *MemoryRepository) GetPatientByID(ctx context.Context, id string) (*domain.Patient, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
-	patient, exists := r.patients[id]
-	if !exists {
-		return nil, fmt.Errorf("patient with ID %s not found", id)
-	}
-
-	return patient, nil
 }
