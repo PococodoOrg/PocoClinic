@@ -84,7 +84,7 @@ loadtest/reports/*
 *$py.class
 
 # --- Build outputs & release artifacts ----------------------------------------
-bin/
+/bin/
 dist/
 build/
 /docs/guide-site/
