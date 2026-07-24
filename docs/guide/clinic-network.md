@@ -22,7 +22,7 @@ PocoClinic is designed for a **private, isolated local area network (LAN)**. Dai
 
 | Service | Port (default) | Who connects |
 |---------|----------------|--------------|
-| PocoClinic web UI + API | 8080 (production default; same origin) | Staff browsers on the LAN |
+| PocoClinic web UI + API | 443 (HTTPS, recommended) or 8080 (HTTP migrate-only) | Staff browsers on the LAN |
 | SQLite | _(file on disk — no port)_ | Server process only |
 | Backup Helper | 9090 | Server browser only (localhost) |
 
@@ -34,6 +34,8 @@ PocoClinic is designed for a **private, isolated local area network (LAN)**. Dai
 | **Optional** | Initial software install, security patches during maintenance windows |
 
 Clinics that require full egress blocking should use the **release tarball** built with `scripts/build-release.mjs` (copies [`clinic/server/`](../../clinic/server/README.md)) — see [DEPLOYMENT-BOUNDARY](../deploy/DEPLOYMENT-BOUNDARY.md) and [ADR-0010](../../adr/0010-local-airgap-deployment.md).
+
+**HTTPS on the LAN:** [Pi TLS guide](../../devices/raspberry-pi/tls-lan.md) · [Pi hardening](../../devices/raspberry-pi/hardening.md) · [ADR-0017](../../adr/0017-raspberry-pi-hardening-and-lan-tls.md)
 
 ## Security expectations
 

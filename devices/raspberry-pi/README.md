@@ -13,6 +13,8 @@ The application release contract (tarball vs OS image) stays in [`docs/deploy/DE
 | Path | Contents |
 |------|----------|
 | [binder/](./binder/README.md) | **Print-me** Pi device binder (A emergency · B periodic · C help) |
+| [hardening.md](./hardening.md) | Firewall, SSH, permissions — run `scripts/harden-pi.sh` |
+| [tls-lan.md](./tls-lan.md) | **HTTPS on the LAN** — local CA, Caddy or Go TLS |
 | [touchscreen-backup.md](./touchscreen-backup.md) | Full touchscreen kiosk guide |
 | [hardware.md](./hardware.md) | Recommended models, RAM, storage, display |
 

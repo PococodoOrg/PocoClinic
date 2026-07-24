@@ -19,6 +19,8 @@ Files in this directory are **copied into the release tarball** and installed un
 │   ├── restore
 │   └── audit-purge
 ├── cron/               # example /etc/cron.d drop-ins
+├── scripts/            # harden-pi.sh, generate-lan-tls.sh
+├── caddy/              # Caddyfile.example for LAN HTTPS
 ├── install.sh
 └── env.template
 ```

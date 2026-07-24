@@ -46,3 +46,4 @@ New production CLI: `backend/cmd/<name>` + `clinic/server/bin/<name>` wrapper + 
 - [0012 — Backup & recovery](./adr/0012-backup-and-recovery-ops.md)
 - [0010 — Air-gapped deploy](./adr/0010-local-airgap-deployment.md)
 - [0016 — Clinic runtime packaging](./adr/0016-clinic-runtime-packaging.md)
+- [0017 — Pi hardening & LAN TLS](./adr/0017-raspberry-pi-hardening-and-lan-tls.md)
