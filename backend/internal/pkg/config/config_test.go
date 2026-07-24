@@ -10,21 +10,45 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	// Save current env vars
-	oldPort := os.Getenv("SERVER_PORT")
-	oldHost := os.Getenv("SERVER_HOST")
-	oldOrigin := os.Getenv("ALLOWED_ORIGIN")
-	oldRPS := os.Getenv("RATE_LIMIT_RPS")
-	oldBurst := os.Getenv("RATE_LIMIT_BURST")
+	envKeys := []string{
+		"SERVER_PORT",
+		"SERVER_HOST",
+		"ALLOWED_ORIGIN",
+		"RATE_LIMIT_RPS",
+		"RATE_LIMIT_BURST",
+		"ENV",
+		"JWT_ACCESS_SECRET",
+		"JWT_REFRESH_SECRET",
+		"DATABASE_URL",
+		"RUN_MIGRATIONS",
+		"DOCUMENT_ENCRYPTION_KEY",
+	}
 
-	// Restore env vars after test
+	saved := make(map[string]string, len(envKeys))
+	for _, key := range envKeys {
+		saved[key] = os.Getenv(key)
+	}
 	defer func() {
-		os.Setenv("SERVER_PORT", oldPort)
-		os.Setenv("SERVER_HOST", oldHost)
-		os.Setenv("ALLOWED_ORIGIN", oldOrigin)
-		os.Setenv("RATE_LIMIT_RPS", oldRPS)
-		os.Setenv("RATE_LIMIT_BURST", oldBurst)
+		for _, key := range envKeys {
+			if saved[key] == "" {
+				os.Unsetenv(key)
+			} else {
+				os.Setenv(key, saved[key])
+			}
+		}
 	}()
+
+	clearEnv := func() {
+		for _, key := range envKeys {
+			os.Unsetenv(key)
+		}
+	}
+
+	strongAccess := "prod-access-secret-with-enough-length-here"
+	strongRefresh := "prod-refresh-secret-with-enough-length-here"
+	prodDB := "./data/pococlinic-test.db"
+	// Non-default 32-byte key for production tests (32 zero bytes, base64).
+	prodDocKey := "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
 
 	tests := []struct {
 		name      string
@@ -42,6 +66,39 @@ func TestLoadConfig(t *testing.T) {
 				assert.Equal(t, []string{"http://localhost:3000"}, cfg.Security.AllowedOrigins)
 				assert.Equal(t, 10, cfg.Security.RateLimit.RequestsPerSecond)
 				assert.Equal(t, 20, cfg.Security.RateLimit.BurstSize)
+				assert.True(t, cfg.Database.RunMigrations)
+				assert.Equal(t, []byte(defaultDocumentEncryptionKeyMaterial), cfg.Storage.DocumentEncryptionKey)
+				assert.Len(t, cfg.Storage.DocumentEncryptionKey, 32)
+			},
+		},
+		{
+			name: "Production skips migrations on app start",
+			envVars: map[string]string{
+				"ENV":                      "production",
+				"JWT_ACCESS_SECRET":        strongAccess,
+				"JWT_REFRESH_SECRET":       strongRefresh,
+				"DATABASE_URL":             prodDB,
+				"DOCUMENT_ENCRYPTION_KEY":  prodDocKey,
+			},
+			wantError: false,
+			validate: func(t *testing.T, cfg *Config) {
+				assert.False(t, cfg.Database.RunMigrations)
+				assert.Equal(t, prodDB, cfg.Database.URL)
+			},
+		},
+		{
+			name: "RUN_MIGRATIONS override",
+			envVars: map[string]string{
+				"ENV":                      "production",
+				"RUN_MIGRATIONS":           "true",
+				"JWT_ACCESS_SECRET":        strongAccess,
+				"JWT_REFRESH_SECRET":       strongRefresh,
+				"DATABASE_URL":             prodDB,
+				"DOCUMENT_ENCRYPTION_KEY":  prodDocKey,
+			},
+			wantError: false,
+			validate: func(t *testing.T, cfg *Config) {
+				assert.True(t, cfg.Database.RunMigrations)
 			},
 		},
 		{
@@ -63,6 +120,59 @@ func TestLoadConfig(t *testing.T) {
 			},
 		},
 		{
+			name: "Production rejects default JWT secrets",
+			envVars: map[string]string{
+				"ENV":          "production",
+				"DATABASE_URL": prodDB,
+			},
+			wantError: true,
+		},
+		{
+			name: "Production requires DATABASE_URL",
+			envVars: map[string]string{
+				"ENV":                     "production",
+				"JWT_ACCESS_SECRET":       strongAccess,
+				"JWT_REFRESH_SECRET":      strongRefresh,
+				"DOCUMENT_ENCRYPTION_KEY": prodDocKey,
+			},
+			wantError: true,
+		},
+		{
+			name: "Production requires DOCUMENT_ENCRYPTION_KEY",
+			envVars: map[string]string{
+				"ENV":                "production",
+				"JWT_ACCESS_SECRET":  strongAccess,
+				"JWT_REFRESH_SECRET": strongRefresh,
+				"DATABASE_URL":       prodDB,
+			},
+			wantError: true,
+		},
+		{
+			name: "Production rejects default DOCUMENT_ENCRYPTION_KEY",
+			envVars: map[string]string{
+				"ENV":                     "production",
+				"JWT_ACCESS_SECRET":       strongAccess,
+				"JWT_REFRESH_SECRET":      strongRefresh,
+				"DATABASE_URL":            prodDB,
+				"DOCUMENT_ENCRYPTION_KEY": DefaultDocumentEncryptionKeyBase64(),
+			},
+			wantError: true,
+		},
+		{
+			name: "Production accepts strong JWT secrets",
+			envVars: map[string]string{
+				"ENV":                     "production",
+				"JWT_ACCESS_SECRET":       strongAccess,
+				"JWT_REFRESH_SECRET":      strongRefresh,
+				"DATABASE_URL":            prodDB,
+				"DOCUMENT_ENCRYPTION_KEY": prodDocKey,
+			},
+			wantError: false,
+			validate: func(t *testing.T, cfg *Config) {
+				assert.Equal(t, "production", cfg.App.Env)
+			},
+		},
+		{
 			name: "Invalid port",
 			envVars: map[string]string{
 				"SERVER_PORT": "invalid",
@@ -80,7 +190,7 @@ func TestLoadConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Set environment variables
+			clearEnv()
 			for k, v := range tt.envVars {
 				os.Setenv(k, v)
 			}

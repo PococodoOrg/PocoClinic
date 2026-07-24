@@ -1,0 +1,4 @@
+# PocoClinic uses embedded SQLite — there is no database container to run.
+# See adr/0015-clinic-database-engine.md and backend/.env.example (DATABASE_URL=./data/pococlinic.db).
+
+services: {}
