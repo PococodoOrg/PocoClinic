@@ -2,11 +2,13 @@
 
 Example systemd units for running PocoClinic on a clinic server. Adjust paths and user for your environment.
 
+**First-time Pi install?** Prefer the beginner walkthrough: [devices/raspberry-pi/setup.md](../../devices/raspberry-pi/setup.md).
+
 ## Prerequisites
 
 - SQLite file path configured
 - Release tarball built with `node scripts/build-release.mjs`, or manual binary build
-- Environment file: `/etc/pococlinic/env`
+- Environment file: `/etc/pococlinic/env` with real `JWT_*`, `DOCUMENT_ENCRYPTION_KEY`, and matching `ALLOWED_ORIGIN`
 
 ## Quick install from release tarball
 
@@ -15,7 +17,7 @@ Example systemd units for running PocoClinic on a clinic server. Adjust paths an
 tar -xzf pococlinic-1.0.0-linux-arm64.tar.gz
 cd pococlinic-1.0.0-linux-arm64
 sudo ./install.sh
-sudo nano /etc/pococlinic/env    # set JWT secrets, ALLOWED_ORIGIN
+sudo nano /etc/pococlinic/env    # JWT_*, DOCUMENT_ENCRYPTION_KEY, ALLOWED_ORIGIN
 sudo /opt/pococlinic/bin/migrate
 sudo systemctl enable --now pococlinic pococlinic-ops-helper
 sudo cp /opt/pococlinic/cron/pococlinic-backup /etc/cron.d/
@@ -37,12 +39,15 @@ DATABASE_URL=/var/lib/pococlinic/pococlinic.db
 BACKUP_DIR=/var/lib/pococlinic/backups
 DOCUMENTS_DIR=/var/lib/pococlinic/documents
 STATIC_DIR=/opt/pococlinic/static
-JWT_ACCESS_SECRET=change-me
-JWT_REFRESH_SECRET=change-me
-ALLOWED_ORIGIN=http://pococlinic.local
+JWT_ACCESS_SECRET=use-openssl-rand-base64-48
+JWT_REFRESH_SECRET=use-different-openssl-rand-base64-48
+DOCUMENT_ENCRYPTION_KEY=use-openssl-rand-base64-32
+ALLOWED_ORIGIN=http://192.168.1.50:8080
+COOKIE_SECURE=false
 AUDIT_RETENTION_DAYS=365
 ```
 
+(Generate secrets with `openssl rand`; set `ALLOWED_ORIGIN` to the exact browser URL. Keep `COOKIE_SECURE=false` only until LAN TLS — see [Pi setup](../../devices/raspberry-pi/setup.md).)
 ## Install services
 
 ```bash

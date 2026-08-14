@@ -63,4 +63,10 @@ Details: [Pi hardware](../../../devices/raspberry-pi/hardware.md)
 
 ---
 
+## Need a screen-by-screen walkthrough?
+
+If this is your first Pi, follow [devices/raspberry-pi/setup.md](../../../devices/raspberry-pi/setup.md) (OS flash through first admin login), then use this binder for formal sign-off (I2–I5).
+
+---
+
 **Next:** Section **I2** — Network & Wi‑Fi

@@ -28,6 +28,8 @@ Secrets: print the blank [Safe vault](../../ops/safe-credentials-vault.md) → f
 
 If the server is a **Raspberry Pi**, also print the [Pi device binder](../../../devices/raspberry-pi/binder/README.md) and leave it in the cabinet.
 
+**First Pi install?** Screen-by-screen: [devices/raspberry-pi/setup.md](../../../devices/raspberry-pi/setup.md).
+
 **Print path:** [binder-printer](../../../binder-printer/README.md) → **Installer binder**.
 
 ---

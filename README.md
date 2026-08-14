@@ -17,10 +17,11 @@ Full intent: [docs/VISION.md](./docs/VISION.md) · Security model: [docs/NETWORK
 
 | I want to… | Start here |
 |------------|------------|
+| **Set up after cloning** (interactive) | **`setup.bat`** (Windows) or **`./setup.sh`** — pick Raspberry Pi, local dev, … |
 | **Understand the product** (evaluate for a clinic) | [Documentation guide](./docs/guide/README.md) → [What is PocoClinic?](./docs/guide/evaluating-pococlinic.md) |
 | **See why we chose X** (architecture) | [**adr/**](./adr/README.md) — especially [0014](./adr/0014-private-lan-only-deployment.md) (scope) and [0015](./adr/0015-clinic-database-engine.md) (database) |
 | **Run / administer a clinic** | [For administrators](./docs/guide/for-administrators/README.md) · [Ops hub](./docs/ops/README.md) · [Binders](./docs/binders/README.md) |
-| **Install or replace a server** | [Installer binder](./docs/binders/installer/README.md) · [clinic/server/](./clinic/server/README.md) · [Raspberry Pi](./devices/raspberry-pi/README.md) |
+| **Install on a Raspberry Pi** | **`setup.bat` → Raspberry Pi** · [written guide](./devices/raspberry-pi/setup.md) · [Installer binder](./docs/binders/installer/README.md) |
 | **Print paper binders** | [binder-printer](./binder-printer/README.md) · [`clinic/workstation/`](./clinic/workstation/README.md) — not part of the EMR |
 | **Packaged clinic server ops** | [`clinic/server/`](./clinic/server/README.md) — install, cron, env wrappers (shipped in tarball) |
 | **Develop or contribute code** | [Getting started](#getting-started) · [AGENTS.md](./AGENTS.md) · [FEATURES.md](./docs/FEATURES.md) |
@@ -109,10 +110,20 @@ Full catalog: [docs/ops/tools-and-scripts.md](./docs/ops/tools-and-scripts.md) �
 
 ## Getting started
 
+### One command after clone
+
+```bat
+setup.bat
+```
+
+Or on macOS/Linux: `chmod +x setup.sh && ./setup.sh`
+
+The wizard asks what you want (**Raspberry Pi**, local development, …) and walks you through that path. Written Pi guide: [devices/raspberry-pi/setup.md](./devices/raspberry-pi/setup.md).
+
 ### Prerequisites
 
-- Node.js 18+
-- Go 1.25+ (see `backend/go.mod`)
+- Node.js 18+ (required for `setup.bat` / release builds)
+- Go 1.25+ (see `backend/go.mod`) for building or local API
 - No separate database server — SQLite file path via `DATABASE_URL` (see [ADR-0015](./adr/0015-clinic-database-engine.md))
 
 ### Run on Windows (quick)
@@ -143,7 +154,7 @@ cd backend && go mod tidy && go run ./cmd/main.go
 Copy [`.env.example`](./.env.example) / [`backend/.env.example`](./backend/.env.example) as needed.
 
 - **Local migrate / backup / restore:** `migrate.bat`, `backup.bat`, `restore.bat` (forward to [`clinic/dev-windows/`](./clinic/dev-windows/README.md))
-- **Production Pi:** [`clinic/server/`](./clinic/server/README.md) after `build-release` — see [deployment boundary](./docs/deploy/DEPLOYMENT-BOUNDARY.md)
+- **Production Pi:** `setup.bat` → Raspberry Pi, or [`clinic/server/`](./clinic/server/README.md) after `build-release` — see [deployment boundary](./docs/deploy/DEPLOYMENT-BOUNDARY.md)
 - **Full tool index:** [docs/ops/tools-and-scripts.md](./docs/ops/tools-and-scripts.md)
 
 ### Tests

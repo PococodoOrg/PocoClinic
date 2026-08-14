@@ -167,6 +167,11 @@ func LoadConfig() (*Config, error) {
 	}
 	config.Storage.DocumentEncryptionKey = docKey
 
+	cookieSecure, err := parseCookieSecure(env)
+	if err != nil {
+		return nil, err
+	}
+
 	config.Auth = AuthConfig{
 		AccessTokenSecret:      getEnvOrDefault("JWT_ACCESS_SECRET", defaultAccessTokenSecret),
 		RefreshTokenSecret:     getEnvOrDefault("JWT_REFRESH_SECRET", defaultRefreshTokenSecret),
@@ -174,7 +179,7 @@ func LoadConfig() (*Config, error) {
 		RefreshTokenTTL:          refreshTTL,
 		SessionInactivityTTL:     inactivityTTL,
 		Issuer:                   getEnvOrDefault("JWT_ISSUER", "pococlinic"),
-		CookieSecure:             env == "production",
+		CookieSecure:             cookieSecure,
 		RefreshTokenCookieName:   getEnvOrDefault("REFRESH_TOKEN_COOKIE", "poco_refresh_token"),
 		AccessTokenCookieName:    getEnvOrDefault("ACCESS_TOKEN_COOKIE", "poco_access_token"),
 	}
@@ -261,6 +266,19 @@ func bytesEqual(a, b []byte) bool {
 // DefaultDocumentEncryptionKeyBase64 returns the development default key encoding (for docs/examples).
 func DefaultDocumentEncryptionKeyBase64() string {
 	return base64.StdEncoding.EncodeToString([]byte(defaultDocumentEncryptionKeyMaterial))
+}
+
+// parseCookieSecure defaults to Secure cookies in production (HTTPS). Override with
+// COOKIE_SECURE=false only for temporary HTTP bring-up on a private LAN; remove before go-live.
+func parseCookieSecure(env string) (bool, error) {
+	if value, exists := os.LookupEnv("COOKIE_SECURE"); exists {
+		parsed, err := strconv.ParseBool(value)
+		if err != nil {
+			return false, fmt.Errorf("invalid COOKIE_SECURE: %w", err)
+		}
+		return parsed, nil
+	}
+	return env == "production", nil
 }
 
 func parseRunMigrations(env string) bool {

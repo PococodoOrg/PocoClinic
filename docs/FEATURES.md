@@ -246,6 +246,8 @@ Conventions for agents and contributors: `.cursor/rules/backend-api-conventions.
   - [x] Tools & scripts catalog (`docs/ops/tools-and-scripts.md`)
   - [x] microSD / Pi deployment boundary (`docs/deploy/DEPLOYMENT-BOUNDARY.md`)
   - [x] Devices hub at repo root (`devices/`) with Raspberry Pi folder (docs + future ops code)
+  - [x] Interactive setup wizard (`setup.bat` / `scripts/setup.mjs`) — Raspberry Pi + local dev paths
+  - [x] Raspberry Pi beginner setup walkthrough (`devices/raspberry-pi/setup.md`)
   - [x] Raspberry Pi print-me binder (`devices/raspberry-pi/binder/`)
   - [x] Standalone binder printer utility (`binder-printer/`, `clinic/workstation/`) — not part of EMR
 

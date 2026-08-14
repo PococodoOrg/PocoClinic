@@ -53,7 +53,7 @@ sudo LAN_CIDR=192.168.1.0/24 ADMIN_SSH_CIDR=192.168.1.0/24 ./scripts/harden-pi.s
 | Static IP | DHCP reservation or static config — record in safe vault |
 | Default accounts | Change/disable Pi OS default password; use dedicated `pococlinic` service user (install.sh) |
 | SSH keys | Admin laptops use keys; disable password auth after verify |
-| HTTPS | Run [generate-lan-tls.sh](../../clinic/server/scripts/generate-lan-tls.sh); trust CA on staff devices |
+| HTTPS | Run [generate-lan-tls.sh](../../clinic/server/scripts/generate-lan-tls.sh); trust CA on staff devices; remove temporary `COOKIE_SECURE=false` |
 | Bind app behind proxy | `SERVER_HOST=127.0.0.1` when using Caddy |
 | Ops helper | Confirm `OPS_HELPER_HOST=127.0.0.1` — never `0.0.0.0` |
 | USB backups | Encrypted clinic process; drives stored locked |

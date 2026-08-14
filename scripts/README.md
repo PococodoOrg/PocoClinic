@@ -6,6 +6,7 @@ Build, CI, and release **build** automation for PocoClinic — **not** post-depl
 
 | Path | Purpose | Full docs |
 |------|---------|-----------|
+| **`setup.mjs`** | **Interactive setup wizard** (Pi, local dev, …) | Repo-root `setup.bat` / `setup.sh` |
 | `build-release.mjs` | Linux ARM64 release tarball for Pi | [Tools catalog](../docs/ops/tools-and-scripts.md#shell-scripts-scripts) |
 | `build-help-site.mjs` | Static HTML from `docs/guide/` | [Tools catalog](../docs/ops/tools-and-scripts.md#documentation-generators) |
 | `test-all.sh` | Backend + frontend + loadtest pytest (local CI parity) | — |

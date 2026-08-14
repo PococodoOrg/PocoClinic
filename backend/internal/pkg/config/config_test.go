@@ -22,6 +22,7 @@ func TestLoadConfig(t *testing.T) {
 		"DATABASE_URL",
 		"RUN_MIGRATIONS",
 		"DOCUMENT_ENCRYPTION_KEY",
+		"COOKIE_SECURE",
 	}
 
 	saved := make(map[string]string, len(envKeys))
@@ -84,7 +85,30 @@ func TestLoadConfig(t *testing.T) {
 			validate: func(t *testing.T, cfg *Config) {
 				assert.False(t, cfg.Database.RunMigrations)
 				assert.Equal(t, prodDB, cfg.Database.URL)
+				assert.True(t, cfg.Auth.CookieSecure)
 			},
+		},
+		{
+			name: "COOKIE_SECURE=false allows temporary HTTP bring-up",
+			envVars: map[string]string{
+				"ENV":                     "production",
+				"JWT_ACCESS_SECRET":       strongAccess,
+				"JWT_REFRESH_SECRET":      strongRefresh,
+				"DATABASE_URL":            prodDB,
+				"DOCUMENT_ENCRYPTION_KEY": prodDocKey,
+				"COOKIE_SECURE":           "false",
+			},
+			wantError: false,
+			validate: func(t *testing.T, cfg *Config) {
+				assert.False(t, cfg.Auth.CookieSecure)
+			},
+		},
+		{
+			name: "Invalid COOKIE_SECURE",
+			envVars: map[string]string{
+				"COOKIE_SECURE": "sometimes",
+			},
+			wantError: true,
 		},
 		{
 			name: "RUN_MIGRATIONS override",

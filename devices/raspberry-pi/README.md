@@ -4,6 +4,14 @@ PocoClinic’s primary **clinic server** target: a Raspberry Pi on the private L
 
 ← [Devices](../README.md) · [Repo README](../../README.md) · [Docs hub](../../docs/README.md)
 
+## Start here
+
+| If you are… | Open this |
+|-------------|-----------|
+| **Installing for the first time** | **`setup.bat`** (repo root) → **Raspberry Pi** · or **[setup.md](./setup.md)** |
+| Replacing / formal clinic deploy with paper checklists | [Installer binder](../../docs/binders/installer/README.md) |
+| Looking up hardware or kiosk details | Tables below |
+
 **This folder** holds Pi-specific documentation and (over time) Pi-only ops code — kiosk launchers, hardware notes.  
 Server install/cron/env wrappers ship in [`clinic/server/`](../../clinic/server/README.md).  
 The application release contract (tarball vs OS image) stays in [`docs/deploy/DEPLOYMENT-BOUNDARY.md`](../../docs/deploy/DEPLOYMENT-BOUNDARY.md).
@@ -12,6 +20,7 @@ The application release contract (tarball vs OS image) stays in [`docs/deploy/DE
 
 | Path | Contents |
 |------|----------|
+| **[setup.md](./setup.md)** | **Beginner install** — flash SD → install → first admin login |
 | [binder/](./binder/README.md) | **Print-me** Pi device binder (A emergency · B periodic · C help) |
 | [hardening.md](./hardening.md) | Firewall, SSH, permissions — run `scripts/harden-pi.sh` |
 | [tls-lan.md](./tls-lan.md) | **HTTPS on the LAN** — local CA, Caddy or Go TLS |
@@ -20,14 +29,13 @@ The application release contract (tarball vs OS image) stays in [`docs/deploy/DE
 
 **Print the Pi binder:** [`clinic/workstation/print-binder.bat`](../../clinic/workstation/print-binder.bat) (or repo-root `print-binder.bat`) → choose **Raspberry Pi**, or follow [binder/README.md](./binder/README.md).
 
-**Install on Pi:** extract release tarball and run [`clinic/server/install.sh`](../../clinic/server/install.sh) — see [deployment boundary](../../docs/deploy/DEPLOYMENT-BOUNDARY.md).
-
 ## Quick facts
 
 | Item | Guidance |
 |------|----------|
 | Role | Clinic **server** only — not a staff charting tablet product |
 | Clients | Staff use browsers on clinic PCs / tablets on the **same LAN** |
+| First install | Follow **[setup.md](./setup.md)** (HTTP first; TLS later) |
 | Ops UI | Optional Pi touchscreen → backup/restore at `http://127.0.0.1:9090` only |
 | Release | Linux **ARM64** tarball from `build-release.bat` / `scripts/build-release.mjs` |
 | Server ops (on Pi) | [`clinic/server/`](../../clinic/server/README.md) → `/opt/pococlinic/bin/*` |

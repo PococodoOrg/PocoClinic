@@ -17,7 +17,8 @@ Administrators set up the server, manage staff and badges, protect data with USB
 
 | Document | Contents |
 |----------|----------|
-| [First-time setup](./first-time-setup.md) | Server prep, `/etc/pococlinic/env`, migrations, staff, first backup |
+| [First-time setup](./first-time-setup.md) | After install: staff, binders, first backup |
+| [**Pi beginner setup**](../../../devices/raspberry-pi/setup.md) | Flash OS → install → first admin login |
 | [Daily operations](./daily-operations.md) | Dashboard review, backups, locked accounts |
 | [Staff & badges](./staff-and-badges.md) | Onboarding, PIN policy, reissue |
 | [Backup & recovery](./backup-and-recovery.md) | USB rotation, verify, restore, drills |

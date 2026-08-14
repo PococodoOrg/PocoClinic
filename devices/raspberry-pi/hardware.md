@@ -49,5 +49,6 @@ See [`docs/guide/clinic-network.md`](../../docs/guide/clinic-network.md).
 ## Related
 
 - [Raspberry Pi index](./README.md)
+- **[Beginner setup](./setup.md)** — flash → install → first login
 - [Touchscreen backup](./touchscreen-backup.md)
 - [Deployment boundary](../../docs/deploy/DEPLOYMENT-BOUNDARY.md)

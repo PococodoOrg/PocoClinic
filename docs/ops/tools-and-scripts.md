@@ -12,6 +12,7 @@ Every helper, CLI entrypoint, batch wrapper, and ops script in the PocoClinic re
 
 | I want to… | Use |
 |------------|-----|
+| **Set up after cloning (interactive)** | `setup.bat` / `./setup.sh` → `scripts/setup.mjs` |
 | **Build Pi release tarball** | `build-release.bat` or `node scripts/build-release.mjs` |
 | Run everything locally (Windows dev) | `run-all.bat` |
 | Set DATABASE_URL to a SQLite file path | `set DATABASE_URL=./data/pococlinic.db` |
@@ -39,6 +40,7 @@ Convenience **forwarders** for local development on Windows. Ops scripts live un
 
 | Script | Forwards to | Prerequisites |
 |--------|-------------|---------------|
+| **`setup.bat`** | `scripts/setup.mjs` | Node.js — interactive Pi / local / docs wizard |
 | `run-all.bat` | _(repo root)_ Opens backend + frontend in separate terminals | Go, Node.js |
 | `run-backend.bat` | _(repo root)_ Starts API server | Go, `DATABASE_URL` optional |
 | `run-frontend.bat` | _(repo root)_ Vite dev server | Node.js |
@@ -112,6 +114,7 @@ Windows: `migrate.bat`, `backup.bat`, `restore.bat` at repo root (forward to `cl
 
 | Path | Purpose | Notes |
 |------|---------|-------|
+| `scripts/setup.mjs` | **Interactive setup wizard** (Raspberry Pi, local dev, docs) | Entry: repo-root `setup.bat` / `setup.sh` |
 | `scripts/build-release.mjs` | **Production release tarball** for Linux ARM64 (Pi) | Output: `dist/pococlinic-<ver>-linux-arm64.tar.gz` |
 | `scripts/build-help-site.mjs` | Converts `docs/guide/**/*.md` → static HTML in `docs/guide-site/` | No npm deps; run with Node 18+ |
 | `scripts/pi/start-backup-kiosk.sh` | Launches Chromium kiosk → `http://127.0.0.1:9090/?pi=1` | Requires X11, Chromium, optional `unclutter` |
@@ -185,7 +188,8 @@ Shared by all Go binaries via `backend/internal/pkg/config`. Production values l
 | `JWT_REFRESH_SECRET` | dev placeholder | **Required** in production (≥32 chars, non-default, must differ from access secret) |
 | `ACCESS_TOKEN_COOKIE` | `poco_access_token` | HttpOnly access session cookie name |
 | `REFRESH_TOKEN_COOKIE` | `poco_refresh_token` | HttpOnly refresh cookie name |
-| `ALLOWED_ORIGIN` | `http://localhost:3000` | Clinic LAN URL (e.g. `http://pococlinic.local`) |
+| `ALLOWED_ORIGIN` | `http://localhost:3000` | Exact staff browser origin (e.g. `http://192.168.1.50:8080` first bring-up; `https://pococlinic.local` after TLS) |
+| `COOKIE_SECURE` | _(unset → true in production)_ | Set `false` only for temporary HTTP bring-up; remove after LAN TLS |
 | `TRUSTED_PROXIES` | _(unset)_ | Comma-separated reverse-proxy IPs/CIDRs when the app sits behind nginx/Caddy on the LAN (e.g. `127.0.0.1,192.168.1.10`). Enables accurate `ClientIP` for rate limits and audit logs. Leave unset for direct workstation access. |
 | `AUDIT_RETENTION_DAYS` | _(unset)_ | Used by `cmd/audit-purge` |
 | `OPS_HELPER_HOST` | `127.0.0.1` | Keep localhost-only |

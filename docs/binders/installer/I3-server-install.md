@@ -4,7 +4,10 @@
 
 Install PocoClinic from the **release tarball** on Linux (Raspberry Pi or small PC).
 
-Full reference: [clinic/server/](../../../clinic/server/README.md) · [Deploy hub](../../deploy/README.md)
+**First time / need hand-holding?** Use the full walkthrough (flash OS → login):  
+[devices/raspberry-pi/setup.md](../../../devices/raspberry-pi/setup.md)
+
+Short reference: [clinic/server/](../../../clinic/server/README.md) · [Deploy hub](../../deploy/README.md)
 
 ---
 
@@ -28,17 +31,26 @@ Installs to `/opt/pococlinic`, creates `pococlinic` user, copies systemd units.
 
 ## 2. Configure environment
 
-Edit `/etc/pococlinic/env` (from `env.template`):
+Edit `/etc/pococlinic/env` (from `env.template`). Stock placeholders will **not** start — replace them.
+
+On the Pi, generate values:
+
+```bash
+openssl rand -base64 48   # JWT_ACCESS_SECRET
+openssl rand -base64 48   # JWT_REFRESH_SECRET (must differ)
+openssl rand -base64 32   # DOCUMENT_ENCRYPTION_KEY
+```
 
 | Variable | Example |
 |----------|---------|
 | `DATABASE_URL` | `/var/lib/pococlinic/pococlinic.db` |
 | `BACKUP_DIR` | `/var/lib/pococlinic/backups` |
-| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Unique 32+ chars each |
-| `DOCUMENT_ENCRYPTION_KEY` | `openssl rand -base64 32` |
-| `ALLOWED_ORIGIN` | `https://pococlinic.local` (after TLS) |
+| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | From openssl above (32+ chars each, different) |
+| `DOCUMENT_ENCRYPTION_KEY` | From openssl above (required in production) |
+| `ALLOWED_ORIGIN` | First boot HTTP: `http://<pi-ip>:8080` — after TLS: `https://pococlinic.local` |
+| `COOKIE_SECURE` | `false` for temporary HTTP bring-up only — **remove before patients** (see [tls-lan.md](../../../devices/raspberry-pi/tls-lan.md)) |
 
-Generate secrets **on the server**; copy to safe vault at handoff.
+`ALLOWED_ORIGIN` must match the browser URL **exactly**. Copy secrets to the safe vault at handoff.
 
 ---
 
@@ -63,9 +75,10 @@ Ops helper: **http://127.0.0.1:9090** on the server only.
 
 ## 5. Bootstrap admin
 
-1. On LAN browser: `/login/admin`  
-2. Sign in with bootstrap credentials (delete `bootstrap-admin-once.txt` after)  
-3. Admin dashboard → **Database connected**, no pending migrations  
+1. On LAN browser: `http://<pi-ip>:8080/login/admin` (HTTPS after Section I4)  
+2. Read credentials: `sudo cat /var/lib/pococlinic/bootstrap-admin-once.txt`  
+3. Sign in (PIN `0000` must be changed); then delete the bootstrap file  
+4. Admin dashboard → **Database connected**, no pending migrations  
 
 ---
 

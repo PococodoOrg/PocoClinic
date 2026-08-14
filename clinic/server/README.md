@@ -40,4 +40,7 @@ sudo /opt/pococlinic/bin/audit-purge --days 365 --dry-run
 
 ## Install / upgrade
 
-See [install.sh](./install.sh). Full flow: [docs/deploy/DEPLOYMENT-BOUNDARY.md](../../docs/deploy/DEPLOYMENT-BOUNDARY.md).
+See [install.sh](./install.sh).
+
+- **First-time Raspberry Pi (step-by-step):** [devices/raspberry-pi/setup.md](../../devices/raspberry-pi/setup.md)
+- Release contract / image split: [docs/deploy/DEPLOYMENT-BOUNDARY.md](../../docs/deploy/DEPLOYMENT-BOUNDARY.md)

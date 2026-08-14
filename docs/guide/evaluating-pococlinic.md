@@ -59,7 +59,7 @@ Details: [NETWORK-AND-SECURITY.md](../NETWORK-AND-SECURITY.md)
 
 ## Try it (developers)
 
-See the root [README.md](../../README.md) for local development (`run-all.bat`, SQLite file via `DATABASE_URL`). Production deployment: [first-time-setup](./for-administrators/first-time-setup.md) · [clinic/server/](../../clinic/server/README.md) · [deploy hub](../deploy/README.md).
+See the root [README.md](../../README.md) for local development (`run-all.bat`, SQLite file via `DATABASE_URL`). Production on a Pi: **[beginner setup](../../devices/raspberry-pi/setup.md)** · [first-time-setup](./for-administrators/first-time-setup.md) · [clinic/server/](../../clinic/server/README.md) · [deploy hub](../deploy/README.md).
 
 ## Next steps
 

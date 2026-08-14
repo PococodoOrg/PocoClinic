@@ -25,7 +25,7 @@ Complete in order. Initials required.
 | 3 | Fill **Section 3** emergency contacts and key-holder names | |
 | 4 | Read **Section 4** break-glass steps with a second administrator present | |
 | 5 | Place printed sheet in the ops binder; lock binder in the safe | |
-| 6 | Delete `data/bootstrap-admin-once.txt` (or equivalent) from the server | |
+| 6 | Delete bootstrap credentials file from the server (`/var/lib/pococlinic/bootstrap-admin-once.txt` on Pi; `./data/bootstrap-admin-once.txt` in local dev) | |
 | 7 | Remove filled secrets from any `.env` printouts, Notepad files, Photos, Downloads | |
 | 8 | Confirm no filled copy remains in email, USB scratch folders, or cloud sync | |
 | 9 | Sign below | |
@@ -43,7 +43,7 @@ Complete in order. Initials required.
 
 ### 2A. Bootstrap / break-glass administrator
 
-Source: first boot file `bootstrap-admin-once.txt` (usually under `./data/`), or Staff → admin user after setup.
+Source: first boot file `bootstrap-admin-once.txt` — **Pi/production:** `/var/lib/pococlinic/bootstrap-admin-once.txt`; **local dev:** usually `./data/bootstrap-admin-once.txt`. Or Staff → admin user after setup.
 
 | Item | Value (handwritten) |
 |------|---------------------|
@@ -64,7 +64,7 @@ These unlock sessions and decrypt patient document blobs. Without them, a restor
 | `JWT_ACCESS_SECRET` | | Min 32 characters in production |
 | `JWT_REFRESH_SECRET` | | Must differ from access secret |
 | `DOCUMENT_ENCRYPTION_KEY` | | Base64 of 32 random bytes (`openssl rand -base64 32`) |
-| `DATABASE_URL` | | Includes DB user/password if any |
+| `DATABASE_URL` | | SQLite file path (e.g. `/var/lib/pococlinic/pococlinic.db`) |
 
 Optional (if your install uses them):
 

@@ -37,6 +37,7 @@ Choose **Installer**, **Site operations**, **Raspberry Pi**, and/or **Safe vault
 |-------|--------|
 | Searchable help when EMR is up | In-app **Help** (`/help`) |
 | Long-form guides | [docs/guide/](../guide/README.md) |
+| **First-time Pi install** | [devices/raspberry-pi/setup.md](../../devices/raspberry-pi/setup.md) |
 | Architecture decisions | [adr/](../../adr/README.md) |
 | Release tarball install tree | [clinic/server/](../../clinic/server/README.md) |
 

@@ -34,7 +34,7 @@ Human-facing docs for PocoClinic. Architecture **decisions** live in root [`adr/
 | Path | Purpose |
 |------|---------|
 | [adr/](../adr/README.md) | Architecture Decision Records |
-| [devices/](../devices/README.md) | Raspberry Pi (and future) server boxes |
+| [devices/](../devices/README.md) | Raspberry Pi (start: [setup.md](../devices/raspberry-pi/setup.md)) |
 | [binder-printer/](../binder-printer/README.md) | Print binders from markdown |
 | [ops-helper/](../ops-helper/) | Localhost backup/restore UI (source; binary ships in tarball) |
 | [clinic/](../clinic/README.md) | Post-deploy server install tree + workstation tools |

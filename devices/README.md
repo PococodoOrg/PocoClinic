@@ -12,7 +12,7 @@ Staff charting still uses **clinic browsers** on the LAN. Device folders cover t
 
 | Folder | Role | Status |
 |--------|------|--------|
-| [raspberry-pi/](./raspberry-pi/README.md) | Primary clinic server (ARM64) + optional touchscreen backup kiosk | Active |
+| [raspberry-pi/](./raspberry-pi/README.md) | Primary clinic server (ARM64) + optional touchscreen backup kiosk | Active — **`setup.bat` → Raspberry Pi** or [setup.md](./raspberry-pi/setup.md) |
 | *(future)* | Small x86 PC / NUC | Not started |
 
 **Print device binders:** [`binder-printer/`](../binder-printer/README.md) · [`clinic/workstation/`](../clinic/workstation/README.md) (not part of the EMR).

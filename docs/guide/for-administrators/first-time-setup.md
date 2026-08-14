@@ -2,9 +2,12 @@
 
 Complete these steps once when PocoClinic is installed on the clinic server. Track progress in the EMR: **Admin dashboard → Administrator guide → First-time setup checklist**.
 
+**Installing on a Raspberry Pi from scratch?** Start with the beginner walkthrough:  
+[devices/raspberry-pi/setup.md](../../../devices/raspberry-pi/setup.md) (flash OS → install → first admin login). Then return here for staff, binders, and backup readiness.
+
 ## 1. Prepare the server
 
-- Install the OS and ensure the server has a static IP on the clinic LAN
+- Install the OS and ensure the server has a static IP on the clinic LAN ([Pi setup](../../../devices/raspberry-pi/setup.md) covers this)
 - Create persistent directories (typical production paths under `/var/lib/pococlinic/`)
 - Production env file: `/etc/pococlinic/env` (from [clinic/server/env.template](../../../clinic/server/env.template) via `install.sh`)
 
@@ -20,7 +23,8 @@ Complete these steps once when PocoClinic is installed on the clinic server. Tra
 | `BACKUP_DIR` | Backup tar directory (e.g. `/var/lib/pococlinic/backups`) |
 | `DOCUMENT_ENCRYPTION_KEY` | Base64 32-byte AES key for document blobs (required in production) |
 | `DOCUMENTS_DIR` | Legacy disk path / bootstrap parent (optional for new installs) |
-| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Session signing (production must be unique) |
+| `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` | Session signing (production must be unique, ≥32 chars, different from each other) |
+| `COOKIE_SECURE` | Defaults to Secure cookies in production; set `false` only for temporary HTTP bring-up ([Pi setup](../../../devices/raspberry-pi/setup.md)) |
 
 ## 3. Run migrations
 
@@ -70,9 +74,11 @@ run-ops-helper.bat   # dev checkout — forwards to clinic/dev-windows/
 
 ## 5. Bootstrap administrator sign-in
 
-1. Open `/login/admin` in a browser on the LAN
-2. Sign in with administrator email, key, and PIN
-3. Confirm the admin dashboard loads with **Database** storage mode (not in-memory)
+1. Open `/login/admin` in a browser on the LAN (Pi first bring-up: `http://<pi-ip>:8080/login/admin`)
+2. Read credentials: `sudo cat /var/lib/pococlinic/bootstrap-admin-once.txt` (local dev: usually `./data/bootstrap-admin-once.txt`)
+3. Sign in with administrator email, **access key**, and PIN (`0000` then change)
+4. Confirm the admin dashboard loads with **Database** storage mode (not in-memory)
+5. Delete the bootstrap file after a successful login
 
 ## 6. Safe vault sheet (print → lock → delete)
 
@@ -82,7 +88,7 @@ Secrets must not stay on the server forever. Complete once at setup:
 2. Handwrite admin email/key/PIN, `JWT_*` secrets, `DOCUMENT_ENCRYPTION_KEY`, and `DATABASE_URL`
 3. Add emergency contacts and safe key holders; sign with a witness
 4. Place the filled sheet in the **safe** — not loose in a desk binder
-5. Delete `data/bootstrap-admin-once.txt` and any digital copies of the filled values
+5. Delete `/var/lib/pococlinic/bootstrap-admin-once.txt` on the Pi (or `./data/bootstrap-admin-once.txt` in local dev) and any digital copies of the filled values
 
 ## 6b. Assemble binders
 

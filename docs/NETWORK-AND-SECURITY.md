@@ -95,7 +95,8 @@ We do **not** treat “offline” as “trust everyone on the network.” Contro
 | Internet | May use npm, Docker Hub, GitHub for builds | **Not required** for daily operation |
 | `DATABASE_URL` | SQLite file on the clinic server | On-server persistent DB |
 | `OPS_HELPER_HOST` | `127.0.0.1` | **`127.0.0.1` only** |
-| `ALLOWED_ORIGIN` | `http://localhost:3000` | Clinic LAN origin(s) only |
+| `ALLOWED_ORIGIN` | `http://localhost:3000` | Exact clinic LAN origin only |
+| `COOKIE_SECURE` | Secure in production | `false` only for temporary HTTP bring-up; HTTPS before patients ([Pi TLS](../devices/raspberry-pi/tls-lan.md)) |
 | Client devices | Developer machine | Clinic-owned workstations |
 
 Developers may use the internet to build releases; **release artifacts** must install and run on a clinic server **without ongoing internet** (see [ADR-0010](../adr/0010-local-airgap-deployment.md)).
@@ -112,6 +113,7 @@ Developers may use the internet to build releases; **release artifacts** must in
 | [ADR-0014](../adr/0014-private-lan-only-deployment.md) | LAN-only, no mobile, no internet |
 | [ADR-0016](../adr/0016-clinic-runtime-packaging.md) | Post-deploy `clinic/` vs dev `scripts/` |
 | [clinic/](../clinic/README.md) | Server install tree shipped in release tarball |
+| [Pi beginner setup](../devices/raspberry-pi/setup.md) | Flash OS → install → first admin login |
 | [DEPLOYMENT-BOUNDARY](./deploy/DEPLOYMENT-BOUNDARY.md) | Tarball vs microSD image responsibilities |
 | [ADR-0015](../adr/0015-clinic-database-engine.md) | Clinic DB engine (Accepted: SQLite) |
 | [administrator-runbook.md](./ops/administrator-runbook.md) | Printable ops procedures |

@@ -11,6 +11,7 @@
 | Env / secrets file | `/etc/pococlinic/env` | ________________ |
 | Backups (`BACKUP_DIR`) | `/var/lib/pococlinic/backups` | ________________ |
 | Database file | `/var/lib/pococlinic/pococlinic.db` (typical) | ________________ |
+| First-boot admin credentials | `/var/lib/pococlinic/bootstrap-admin-once.txt` (delete after setup) | ________________ |
 | Ops helper | `ops-helper` on port **9090** localhost | |
 
 ## Services (names may vary)
@@ -36,6 +37,7 @@ curl -s http://127.0.0.1:9090/ | head
 
 ## Build reminders (dev / upgrade)
 
+- **First install walkthrough:** [`devices/raspberry-pi/setup.md`](../setup.md)
 - Pi touch UI: `build-ops-helper-pi.bat` or `ops-helper` → `npm run build:pi`  
 - Release tarball: `build-release.bat` (linux-arm64) — includes [`clinic/server/`](../../../clinic/server/README.md)  
 - Contract: [`docs/deploy/DEPLOYMENT-BOUNDARY.md`](../../../docs/deploy/DEPLOYMENT-BOUNDARY.md)

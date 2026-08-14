@@ -44,7 +44,7 @@ A volunteer inserts a **microSD card** into a **Raspberry Pi** at the clinic. On
 | Clinical web UI (EMR) | **This repo** | React build served to LAN |
 | Backup helper UI (localhost) | **This repo** | Pi touch build embedded in `ops-helper` |
 | Persistent PHI data paths | **Contract** | Paths documented here; image process creates mount points |
-| LAN hostname / TLS | Image-build or clinic IT | e.g. `http://pococlinic.local` or HTTPS with local CA |
+| LAN hostname / TLS | Image-build or clinic IT | e.g. `https://pococlinic.local` (after TLS); first bring-up may use `http://<ip>:8080` — see [Pi setup](../../devices/raspberry-pi/setup.md) |
 | USB backup rotation SOP | Clinic ops | Documented in runbooks, not in software |
 
 ---
@@ -246,6 +246,7 @@ Development shortcuts (`run-all.bat`, Vite dev server) **do not cross** into pro
 
 ## Related documents
 
+- **[Pi beginner setup](../../devices/raspberry-pi/setup.md)** — flash OS + install + first login (for humans, not image builders)
 - [Deploy documentation hub](./README.md)
 - [Tools & scripts catalog](../ops/tools-and-scripts.md) — every helper referenced above
 - [Clinic runtime packaging (ADR-0016)](../../adr/0016-clinic-runtime-packaging.md)

@@ -80,6 +80,7 @@ Until trusted, browsers show a certificate warning.
 | Task | Done |
 |------|------|
 | Staff URL uses **https://** | ☐ |
+| Remove `COOKIE_SECURE=false` (or set `true`) | ☐ |
 | Remove UFW rule for :8080 when migration complete | ☐ |
 | `OPS_HELPER_MAIN_APP_URL=https://pococlinic.local` | ☐ |
 | Test login + cookie session on iPad | ☐ |

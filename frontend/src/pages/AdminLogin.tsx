@@ -87,7 +87,7 @@ export default function AdminLogin() {
                 />
                 <PasswordInput
                   label="Access key"
-                  description="From the server log on first startup, or your break-glass record"
+                  description="From bootstrap-admin-once.txt on the server (Pi: /var/lib/pococlinic/), or your safe vault sheet"
                   value={key}
                   onChange={(event) => setKey(event.currentTarget.value)}
                   size="lg"

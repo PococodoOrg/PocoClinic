@@ -37,6 +37,8 @@ Secrets: [Safe vault credentials](./safe-credentials-vault.md) → filled copy i
 | [Clinic runtime (`clinic/`)](../../clinic/README.md) | Image builders & admins | Post-deploy install tree shipped in tarball |
 | [Deployment boundary](../deploy/DEPLOYMENT-BOUNDARY.md) | Image builders | microSD / Pi packaging |
 | [Pi touchscreen backup](../../devices/raspberry-pi/touchscreen-backup.md) | Admins | Localhost backup kiosk on Pi display |
+| [**Pi beginner setup**](../../devices/raspberry-pi/setup.md) | First-time installers | Flash SD → install → first admin login |
+| [**Interactive setup**](../../setup.bat) | Anyone after clone | `setup.bat` / `./setup.sh` — pick Raspberry Pi or local dev |
 | [Devices · Raspberry Pi](../../devices/raspberry-pi/README.md) | Admins / installers | Pi hardware + device ops code |
 
 ## Related

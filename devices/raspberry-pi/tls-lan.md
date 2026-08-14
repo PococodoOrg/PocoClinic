@@ -78,8 +78,18 @@ ALLOWED_ORIGIN=https://pococlinic.local
 
 Restart: `sudo systemctl restart pococlinic`
 
-Binding to port 443 may require `CAP_NET_BIND_SERVICE` on the binary or running behind a reverse proxy — **Path A avoids this**.
+Binding to port 443 as the `pococlinic` user works when the systemd unit includes `AmbientCapabilities=CAP_NET_BIND_SERVICE` (shipped in `scripts/deploy/pococlinic.service` and copied by `install.sh`). If an older unit lacks that, re-run install from a current tarball, or use **Path A (Caddy)**.
 
+After TLS is live, remove temporary HTTP bring-up settings from `/etc/pococlinic/env`:
+
+```bash
+# Delete or set true — Secure cookies require HTTPS
+# COOKIE_SECURE=false
+ALLOWED_ORIGIN=https://pococlinic.local
+OPS_HELPER_MAIN_APP_URL=https://pococlinic.local
+```
+
+Then `sudo systemctl restart pococlinic`.
 ---
 
 ## Step 3 — Trust the CA on clinic devices
